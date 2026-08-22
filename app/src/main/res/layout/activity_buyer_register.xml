@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🎁 Buyer Registration"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="#E91E8C"
+        android:layout_marginBottom="20dp" />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/etName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Full Name"
+        android:padding="14dp"
+        android:background="#FCE4EC"
+        android:layout_marginBottom="12dp" />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/etEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Email Address"
+        android:padding="14dp"
+        android:background="#FCE4EC"
+        android:layout_marginBottom="12dp" />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/etPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Password (min 6 chars)"
+        android:inputType="textPassword"
+        android:padding="14dp"
+        android:background="#FCE4EC"
+        android:layout_marginBottom="12dp" />
+
+    <!-- ✅ ADDED: Confirm Password Field -->
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/etConfirmPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Confirm Password"
+        android:inputType="textPassword"
+        android:padding="14dp"
+        android:background="#FCE4EC"
+        android:layout_marginBottom="12dp" />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/etPhone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Phone / WhatsApp (optional)"
+        android:padding="14dp"
+        android:background="#FCE4EC"
+        android:layout_marginBottom="20dp" />
+
+    <Button
+        android:id="@+id/btnRegister"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="✅ Create Account"
+        android:backgroundTint="#E91E8C"
+        android:textColor="#FFFFFF"
+        android:padding="12dp" />
+
+</LinearLayout>

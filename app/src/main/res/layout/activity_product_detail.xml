@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- ✅ TOOLBAR with App Name + Speaker Icon -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#E91E8C"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="📦 Product Detail"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF" />
+
+            <!-- ✅ Speaker Icon for TTS Voice Guidance -->
+            <ImageButton
+                android:id="@+id/btnSpeaker"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_speaker"
+                android:background="@android:color/transparent"
+                android:scaleType="centerInside"
+                android:contentDescription="Voice Guidance" />
+        </LinearLayout>
+
+        <!-- Product Image -->
+        <ImageView
+            android:id="@+id/ivProduct"
+            android:layout_width="match_parent"
+            android:layout_height="260dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/placeholder_product" />
+
+        <!-- Product Details -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- Product Name -->
+            <TextView
+                android:id="@+id/tvProductName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#333333" />
+
+            <!-- Product Price -->
+            <TextView
+                android:id="@+id/tvProductPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:textColor="#E91E8C"
+                android:textStyle="bold"
+                android:layout_marginTop="4dp" />
+
+            <!-- Seller Info Card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="#FCE4EC"
+                android:padding="12dp"
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvSellerName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textSize="15sp"
+                        android:textColor="#333333" />
+
+                    <TextView
+                        android:id="@+id/tvSellerMeta"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#777777"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tvSellerRating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#FFA000"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnViewSeller"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="View →"
+                    android:backgroundTint="#E91E8C"
+                    android:textColor="#FFFFFF" />
+            </LinearLayout>
+
+            <!-- Description -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📝 Description"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textColor="#E91E8C"
+                android:layout_marginTop="20dp" />
+
+            <TextView
+                android:id="@+id/tvDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#666666"
+                android:layout_marginTop="6dp" />
+
+            <!-- Place Order Button (Rose Pink) -->
+            <Button
+                android:id="@+id/btnPlaceOrder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🛒 Place Order"
+                android:backgroundTint="#E91E8C"
+                android:textColor="#FFFFFF"
+                android:padding="14dp"
+                android:layout_marginTop="20dp" />
+
+            <!-- WhatsApp Chat Button -->
+            <Button
+                android:id="@+id/btnWhatsApp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="📱 Chat on WhatsApp"
+                android:backgroundTint="#25D366"
+                android:textColor="#FFFFFF"
+                android:padding="14dp"
+                android:layout_marginTop="10dp" />
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

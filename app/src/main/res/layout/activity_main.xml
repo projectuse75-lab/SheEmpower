@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- ✅ FIXED HEADER: Vertical layout, title on its own row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#E91E8C"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="💗 She Empower"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:maxLines="1"
+                android:textColor="#FFFFFF" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp">
+
+                <!-- Speaker Icon -->
+                <ImageButton
+                    android:id="@+id/btnSpeaker"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_speaker"
+                    android:background="@android:color/transparent"
+                    android:scaleType="centerInside" />
+
+                <Button
+                    android:id="@+id/btnLogin"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="🔑 Login"
+                    android:textSize="13sp"
+                    android:backgroundTint="#FFFFFF"
+                    android:textColor="#E91E8C"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="4dp" />
+
+                <Button
+                    android:id="@+id/btnJoin"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="📝 Register"
+                    android:textSize="13sp"
+                    android:backgroundTint="#FFFFFF"
+                    android:textColor="#E91E8C"
+                    android:layout_marginStart="4dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Search Bar -->
+        <EditText
+            android:id="@+id/etSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:hint="🔍 Search products, sellers, categories..."
+            android:padding="14dp"
+            android:background="#FCE4EC"
+            android:textColor="#333333" />
+
+        <!-- Categories Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="🛍️ Shop by Category"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="#E91E8C" />
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+            <LinearLayout
+                android:id="@+id/layoutCategories"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
+        </HorizontalScrollView>
+
+        <!-- Top Rated Sellers -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="⭐ Top Rated Sellers"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="#E91E8C" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvTopSellers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:nestedScrollingEnabled="false" />
+
+        <!-- Tabs -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_margin="16dp">
+
+            <TextView
+                android:id="@+id/tvProductsTab"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="🛍️ Products"
+                android:gravity="center"
+                android:padding="12dp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:background="#E91E8C" />
+
+            <TextView
+                android:id="@+id/tvSellersTab"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="🏪 Sellers"
+                android:gravity="center"
+                android:padding="12dp"
+                android:textStyle="bold"
+                android:textColor="#E91E8C"
+                android:background="#FCE4EC" />
+        </LinearLayout>
+
+        <!-- Products/Sellers List -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvLatestProducts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:nestedScrollingEnabled="false" />
+
+    </LinearLayout>
+</ScrollView>

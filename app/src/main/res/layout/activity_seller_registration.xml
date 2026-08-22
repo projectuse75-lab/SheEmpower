@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- ✅ TOOLBAR with App Name + Speaker Icon -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#E91E8C"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="🏪 Register as Seller"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF" />
+
+            <!-- ✅ Speaker Icon for TTS Voice Guidance -->
+            <ImageButton
+                android:id="@+id/btnSpeaker"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_speaker"
+                android:background="@android:color/transparent"
+                android:scaleType="centerInside"
+                android:contentDescription="Voice Guidance" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- Subtitle -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Reach thousands of buyers across Pakistan — completely free!"
+                android:textColor="#888888"
+                android:textSize="14sp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Full Name -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Full Name"
+                android:textColor="#E91E8C"
+                android:textStyle="bold" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etSellerName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="👤 Fatima Malik"
+                android:padding="14dp"
+                android:background="#FCE4EC"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="14dp" />
+
+            <!-- Email -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Email Address"
+                android:textColor="#E91E8C"
+                android:textStyle="bold" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etSellerEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="📧 fatima@email.com"
+                android:padding="14dp"
+                android:background="#FCE4EC"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="14dp" />
+
+            <!-- Password -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Password"
+                android:textColor="#E91E8C"
+                android:textStyle="bold" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etSellerPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="🔒 Min 6 characters"
+                android:inputType="textPassword"
+                android:padding="14dp"
+                android:background="#FCE4EC"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="14dp" />
+
+            <!-- Business Name -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Business Name"
+                android:textColor="#E91E8C"
+                android:textStyle="bold" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etBusinessName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="🏪 Fatima's Kitchen"
+                android:padding="14dp"
+                android:background="#FCE4EC"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="14dp" />
+
+            <!-- City -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="City"
+                android:textColor="#E91E8C"
+                android:textStyle="bold" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etCity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="📍 Lahore, Karachi, Islamabad..."
+                android:padding="14dp"
+                android:background="#FCE4EC"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="14dp" />
+
+            <!-- Bio -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Short Bio"
+                android:textColor="#E91E8C"
+                android:textStyle="bold" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etBio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="📝 Tell buyers about your skills..."
+                android:padding="14dp"
+                android:background="#FCE4EC"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="14dp" />
+
+            <!-- WhatsApp Number -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📱 WhatsApp Number (Required)"
+                android:textColor="#E91E8C"
+                android:textStyle="bold" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etWhatsApp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="e.g. 923001234567 (with country code)"
+                android:inputType="phone"
+                android:padding="14dp"
+                android:background="#FCE4EC"
+                android:layout_marginTop="6dp" />
+
+            <!-- WhatsApp Hint -->
+            <TextView
+                android:id="@+id/tvWhatsAppHint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="✅ Buyers will use this number to chat with you on WhatsApp."
+                android:textColor="#4CAF50"
+                android:textSize="12sp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="14dp" />
+
+            <!-- Category Spinner -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🛍️ Category"
+                android:textColor="#E91E8C"
+                android:textStyle="bold" />
+            <Spinner
+                android:id="@+id/spinnerCategory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="14dp" />
+
+            <!-- CNIC Upload -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📋 CNIC Image (Required — for verification)"
+                android:textColor="#E91E8C"
+                android:textStyle="bold" />
+            <Button
+                android:id="@+id/btnPickCnic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="📷 Tap to upload CNIC photo"
+                android:layout_marginTop="6dp"
+                android:backgroundTint="#FCE4EC"
+                android:textColor="#E91E8C" />
+            <TextView
+                android:id="@+id/tvCnicStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#888888"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="14dp" />
+
+            <!-- Voice Sample -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🎙️ Voice Sample (Required — introduce yourself)"
+                android:textColor="#E91E8C"
+                android:textStyle="bold" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="6dp">
+
+                <!-- ✅ FIXED: Record Button Color -->
+                <Button
+                    android:id="@+id/btnRecord"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="🎙 Record Voice"
+                    android:backgroundTint="#E91E8C"
+                    android:textColor="#FFFFFF" />
+
+                <Button
+                    android:id="@+id/btnPickAudio"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:text="📁 Upload"
+                    android:backgroundTint="#FCE4EC"
+                    android:textColor="#E91E8C" />
+            </LinearLayout>
+            <TextView
+                android:id="@+id/tvVoiceStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#888888"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="20dp" />
+
+            <!-- ✅ FIXED: Submit Button Color -->
+            <Button
+                android:id="@+id/btnSellerRegister"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🚀 Submit Registration"
+                android:backgroundTint="#E91E8C"
+                android:textColor="#FFFFFF"
+                android:padding="14dp" />
+
+            <!-- Footer Note -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="After registration, wait for admin approval ✓"
+                android:gravity="center"
+                android:textColor="#888888"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="20dp" />
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

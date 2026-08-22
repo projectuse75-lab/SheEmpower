@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- ✅ Toolbar with Speaker Icon -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#E91E8C"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="➕ Add Product"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <!-- ✅ Speaker Icon for TTS -->
+            <ImageButton
+                android:id="@+id/btnSpeaker"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_speaker"
+                android:background="@android:color/transparent"
+                android:scaleType="centerInside"
+                android:contentDescription="Voice Guidance" />
+        </LinearLayout>
+
+        <!-- Form Fields -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Product Name -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Product Name"
+                android:textColor="#E91E8C"
+                android:textStyle="bold" />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etProductName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="e.g. Handmade Necklace"
+                android:padding="14dp"
+                android:background="#FCE4EC"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Description -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Description"
+                android:textColor="#E91E8C"
+                android:textStyle="bold" />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Describe your product..."
+                android:padding="14dp"
+                android:background="#FCE4EC"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="12dp"
+                android:minLines="3" />
+
+            <!-- Price -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Price (PKR)"
+                android:textColor="#E91E8C"
+                android:textStyle="bold" />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="2500"
+                android:inputType="numberDecimal"
+                android:padding="14dp"
+                android:background="#FCE4EC"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Image Upload -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Product Image"
+                android:textColor="#E91E8C"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnPickImage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="📷 Upload Product Image"
+                android:backgroundTint="#FCE4EC"
+                android:textColor="#E91E8C"
+                android:layout_marginTop="6dp" />
+
+            <TextView
+                android:id="@+id/tvImageStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No image selected"
+                android:textColor="#888888"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Submit Button -->
+            <Button
+                android:id="@+id/btnSubmit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="✅ Add Product"
+                android:backgroundTint="#E91E8C"
+                android:textColor="#FFFFFF"
+                android:padding="14dp"
+                android:layout_marginTop="8dp" />
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
