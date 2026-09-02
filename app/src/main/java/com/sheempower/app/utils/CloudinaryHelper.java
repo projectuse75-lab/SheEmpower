@@ -4,12 +4,15 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import okhttp3.*;
 import java.io.IOException;
 import java.io.InputStream;
 import org.json.JSONObject;
 
 public class CloudinaryHelper {
+
+    private static final String TAG = "CloudinaryHelper";
 
     public interface UploadCallback { void onResult(String url); }
 
@@ -37,6 +40,12 @@ public class CloudinaryHelper {
                 Response response = client.newCall(request).execute();
                 String resStr = response.body() != null ? response.body().string() : null;
 
+                if (!response.isSuccessful()) {
+                    Log.e(TAG, "Upload failed. HTTP " + response.code() + " — Response: " + resStr
+                            + "\nCheck: cloud name = '" + Constants.CLOUDINARY_CLOUD_NAME
+                            + "', preset = '" + Constants.CLOUDINARY_UPLOAD_PRESET + "' (must be Unsigned mode in Cloudinary dashboard)");
+                }
+
                 String secureUrl = null;
                 if (response.isSuccessful() && resStr != null) {
                     JSONObject json = new JSONObject(resStr);
@@ -47,6 +56,7 @@ public class CloudinaryHelper {
                 new Handler(Looper.getMainLooper()).post(() -> callback.onResult(finalUrl));
 
             } catch (Exception e) {
+                Log.e(TAG, "Upload exception: " + e.getMessage(), e);
                 new Handler(Looper.getMainLooper()).post(() -> callback.onResult(null));
             }
         }).start();

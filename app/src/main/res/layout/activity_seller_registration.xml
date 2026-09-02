@@ -7,281 +7,351 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="20dp">
 
-        <!-- ✅ TOOLBAR with App Name + Speaker Icon -->
+        <!-- ============================================================ -->
+        <!-- ✅ TOOLBAR WITH SPEAKER ICON -->
+        <!-- ============================================================ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#E91E8C"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:padding="16dp">
+            android:layout_marginBottom="8dp">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="🏪 Register as Seller"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="#FFFFFF" />
+                android:orientation="vertical">
 
-            <!-- ✅ Speaker Icon for TTS Voice Guidance -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🏪 اپنا کام شروع کریں"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="#FF4081" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Register as Seller"
+                    android:textSize="13sp"
+                    android:textColor="#888888" />
+            </LinearLayout>
+
+            <!-- ✅ Speaker Icon -->
             <ImageButton
                 android:id="@+id/btnSpeaker"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:src="@drawable/ic_speaker"
                 android:background="@android:color/transparent"
-                android:scaleType="centerInside"
-                android:contentDescription="Voice Guidance" />
+                android:scaleType="centerInside" />
         </LinearLayout>
+
+        <!-- Subtitle -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="پاکستان بھر کے ہزاروں خریداروں تک پہنچیں — بالکل مفت!"
+            android:textColor="#888888"
+            android:layout_marginBottom="20dp"
+            android:textSize="14sp" />
+
+        <!-- ============================================================ -->
+        <!-- ✅ FULL NAME -->
+        <!-- ============================================================ -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="اپنا نام / Full Name"
+            android:textColor="#AA3366" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etSellerName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="👤 مثال: فاطمہ بی بی"
+            android:textSize="15sp"
+            android:padding="14dp"
+            android:background="#FCE4EC"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="14dp" />
+
+        <!-- ============================================================ -->
+        <!-- ✅ EMAIL -->
+        <!-- ============================================================ -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ای میل ایڈریس / Email"
+            android:textColor="#AA3366" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etSellerEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="📧 apna_email@example.com"
+            android:textSize="15sp"
+            android:padding="14dp"
+            android:background="#FCE4EC"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="14dp" />
+
+        <!-- ============================================================ -->
+        <!-- ✅ PASSWORD -->
+        <!-- ============================================================ -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="پاس ورڈ / Password"
+            android:textColor="#AA3366" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etSellerPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="🔒 کم از کم 6 حروف"
+            android:inputType="textPassword"
+            android:textSize="15sp"
+            android:padding="14dp"
+            android:background="#FCE4EC"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="14dp" />
+
+        <!-- ============================================================ -->
+        <!-- ✅ BUSINESS NAME -->
+        <!-- ============================================================ -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="کاروبار کا نام / Business Name"
+            android:textColor="#AA3366" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etBusinessName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="🏪 مثال: فاطمہ کی کڑھائی"
+            android:textSize="15sp"
+            android:padding="14dp"
+            android:background="#FCE4EC"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="14dp" />
+
+        <!-- ============================================================ -->
+        <!-- ✅ CITY -->
+        <!-- ============================================================ -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="شہر / City"
+            android:textColor="#AA3366" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etCity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="📍 مثال: لاہور، ملتان، پشاور"
+            android:textSize="15sp"
+            android:padding="14dp"
+            android:background="#FCE4EC"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="14dp" />
+
+        <!-- ============================================================ -->
+        <!-- ✅ BIO -->
+        <!-- ============================================================ -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="مختصر تعارف / Short Bio"
+            android:textColor="#AA3366" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etBio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="📝 اپنے ہنر کے بارے میں بتائیں"
+            android:textSize="15sp"
+            android:padding="14dp"
+            android:background="#FCE4EC"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="14dp" />
+
+        <!-- ============================================================ -->
+        <!-- ✅ WHATSAPP NUMBER -->
+        <!-- ============================================================ -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📱 واٹس ایپ نمبر (ضروری) / WhatsApp Number"
+            android:textColor="#FF4081"
+            android:textStyle="bold" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etWhatsApp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="مثال: 923001234567 (ملکی کوڈ کے ساتھ)"
+            android:inputType="phone"
+            android:textSize="15sp"
+            android:padding="14dp"
+            android:background="#E8F5E9"
+            android:layout_marginTop="6dp" />
+
+        <TextView
+            android:id="@+id/tvWhatsAppHint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#4CAF50"
+            android:textSize="12sp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="14dp" />
+
+        <!-- ============================================================ -->
+        <!-- ✅ CAPACITY DESCRIPTION (NEW) -->
+        <!-- ============================================================ -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🙋‍♀️ آپ کتنے لوگوں / کتنی مقدار کے لیے کام کر سکتی ہیں؟"
+            android:textColor="#AA3366"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="یہ خریدار کو آپ کی پروفائل پر نظر آئے گا"
+            android:textColor="#888888"
+            android:textSize="11sp"
+            android:layout_marginBottom="4dp" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etCapacity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="مثال: میں 50 لوگوں کے لیے کھانا بنا سکتی ہوں"
+            android:textSize="15sp"
+            android:padding="14dp"
+            android:background="#FCE4EC"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="14dp" />
+
+        <!-- ============================================================ -->
+        <!-- ✅ CATEGORY SPINNER -->
+        <!-- ============================================================ -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🛍️ زمرہ / Category"
+            android:textColor="#AA3366" />
+
+        <Spinner
+            android:id="@+id/spinnerCategory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FCE4EC"
+            android:padding="14dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="14dp" />
+
+        <!-- ============================================================ -->
+        <!-- ✅ CNIC UPLOAD -->
+        <!-- ============================================================ -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📋 شناختی کارڈ کی تصویر (ضروری) / CNIC Image"
+            android:textColor="#AA3366" />
+
+        <Button
+            android:id="@+id/btnPickCnic"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="📷 شناختی کارڈ کی تصویر اپلوڈ کریں"
+            android:textSize="14sp"
+            android:layout_marginTop="6dp"
+            android:backgroundTint="#FFE4EC"
+            android:textColor="#FF4081" />
+
+        <TextView
+            android:id="@+id/tvCnicStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#888888"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="14dp" />
+
+        <!-- ============================================================ -->
+        <!-- ✅ VOICE SAMPLE -->
+        <!-- ============================================================ -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🎙️ اپنی آواز میں تعارف (اختیاری) / Voice Sample"
+            android:textColor="#AA3366" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
+            android:orientation="horizontal"
+            android:layout_marginTop="6dp">
 
-            <!-- Subtitle -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Reach thousands of buyers across Pakistan — completely free!"
-                android:textColor="#888888"
-                android:textSize="14sp"
-                android:layout_marginBottom="16dp" />
-
-            <!-- Full Name -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Full Name"
-                android:textColor="#E91E8C"
-                android:textStyle="bold" />
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etSellerName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="👤 Fatima Malik"
-                android:padding="14dp"
-                android:background="#FCE4EC"
-                android:layout_marginTop="6dp"
-                android:layout_marginBottom="14dp" />
-
-            <!-- Email -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Email Address"
-                android:textColor="#E91E8C"
-                android:textStyle="bold" />
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etSellerEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="📧 fatima@email.com"
-                android:padding="14dp"
-                android:background="#FCE4EC"
-                android:layout_marginTop="6dp"
-                android:layout_marginBottom="14dp" />
-
-            <!-- Password -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Password"
-                android:textColor="#E91E8C"
-                android:textStyle="bold" />
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etSellerPassword"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="🔒 Min 6 characters"
-                android:inputType="textPassword"
-                android:padding="14dp"
-                android:background="#FCE4EC"
-                android:layout_marginTop="6dp"
-                android:layout_marginBottom="14dp" />
-
-            <!-- Business Name -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Business Name"
-                android:textColor="#E91E8C"
-                android:textStyle="bold" />
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etBusinessName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="🏪 Fatima's Kitchen"
-                android:padding="14dp"
-                android:background="#FCE4EC"
-                android:layout_marginTop="6dp"
-                android:layout_marginBottom="14dp" />
-
-            <!-- City -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="City"
-                android:textColor="#E91E8C"
-                android:textStyle="bold" />
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etCity"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="📍 Lahore, Karachi, Islamabad..."
-                android:padding="14dp"
-                android:background="#FCE4EC"
-                android:layout_marginTop="6dp"
-                android:layout_marginBottom="14dp" />
-
-            <!-- Bio -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Short Bio"
-                android:textColor="#E91E8C"
-                android:textStyle="bold" />
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etBio"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="📝 Tell buyers about your skills..."
-                android:padding="14dp"
-                android:background="#FCE4EC"
-                android:layout_marginTop="6dp"
-                android:layout_marginBottom="14dp" />
-
-            <!-- WhatsApp Number -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="📱 WhatsApp Number (Required)"
-                android:textColor="#E91E8C"
-                android:textStyle="bold" />
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etWhatsApp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="e.g. 923001234567 (with country code)"
-                android:inputType="phone"
-                android:padding="14dp"
-                android:background="#FCE4EC"
-                android:layout_marginTop="6dp" />
-
-            <!-- WhatsApp Hint -->
-            <TextView
-                android:id="@+id/tvWhatsAppHint"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="✅ Buyers will use this number to chat with you on WhatsApp."
-                android:textColor="#4CAF50"
+            <Button
+                android:id="@+id/btnRecord"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_weight="1"
+                android:text="🎙 آواز ریکارڈ کریں"
                 android:textSize="12sp"
-                android:layout_marginTop="6dp"
-                android:layout_marginBottom="14dp" />
+                android:backgroundTint="#FF4081"
+                android:textColor="#FFFFFF" />
 
-            <!-- Category Spinner -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🛍️ Category"
-                android:textColor="#E91E8C"
-                android:textStyle="bold" />
-            <Spinner
-                android:id="@+id/spinnerCategory"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:layout_marginBottom="14dp" />
-
-            <!-- CNIC Upload -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="📋 CNIC Image (Required — for verification)"
-                android:textColor="#E91E8C"
-                android:textStyle="bold" />
             <Button
-                android:id="@+id/btnPickCnic"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="📷 Tap to upload CNIC photo"
-                android:layout_marginTop="6dp"
-                android:backgroundTint="#FCE4EC"
-                android:textColor="#E91E8C" />
-            <TextView
-                android:id="@+id/tvCnicStatus"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#888888"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="14dp" />
-
-            <!-- Voice Sample -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🎙️ Voice Sample (Required — introduce yourself)"
-                android:textColor="#E91E8C"
-                android:textStyle="bold" />
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="6dp">
-
-                <!-- ✅ FIXED: Record Button Color -->
-                <Button
-                    android:id="@+id/btnRecord"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="🎙 Record Voice"
-                    android:backgroundTint="#E91E8C"
-                    android:textColor="#FFFFFF" />
-
-                <Button
-                    android:id="@+id/btnPickAudio"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp"
-                    android:text="📁 Upload"
-                    android:backgroundTint="#FCE4EC"
-                    android:textColor="#E91E8C" />
-            </LinearLayout>
-            <TextView
-                android:id="@+id/tvVoiceStatus"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#888888"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="20dp" />
-
-            <!-- ✅ FIXED: Submit Button Color -->
-            <Button
-                android:id="@+id/btnSellerRegister"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="🚀 Submit Registration"
-                android:backgroundTint="#E91E8C"
-                android:textColor="#FFFFFF"
-                android:padding="14dp" />
-
-            <!-- Footer Note -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="After registration, wait for admin approval ✓"
-                android:gravity="center"
-                android:textColor="#888888"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="20dp" />
-
+                android:id="@+id/btnPickAudio"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:text="📁 اپلوڈ"
+                android:textSize="12sp"
+                android:backgroundTint="#FFE4EC"
+                android:textColor="#FF4081" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvVoiceStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#888888"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="20dp" />
+
+        <!-- ============================================================ -->
+        <!-- ✅ SUBMIT BUTTON -->
+        <!-- ============================================================ -->
+        <Button
+            android:id="@+id/btnSellerRegister"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:text="🚀 رجسٹریشن جمع کروائیں / Submit"
+            android:textSize="15sp"
+            android:backgroundTint="#FF4081"
+            android:textColor="#FFFFFF" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="رجسٹریشن کے بعد ایڈمن کی منظوری کا انتظار کریں ✓"
+            android:gravity="center"
+            android:textColor="#888888"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="20dp"
+            android:textSize="12sp" />
+
     </LinearLayout>
 </ScrollView>

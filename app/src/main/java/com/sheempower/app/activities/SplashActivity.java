@@ -3,12 +3,12 @@ package com.sheempower.app.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.widget.Toast;
+import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 import com.sheempower.app.R;
 import com.sheempower.app.utils.DemoDataSeeder;
 import com.sheempower.app.utils.SessionManager;
-import com.sheempower.app.utils.TTSHelper;
+import com.sheempower.app.utils.VoiceGuide;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -17,27 +17,33 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        // Seed demo data if needed
-        DemoDataSeeder.seedIfNeeded(this);
+        try {
+            DemoDataSeeder.seedIfNeeded(this);
+        } catch (Exception e) {
+            Log.e("SplashActivity", "Demo seeding failed: " + e.getMessage(), e);
+        }
+
+        VoiceGuide.announceScreen(this, "شی ایمپاور میں خوش آمدید");
 
         SessionManager session = new SessionManager(this);
 
-        // ✅ TTS ready hone tak wait karein (2 second delay)
         new Handler().postDelayed(() -> {
-            Intent intent;
-            if (session.isLoggedIn()) {
-                if (session.isSeller()) {
-                    intent = new Intent(this, SellerDashboardActivity.class);
-                } else if (session.isAdmin()) {
-                    intent = new Intent(this, AdminDashboardActivity.class);
+            try {
+                Intent intent;
+                if (session.isLoggedIn()) {
+                    if (session.isSeller()) intent = new Intent(this, SellerDashboardActivity.class);
+                    else if (session.isAdmin()) intent = new Intent(this, AdminDashboardActivity.class);
+                    else intent = new Intent(this, MainActivity.class);
                 } else {
                     intent = new Intent(this, MainActivity.class);
                 }
-            } else {
-                intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
+            } catch (Exception e) {
+                Log.e("SplashActivity", "Navigation failed: " + e.getMessage(), e);
+                startActivity(new Intent(this, MainActivity.class));
+            } finally {
+                finish();
             }
-            startActivity(intent);
-            finish();
-        }, 2000); // ✅ 2 second delay for smooth transition
+        }, 800);
     }
 }

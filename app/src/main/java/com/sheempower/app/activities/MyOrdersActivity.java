@@ -3,6 +3,7 @@ package com.sheempower.app.activities;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -10,10 +11,7 @@ import com.google.firebase.database.*;
 import com.sheempower.app.R;
 import com.sheempower.app.adapters.OrderAdapter;
 import com.sheempower.app.models.Order;
-import com.sheempower.app.utils.Constants;
-import com.sheempower.app.utils.DemoDataSeeder;
-import com.sheempower.app.utils.SessionManager;
-import com.sheempower.app.utils.TTSHelper;
+import com.sheempower.app.utils.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,30 +33,36 @@ public class MyOrdersActivity extends AppCompatActivity {
         session = new SessionManager(this);
         tts = TTSHelper.getInstance(this);
 
+        // Find Views
         rvOrders = findViewById(R.id.rvOrders);
         tvEmpty = findViewById(R.id.tvEmpty);
 
         // ✅ Speaker Icon for TTS
         findViewById(R.id.btnSpeaker).setOnClickListener(v -> {
-            String instruction = "My Orders screen. Shows all your orders with real-time status updates.";
-            tts.speak(instruction);
+            VoiceGuide.announceScreen(this,
+                    "میرے آرڈرز کی سکرین۔ یہاں آپ کے تمام آرڈرز دکھائی دیں گے۔");
         });
 
+        // ✅ Auto Voice on Load
+        VoiceGuide.announceScreen(this,
+                "میرے آرڈرز کی سکرین۔ یہاں آپ کے تمام آرڈرز دکھائی دیں گے۔");
+
+        // Setup RecyclerView
         rvOrders.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new OrderAdapter(orderList, false);
+        adapter = new OrderAdapter(orderList, false); // false = buyer mode
         rvOrders.setAdapter(adapter);
 
+        // Load Orders
         loadOrders();
 
-        // ✅ Auto-speak
-        tts.speak("My Orders screen loaded.");
-
-        // ✅ If no orders, show demo orders (for testing)
-        if (orderList.isEmpty()) {
-            addDemoOrders();
-        }
+        // ✅ Bottom Navigation
+        BottomNavHelper.setupBottomNav(this, session);
+        BottomNavHelper.setSelectedTab(this, 2); // Highlight Center Tab
     }
 
+    // ============================================================
+    // LOAD ORDERS (Real-time)
+    // ============================================================
     private void loadOrders() {
         ordersListener = new ValueEventListener() {
             @Override
@@ -73,11 +77,19 @@ public class MyOrdersActivity extends AppCompatActivity {
                 // Sort by timestamp (newest first)
                 orderList.sort((a, b) -> Long.compare(b.getTimestamp(), a.getTimestamp()));
                 adapter.notifyDataSetChanged();
+
+                // Show empty state
                 tvEmpty.setVisibility(orderList.isEmpty() ? View.VISIBLE : View.GONE);
+                if (orderList.isEmpty()) {
+                    tvEmpty.setText("📭 ابھی تک کوئی آرڈر نہیں\n\nNo orders yet");
+                }
             }
 
             @Override
-            public void onCancelled(DatabaseError error) {}
+            public void onCancelled(DatabaseError error) {
+                Toast.makeText(MyOrdersActivity.this,
+                        "Error loading orders: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         };
 
         FirebaseDatabase.getInstance().getReference()
@@ -87,64 +99,20 @@ public class MyOrdersActivity extends AppCompatActivity {
                 .addValueEventListener(ordersListener);
     }
 
-    // ✅ Demo Orders for Testing (Only if user is logged in)
-    private void addDemoOrders() {
-        if (!session.isLoggedIn()) return;
-
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
-        String buyerId = session.getUid();
-
-        // Check if demo orders already exist
-        dbRef.child(Constants.NODE_ORDERS)
-                .orderByChild("buyerId")
-                .equalTo(buyerId)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
-                        if (snapshot.exists()) return; // Already has orders
-
-                        // Create 2 demo orders
-                        Order order1 = new Order();
-                        order1.setId("demo_order_1");
-                        order1.setBuyerId(buyerId);
-                        order1.setSellerId("demo_seller_1");
-                        order1.setProductName("Chicken Biryani");
-                        order1.setDetails("2kg biryani for family gathering");
-                        order1.setAddress("Lahore, Pakistan");
-                        order1.setAmount(1200);
-                        order1.setStatus(Constants.STATUS_PENDING);
-                        order1.setTimestamp(System.currentTimeMillis() - 86400000); // Yesterday
-                        dbRef.child(Constants.NODE_ORDERS).child("demo_order_1").setValue(order1);
-
-                        Order order2 = new Order();
-                        order2.setId("demo_order_2");
-                        order2.setBuyerId(buyerId);
-                        order2.setSellerId("demo_seller_2");
-                        order2.setProductName("Pearl Necklace");
-                        order2.setDetails("Custom pearl necklace for wedding");
-                        order2.setAddress("Islamabad, Pakistan");
-                        order2.setAmount(8500);
-                        order2.setStatus(Constants.STATUS_VERIFIED);
-                        order2.setTimestamp(System.currentTimeMillis() - 172800000); // 2 days ago
-                        dbRef.child(Constants.NODE_ORDERS).child("demo_order_2").setValue(order2);
-
-                        // Clear demo data flag so real orders won't get mixed
-                        DemoDataSeeder.clearDemoDataOnFirstRealUse(MyOrdersActivity.this);
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError error) {}
-                });
-    }
-
+    // ============================================================
+    // ON DESTROY
+    // ============================================================
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        // ✅ Remove listener to prevent memory leaks
         if (ordersListener != null) {
             FirebaseDatabase.getInstance().getReference()
                     .child(Constants.NODE_ORDERS)
                     .removeEventListener(ordersListener);
         }
-        if (tts != null) tts.shutdown();
+
+        // TTSHelper is a singleton — don't shut it down here
     }
 }

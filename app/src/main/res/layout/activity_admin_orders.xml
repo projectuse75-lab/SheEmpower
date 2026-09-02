@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFFFFF">
+
+    <!-- ============================================================ -->
+    <!-- ✅ TOOLBAR WITH SPEAKER ICON -->
+    <!-- ============================================================ -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FF4081"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="📦 تمام آرڈرز / All Orders"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <!-- ✅ Speaker Icon -->
+        <ImageButton
+            android:id="@+id/btnSpeaker"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_speaker"
+            android:background="@android:color/transparent"
+            android:scaleType="centerInside" />
+    </LinearLayout>
+
+    <!-- ============================================================ -->
+    <!-- ✅ CONTENT -->
+    <!-- ============================================================ -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/tvEmpty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📭 ابھی تک کوئی آرڈر نہیں\n\nNo orders yet"
+            android:gravity="center"
+            android:textColor="#888888"
+            android:textSize="16sp"
+            android:visibility="gone"
+            android:layout_gravity="center" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvOrders"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8dp" />
+
+    </FrameLayout>
+
+    <!-- ============================================================ -->
+    <!-- ✅ BOTTOM NAVIGATION -->
+    <!-- ============================================================ -->
+    <include
+        layout="@layout/bottom_nav_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

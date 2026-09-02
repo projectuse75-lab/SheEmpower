@@ -2,7 +2,6 @@ package com.sheempower.app.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,6 +25,7 @@ public class SellerProfileActivity extends AppCompatActivity {
 
     private CircleImageView ivSellerAvatar;
     private TextView tvName, tvCategory, tvCity, tvBio, tvRating, tvStatus;
+    private TextView tvCapacity;  // ✅ NEW: Capacity Description
     private Button btnPlaceOrder, btnWhatsAppChat;
     private RecyclerView rvProducts;
     private ProductAdapter productAdapter;
@@ -45,6 +45,7 @@ public class SellerProfileActivity extends AppCompatActivity {
         tts = TTSHelper.getInstance(this);
         sellerId = getIntent().getStringExtra(EXTRA_SELLER_ID);
 
+        // Find Views
         ivSellerAvatar = findViewById(R.id.ivSellerAvatar);
         tvName = findViewById(R.id.tvSellerName);
         tvCategory = findViewById(R.id.tvSellerCategory);
@@ -52,10 +53,21 @@ public class SellerProfileActivity extends AppCompatActivity {
         tvBio = findViewById(R.id.tvSellerBio);
         tvRating = findViewById(R.id.tvSellerRating);
         tvStatus = findViewById(R.id.tvSellerStatus);
+        tvCapacity = findViewById(R.id.tvSellerCapacity);  // ✅ NEW
         btnPlaceOrder = findViewById(R.id.btnPlaceOrder);
         btnWhatsAppChat = findViewById(R.id.btnWhatsAppChat);
         rvProducts = findViewById(R.id.rvSellerProducts);
 
+        // ✅ Speaker Icon
+        findViewById(R.id.btnSpeaker).setOnClickListener(v -> {
+            VoiceGuide.announceScreen(this,
+                    "یہ بیچنے والی کی پروفائل ہے۔ آپ یہاں سے آرڈر دے سکتی ہیں یا واٹس ایپ پر براہ راست بات کر سکتی ہیں۔");
+        });
+
+        VoiceGuide.announceScreen(this,
+                "یہ بیچنے والی کی پروفائل ہے۔ آپ یہاں سے آرڈر دے سکتی ہیں یا واٹس ایپ پر براہ راست بات کر سکتی ہیں۔");
+
+        // Setup RecyclerView
         rvProducts.setLayoutManager(new GridLayoutManager(this, 2));
         productAdapter = new ProductAdapter(productList,
                 product -> {
@@ -66,36 +78,28 @@ public class SellerProfileActivity extends AppCompatActivity {
                 product -> requireBuyerLogin(() -> goToOrder(product)),
                 product -> WhatsAppHelper.openChat(this,
                         currentSeller != null ? currentSeller.getWhatsappNumber() : null,
-                        "Assalam o Alaikum! Mujhe " + product.getName() + " ke baare mein poochna tha.")
+                        "السلام علیکم! مجھے " + product.getName() + " کے بارے میں پوچھنا تھا۔")
         );
         rvProducts.setAdapter(productAdapter);
-
-        // ✅ Speaker icon (assumes you have a speaker button in the layout)
-        findViewById(R.id.btnSpeaker).setOnClickListener(v -> {
-            if (currentSeller != null) {
-                String instruction = "Seller profile for " + currentSeller.getBusinessName() +
-                        ". Category: " + currentSeller.getCategory() +
-                        ". You can place an order or chat with the seller via WhatsApp.";
-                tts.speak(instruction);
-            }
-        });
 
         loadSellerData();
         loadSellerProducts();
 
+        // Place Order Button
         btnPlaceOrder.setOnClickListener(v -> requireBuyerLogin(() -> {
             Intent i = new Intent(this, PlaceOrderActivity.class);
             i.putExtra(PlaceOrderActivity.EXTRA_SELLER_ID, sellerId);
             startActivity(i);
         }));
 
+        // WhatsApp Chat Button
         btnWhatsAppChat.setOnClickListener(v -> WhatsAppHelper.openChat(this,
                 currentSeller != null ? currentSeller.getWhatsappNumber() : null, null));
-
-        // ✅ Speak screen instruction on create (if desired)
-        tts.speak("Seller profile screen loaded.");
     }
 
+    // ============================================================
+    // LOAD SELLER DATA
+    // ============================================================
     private void loadSellerData() {
         FirebaseDatabase.getInstance().getReference()
                 .child(Constants.NODE_SELLERS).child(sellerId)
@@ -103,23 +107,59 @@ public class SellerProfileActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
                         currentSeller = snapshot.getValue(Seller.class);
-                        if (currentSeller == null) return;
+                        if (currentSeller == null) {
+                            Toast.makeText(SellerProfileActivity.this, "بیچنے والی نہیں ملی / Seller not found", Toast.LENGTH_SHORT).show();
+                            finish();
+                            return;
+                        }
+
                         tvName.setText(currentSeller.getBusinessName());
                         tvCategory.setText(currentSeller.getCategory());
                         tvCity.setText(currentSeller.getCity());
                         tvBio.setText(currentSeller.getBio());
-                        tvRating.setText(String.format("⭐ %.1f (%d)",
+                        tvRating.setText(String.format("⭐ %.1f (%d خریداریاں)",
                                 currentSeller.getRating(), currentSeller.getRatingCount()));
-                        tvStatus.setText("✓ " + currentSeller.getVerificationStatus());
-                        if (currentSeller.getImageUrl() != null && !currentSeller.getImageUrl().isEmpty())
-                            Glide.with(SellerProfileActivity.this).load(currentSeller.getImageUrl()).into(ivSellerAvatar);
+
+                        // ✅ Capacity Description
+                        if (currentSeller.getCapacityDescription() != null && !currentSeller.getCapacityDescription().isEmpty()) {
+                            tvCapacity.setText("🙋‍♀️ " + currentSeller.getCapacityDescription());
+                            tvCapacity.setVisibility(android.view.View.VISIBLE);
+                        } else {
+                            tvCapacity.setVisibility(android.view.View.GONE);
+                        }
+
+                        // Bilingual Status Display
+                        String statusText;
+                        if ("approved".equals(currentSeller.getVerificationStatus())) {
+                            statusText = "✅ منظور شدہ / Approved";
+                        } else if ("pending".equals(currentSeller.getVerificationStatus())) {
+                            statusText = "⏳ زیرِ جائزہ / Pending";
+                        } else if ("rejected".equals(currentSeller.getVerificationStatus())) {
+                            statusText = "❌ مسترد / Rejected";
+                        } else {
+                            statusText = "✓ " + currentSeller.getVerificationStatus();
+                        }
+                        tvStatus.setText(statusText);
+
+                        // Load Avatar
+                        if (currentSeller.getImageUrl() != null && !currentSeller.getImageUrl().isEmpty()) {
+                            Glide.with(SellerProfileActivity.this)
+                                    .load(currentSeller.getImageUrl())
+                                    .placeholder(R.drawable.placeholder_avatar)
+                                    .into(ivSellerAvatar);
+                        }
                     }
 
                     @Override
-                    public void onCancelled(DatabaseError error) {}
+                    public void onCancelled(DatabaseError error) {
+                        Toast.makeText(SellerProfileActivity.this, "Error loading seller", Toast.LENGTH_SHORT).show();
+                    }
                 });
     }
 
+    // ============================================================
+    // LOAD SELLER PRODUCTS
+    // ============================================================
     private void loadSellerProducts() {
         FirebaseDatabase.getInstance().getReference()
                 .child(Constants.NODE_PRODUCTS)
@@ -130,43 +170,58 @@ public class SellerProfileActivity extends AppCompatActivity {
                         productList.clear();
                         for (DataSnapshot child : snapshot.getChildren()) {
                             Product p = child.getValue(Product.class);
-                            if (p != null) productList.add(p);
+                            if (p != null) {
+                                productList.add(p);
+                            }
                         }
                         productAdapter.notifyDataSetChanged();
                     }
 
                     @Override
-                    public void onCancelled(DatabaseError error) {}
+                    public void onCancelled(DatabaseError error) {
+                        Toast.makeText(SellerProfileActivity.this, "Error loading products", Toast.LENGTH_SHORT).show();
+                    }
                 });
     }
 
+    // ============================================================
+    // GO TO ORDER
+    // ============================================================
     private void goToOrder(Product product) {
         Intent i = new Intent(this, PlaceOrderActivity.class);
         i.putExtra(PlaceOrderActivity.EXTRA_SELLER_ID, sellerId);
         i.putExtra(PlaceOrderActivity.EXTRA_PRODUCT_ID, product.getId());
         i.putExtra(PlaceOrderActivity.EXTRA_PRODUCT_NAME, product.getName());
         i.putExtra(PlaceOrderActivity.EXTRA_PRODUCT_PRICE, product.getPrice());
+        i.putExtra(PlaceOrderActivity.EXTRA_CATEGORY, product.getCategory());
         startActivity(i);
     }
 
-    // ✅ FIXED: Also check if user is actually a buyer
+    // ============================================================
+    // BUYER LOGIN CHECK
+    // ============================================================
     private void requireBuyerLogin(Runnable action) {
         if (!session.isLoggedIn()) {
-            Toast.makeText(this, "Please login first", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "پہلے لاگ ان کریں / Please login first", Toast.LENGTH_SHORT).show();
+            VoiceGuide.explain(this, "براہ کرم پہلے لاگ ان کریں");
             startActivity(new Intent(this, LoginActivity.class));
             return;
         }
         if (!session.isBuyer()) {
-            Toast.makeText(this, "Only buyers can place orders. Please register as a buyer.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "صرف خریدار آرڈر دے سکتے ہیں / Only buyers can order", Toast.LENGTH_LONG).show();
+            VoiceGuide.explain(this, "صرف خریدار آرڈر دے سکتے ہیں");
             startActivity(new Intent(this, BuyerRegisterActivity.class));
             return;
         }
         action.run();
     }
 
+    // ============================================================
+    // ON DESTROY
+    // ============================================================
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (tts != null) tts.shutdown();
+        // TTSHelper is a singleton — don't shut it down here
     }
 }

@@ -9,11 +9,13 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- ✅ TOOLBAR with App Name + Speaker Icon -->
+        <!-- ============================================================ -->
+        <!-- ✅ TOOLBAR WITH SPEAKER ICON -->
+        <!-- ============================================================ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#E91E8C"
+            android:background="#FF4081"
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:padding="16dp">
@@ -22,31 +24,35 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="📦 Product Detail"
+                android:text="📦 چیز کی تفصیل"
+                android:textColor="#FFFFFF"
                 android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="#FFFFFF" />
+                android:textStyle="bold" />
 
-            <!-- ✅ Speaker Icon for TTS Voice Guidance -->
+            <!-- ✅ Speaker Icon -->
             <ImageButton
                 android:id="@+id/btnSpeaker"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:src="@drawable/ic_speaker"
                 android:background="@android:color/transparent"
-                android:scaleType="centerInside"
-                android:contentDescription="Voice Guidance" />
+                android:scaleType="centerInside" />
         </LinearLayout>
 
-        <!-- Product Image -->
+        <!-- ============================================================ -->
+        <!-- ✅ PRODUCT IMAGE -->
+        <!-- ============================================================ -->
         <ImageView
             android:id="@+id/ivProduct"
             android:layout_width="match_parent"
             android:layout_height="260dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/placeholder_product" />
+            android:src="@drawable/placeholder_product"
+            android:background="#FCE4EC" />
 
-        <!-- Product Details -->
+        <!-- ============================================================ -->
+        <!-- ✅ PRODUCT DETAILS -->
+        <!-- ============================================================ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -58,7 +64,7 @@
                 android:id="@+id/tvProductName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="22sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="#333333" />
 
@@ -67,12 +73,14 @@
                 android:id="@+id/tvProductPrice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:textColor="#E91E8C"
+                android:textSize="18sp"
+                android:textColor="#FF4081"
                 android:textStyle="bold"
                 android:layout_marginTop="4dp" />
 
-            <!-- Seller Info Card -->
+            <!-- ============================================================ -->
+            <!-- ✅ SELLER INFO CARD -->
+            <!-- ============================================================ -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -115,19 +123,21 @@
                     android:id="@+id/btnViewSeller"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="View →"
-                    android:backgroundTint="#E91E8C"
+                    android:text="دیکھیں →"
+                    android:backgroundTint="#FF4081"
                     android:textColor="#FFFFFF" />
             </LinearLayout>
 
-            <!-- Description -->
+            <!-- ============================================================ -->
+            <!-- ✅ DESCRIPTION -->
+            <!-- ============================================================ -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="📝 Description"
+                android:text="📝 تفصیل / Description"
                 android:textStyle="bold"
-                android:textSize="16sp"
-                android:textColor="#E91E8C"
+                android:textSize="15sp"
+                android:textColor="#FF4081"
                 android:layout_marginTop="20dp" />
 
             <TextView
@@ -137,26 +147,30 @@
                 android:textColor="#666666"
                 android:layout_marginTop="6dp" />
 
-            <!-- Place Order Button (Rose Pink) -->
+            <!-- ============================================================ -->
+            <!-- ✅ BUTTONS -->
+            <!-- ============================================================ -->
+
+            <!-- Place Order -->
             <Button
                 android:id="@+id/btnPlaceOrder"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="🛒 Place Order"
-                android:backgroundTint="#E91E8C"
+                android:layout_height="56dp"
+                android:text="🛒 آرڈر دیں / Place Order"
+                android:textSize="15sp"
+                android:backgroundTint="#FF4081"
                 android:textColor="#FFFFFF"
-                android:padding="14dp"
                 android:layout_marginTop="20dp" />
 
-            <!-- WhatsApp Chat Button -->
+            <!-- WhatsApp -->
             <Button
                 android:id="@+id/btnWhatsApp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="📱 Chat on WhatsApp"
+                android:layout_height="56dp"
+                android:text="📱 واٹس ایپ پر بات کریں / WhatsApp"
+                android:textSize="14sp"
                 android:backgroundTint="#25D366"
                 android:textColor="#FFFFFF"
-                android:padding="14dp"
                 android:layout_marginTop="10dp" />
 
         </LinearLayout>

@@ -10,35 +10,38 @@
         android:orientation="vertical"
         android:padding="20dp">
 
-        <!-- ✅ TOOLBAR with Speaker Icon -->
+        <!-- ============================================================ -->
+        <!-- ✅ TOOLBAR WITH SPEAKER ICON -->
+        <!-- ============================================================ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="12dp">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="👤 Seller Profile"
-                android:textSize="18sp"
+                android:text="👤 بیچنے والی کا پروفائل"
+                android:textSize="20sp"
                 android:textStyle="bold"
-                android:textColor="#E91E8C" />
+                android:textColor="#FF4081" />
 
-            <!-- ✅ Speaker Icon for TTS Voice Guidance -->
+            <!-- ✅ Speaker Icon -->
             <ImageButton
                 android:id="@+id/btnSpeaker"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:src="@drawable/ic_speaker"
                 android:background="@android:color/transparent"
-                android:scaleType="centerInside"
-                android:contentDescription="Voice Guidance" />
+                android:scaleType="centerInside" />
         </LinearLayout>
 
-        <!-- Seller Avatar -->
+        <!-- ============================================================ -->
+        <!-- ✅ SELLER AVATAR -->
+        <!-- ============================================================ -->
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/ivSellerAvatar"
             android:layout_width="90dp"
@@ -46,7 +49,9 @@
             android:layout_gravity="center"
             android:src="@drawable/placeholder_avatar" />
 
-        <!-- Seller Name -->
+        <!-- ============================================================ -->
+        <!-- ✅ SELLER INFO -->
+        <!-- ============================================================ -->
         <TextView
             android:id="@+id/tvSellerName"
             android:layout_width="match_parent"
@@ -57,25 +62,22 @@
             android:textColor="#333333"
             android:layout_marginTop="8dp" />
 
-        <!-- Seller Category -->
         <TextView
             android:id="@+id/tvSellerCategory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:textColor="#E91E8C"
-            android:textSize="14sp" />
+            android:textColor="#FF4081"
+            android:textSize="15sp" />
 
-        <!-- Seller City -->
         <TextView
             android:id="@+id/tvSellerCity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textColor="#888888"
-            android:textSize="13sp" />
+            android:textSize="14sp" />
 
-        <!-- Seller Rating -->
         <TextView
             android:id="@+id/tvSellerRating"
             android:layout_width="match_parent"
@@ -85,16 +87,15 @@
             android:textStyle="bold"
             android:layout_marginTop="4dp" />
 
-        <!-- Seller Status (Verified/Pending) -->
         <TextView
             android:id="@+id/tvSellerStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textColor="#4CAF50"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textSize="14sp" />
 
-        <!-- Seller Bio -->
         <TextView
             android:id="@+id/tvSellerBio"
             android:layout_width="match_parent"
@@ -104,39 +105,56 @@
             android:textColor="#555555"
             android:textSize="14sp" />
 
-        <!-- ✅ Place Order Button (Rose Pink as per prompt) -->
+        <!-- ============================================================ -->
+        <!-- ✅ CAPACITY DESCRIPTION (NEW) -->
+        <!-- ============================================================ -->
+        <TextView
+            android:id="@+id/tvSellerCapacity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="8dp"
+            android:textColor="#FF4081"
+            android:background="#FCE4EC"
+            android:padding="10dp"
+            android:textSize="13sp"
+            android:visibility="gone" />
+
+        <!-- ============================================================ -->
+        <!-- ✅ BUTTONS -->
+        <!-- ============================================================ -->
         <Button
             android:id="@+id/btnPlaceOrder"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="🛒 Place Order"
-            android:backgroundTint="#E91E8C"
+            android:layout_height="56dp"
+            android:text="🛒 آرڈر دیں / Place Order"
+            android:textSize="15sp"
+            android:backgroundTint="#FF4081"
             android:textColor="#FFFFFF"
-            android:padding="14dp"
             android:layout_marginTop="16dp" />
 
-        <!-- WhatsApp Chat Button -->
         <Button
             android:id="@+id/btnWhatsAppChat"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="💬 Chat on WhatsApp"
+            android:layout_height="56dp"
+            android:text="💬 واٹس ایپ پر بات کریں / Chat on WhatsApp"
+            android:textSize="14sp"
             android:backgroundTint="#25D366"
             android:textColor="#FFFFFF"
-            android:padding="14dp"
             android:layout_marginTop="8dp" />
 
-        <!-- Products Section Title -->
+        <!-- ============================================================ -->
+        <!-- ✅ PRODUCTS SECTION -->
+        <!-- ============================================================ -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="🛍️ Products"
+            android:text="🛍️ اشیاء / Products"
             android:textStyle="bold"
             android:textSize="16sp"
-            android:textColor="#E91E8C"
+            android:textColor="#FF4081"
             android:layout_marginTop="20dp" />
 
-        <!-- Products RecyclerView -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvSellerProducts"
             android:layout_width="match_parent"

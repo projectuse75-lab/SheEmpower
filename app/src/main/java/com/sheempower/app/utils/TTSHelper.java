@@ -12,15 +12,14 @@ public class TTSHelper {
     private TTSHelper(Context ctx) {
         tts = new TextToSpeech(ctx.getApplicationContext(), status -> {
             if (status == TextToSpeech.SUCCESS) {
-                // 1. Try Urdu first (as per prompt)
-                int urduResult = tts.setLanguage(new Locale("ur"));
-
-                // 2. Fallback to English if Urdu is not available
-                if (urduResult == TextToSpeech.LANG_MISSING_DATA ||
-                        urduResult == TextToSpeech.LANG_NOT_SUPPORTED) {
-                    tts.setLanguage(Locale.ENGLISH);
+                int result = tts.setLanguage(new Locale("ur", "PK"));
+                if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    result = tts.setLanguage(new Locale("hi", "IN"));
                 }
-
+                if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    tts.setLanguage(Locale.US);
+                }
+                tts.setSpeechRate(0.9f);
                 ready = true;
             }
         });
@@ -37,11 +36,12 @@ public class TTSHelper {
         }
     }
 
+    // ✅ FIXED: Proper shutdown
     public void shutdown() {
         if (tts != null) {
-            tts.stop();      // Stop any ongoing speech
-            tts.shutdown();  // ✅ Release the TTS engine resources
-            tts = null;      // ✅ Prevent memory leaks
+            tts.stop();
+            tts.shutdown();  // ✅ Release resources
+            tts = null;      // ✅ Prevent memory leak
         }
     }
 }

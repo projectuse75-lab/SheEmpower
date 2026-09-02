@@ -9,9 +9,17 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="💗 She Empower"
-        android:textSize="32sp"
+        android:text="💗 شی ایمپاور"
+        android:textSize="30sp"
         android:textStyle="bold"
         android:textColor="#FFFFFF" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SHE EMPOWER"
+        android:textSize="13sp"
+        android:textColor="#FFE0EC"
+        android:layout_marginTop="6dp" />
 
 </LinearLayout>

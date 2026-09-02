@@ -4,6 +4,7 @@ public class Seller {
     private String uid, businessName, ownerName, email, phone;
     private String category, bio, city, cnicUrl, voiceUrl;
     private String verificationStatus, whatsappNumber, imageUrl;
+    private String capacityDescription; // "Mn kitne logon k liye kaam kr sakti hn"
     private boolean isTopRated;
     private double rating;
     private long ratingCount;
@@ -23,6 +24,7 @@ public class Seller {
     public String getVerificationStatus() { return verificationStatus; }
     public String getWhatsappNumber()     { return whatsappNumber; }
     public String getImageUrl()           { return imageUrl; }
+    public String getCapacityDescription(){ return capacityDescription; }
     public boolean isTopRated()           { return isTopRated; }
     public double getRating()             { return rating; }
     public long getRatingCount()          { return ratingCount; }
@@ -40,6 +42,7 @@ public class Seller {
     public void setVerificationStatus(String v) { verificationStatus = v; }
     public void setWhatsappNumber(String v)     { whatsappNumber = v; }
     public void setImageUrl(String v)           { imageUrl = v; }
+    public void setCapacityDescription(String v){ capacityDescription = v; }
     public void setTopRated(boolean v)          { isTopRated = v; }
     public void setRating(double v)             { rating = v; }
     public void setRatingCount(long v)          { ratingCount = v; }

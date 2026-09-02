@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sheempower.app">
 
-    <!-- ✅ Permissions (as per prompt) -->
+    <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -10,13 +10,14 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
+        android:name=".SheEmpowerApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="She Empower"
         android:theme="@style/Theme.SheEmpower"
         android:usesCleartextTraffic="true">
 
-        <!-- Splash Screen (Launcher) -->
+        <!-- Splash -->
         <activity
             android:name=".activities.SplashActivity"
             android:exported="true"
@@ -27,30 +28,31 @@
             </intent-filter>
         </activity>
 
-        <!-- Visitor Dashboard -->
+        <!-- Main -->
         <activity android:name=".activities.MainActivity" android:exported="false" />
 
-        <!-- Auth Screens -->
+        <!-- Auth -->
         <activity android:name=".activities.LoginActivity" android:exported="false" />
         <activity android:name=".activities.BuyerRegisterActivity" android:exported="false" />
         <activity android:name=".activities.SellerRegistrationActivity" android:exported="false" />
 
-        <!-- Explore & Seller Screens -->
+        <!-- Explore -->
         <activity android:name=".activities.SellerListActivity" android:exported="false" />
         <activity android:name=".activities.SellerProfileActivity" android:exported="false" />
         <activity android:name=".activities.ProductDetailActivity" android:exported="false" />
 
-        <!-- Order & Profile Screens -->
+        <!-- Orders & Profile -->
         <activity android:name=".activities.PlaceOrderActivity" android:exported="false" />
-        <activity android:name=".activities.ProfileActivity" android:exported="false" />
         <activity android:name=".activities.MyOrdersActivity" android:exported="false" />
+        <activity android:name=".activities.ProfileActivity" android:exported="false" />
 
         <!-- Dashboards -->
         <activity android:name=".activities.SellerDashboardActivity" android:exported="false" />
         <activity android:name=".activities.AdminDashboardActivity" android:exported="false" />
-
-        <!-- ✅ MISSING ACTIVITY ADDED HERE -->
         <activity android:name=".activities.AddProductActivity" android:exported="false" />
+
+        <!-- ✅ Admin Orders -->
+        <activity android:name=".activities.AdminOrdersActivity" android:exported="false" />
 
     </application>
 

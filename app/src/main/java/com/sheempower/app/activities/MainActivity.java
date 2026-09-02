@@ -23,10 +23,7 @@ import com.sheempower.app.adapters.ProductAdapter;
 import com.sheempower.app.adapters.SellerAdapter;
 import com.sheempower.app.models.Product;
 import com.sheempower.app.models.Seller;
-import com.sheempower.app.utils.Constants;
-import com.sheempower.app.utils.SessionManager;
-import com.sheempower.app.utils.TTSHelper;
-import com.sheempower.app.utils.WhatsAppHelper;
+import com.sheempower.app.utils.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -68,23 +65,23 @@ public class MainActivity extends AppCompatActivity {
         tvProductsTab = findViewById(R.id.tvProductsTab);
         tvSellersTab = findViewById(R.id.tvSellersTab);
 
-        // Null safety
-        if (btnLogin == null || btnJoin == null) {
-            android.util.Log.e("MainActivity", "Login/Join buttons are null!");
-        }
-
         // Speaker Icon
         findViewById(R.id.btnSpeaker).setOnClickListener(v -> {
-            tts.speak("Welcome to She Empower. Explore verified women sellers.");
+            VoiceGuide.announceScreen(this,
+                    "خواتین کی بااختیاری ایپ میں خوش آمدید۔ اپنے ہنر کو بیچیں اور روزگار شروع کریں۔");
         });
+
+        // Auto Voice on Load
+        VoiceGuide.announceScreen(this,
+                "خوش آمدید! براہ کرم لاگ ان کریں یا رجسٹر کریں۔");
 
         // Setup Login/Join
         setupTopButtons();
 
-        // Setup Categories (with bigger text & padding)
+        // Setup Categories
         setupCategoryButtonsText();
 
-        // Setup RecyclerViews (2 columns for products)
+        // Setup RecyclerViews
         setupRecyclerViews();
 
         // Search
@@ -99,7 +96,9 @@ public class MainActivity extends AppCompatActivity {
         loadSellers();
         loadProducts();
 
-        tts.speak("She Empower dashboard loaded.");
+        // ✅ Bottom Navigation (3 Tabs)
+        BottomNavHelper.setupBottomNav(this, session);
+        BottomNavHelper.setSelectedTab(this, 1); // Highlight Home Tab
     }
 
     // ============================================================
@@ -117,14 +116,14 @@ public class MainActivity extends AppCompatActivity {
             btnJoin.setOnClickListener(v -> startActivity(new Intent(this, ProfileActivity.class)));
         } else {
             btnLogin.setVisibility(View.VISIBLE);
-            btnJoin.setText("📝 Register");
+            btnJoin.setText("📝 رجسٹر کریں");
             btnLogin.setOnClickListener(v -> startActivity(new Intent(this, LoginActivity.class)));
             btnJoin.setOnClickListener(v -> startActivity(new Intent(this, SellerRegistrationActivity.class)));
         }
     }
 
     // ============================================================
-    // CATEGORIES AS TEXT BUTTONS (BIGGER TEXT & PADDING)
+    // CATEGORIES (Village-Based)
     // ============================================================
     private void setupCategoryButtonsText() {
         if (layoutCategories == null) {
@@ -136,11 +135,13 @@ public class MainActivity extends AppCompatActivity {
 
         for (int i = 0; i < Constants.CATEGORIES.length; i++) {
             String cat = Constants.CATEGORIES[i];
+            String emoji = Constants.CATEGORY_EMOJIS[i];
+
             Button b = new Button(this);
-            b.setText(Constants.CATEGORY_EMOJIS[i] + " " + cat);
+            b.setText(emoji + " " + cat);
             b.setAllCaps(false);
-            b.setBackgroundTintList(android.content.res.ColorStateList.valueOf(0xFFFCE4EC));
-            b.setTextColor(0xFFE91E8C);
+            b.setBackgroundTintList(android.content.res.ColorStateList.valueOf(0xFFFFFF));
+            b.setTextColor(0xFFFF4081);
             b.setTextSize(14);
             b.setPadding(24, 16, 24, 16);
 
@@ -161,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ============================================================
-    // RECYCLERVIEWS SETUP (2 COLUMNS FOR PRODUCTS)
+    // RECYCLERVIEWS
     // ============================================================
     private void setupRecyclerViews() {
         if (rvTopSellers == null || rvLatestProducts == null) {
@@ -169,34 +170,26 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        // Top Sellers (Horizontal)
         rvTopSellers.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         topSellerAdapter = new SellerAdapter(topSellers, this::openSellerProfile);
         rvTopSellers.setAdapter(topSellerAdapter);
 
-        // Products (2 Columns Grid)
-        rvLatestProducts.setLayoutManager(new GridLayoutManager(this, 2)); // ✅ 2 columns
+        rvLatestProducts.setLayoutManager(new GridLayoutManager(this, 2));
         productAdapter = new ProductAdapter(allProducts,
                 this::openProductDetail,
                 product -> requireBuyerLogin(() -> goToOrder(product)),
                 product -> chatOnWhatsApp(product.getSellerId()));
         rvLatestProducts.setAdapter(productAdapter);
 
-        // All Sellers Adapter (for Sellers tab)
         allSellerAdapter = new SellerAdapter(allSellers, this::openSellerProfile);
 
-        // Tabs
         tvProductsTab.setOnClickListener(v -> switchTab(true));
         tvSellersTab.setOnClickListener(v -> switchTab(false));
     }
 
-    // ============================================================
-    // TAB SWITCH
-    // ============================================================
     private void switchTab(boolean products) {
         tvProductsTab.setAlpha(products ? 1f : 0.5f);
         tvSellersTab.setAlpha(products ? 0.5f : 1f);
-
         if (products) {
             rvLatestProducts.setLayoutManager(new GridLayoutManager(this, 2));
             rvLatestProducts.setAdapter(productAdapter);
@@ -207,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ============================================================
-    // LOAD DATA FROM FIREBASE
+    // LOAD DATA
     // ============================================================
     private void loadSellers() {
         FirebaseDatabase.getInstance().getReference()
@@ -228,7 +221,6 @@ public class MainActivity extends AppCompatActivity {
                         topSellerAdapter.notifyDataSetChanged();
                         allSellerAdapter.notifyDataSetChanged();
                     }
-
                     @Override
                     public void onCancelled(DatabaseError error) {
                         Toast.makeText(MainActivity.this, "Error loading sellers", Toast.LENGTH_SHORT).show();
@@ -249,7 +241,6 @@ public class MainActivity extends AppCompatActivity {
                         }
                         productAdapter.notifyDataSetChanged();
                     }
-
                     @Override
                     public void onCancelled(DatabaseError error) {
                         Toast.makeText(MainActivity.this, "Error loading products", Toast.LENGTH_SHORT).show();
@@ -258,7 +249,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ============================================================
-    // SEARCH FILTER
+    // SEARCH
     // ============================================================
     private void filterSearch(String query) {
         String q = query.toLowerCase().trim();
@@ -267,7 +258,6 @@ public class MainActivity extends AppCompatActivity {
             allSellerAdapter.updateList(allSellers);
             return;
         }
-
         List<Product> filteredP = new ArrayList<>();
         for (Product p : allProducts) {
             if (p.getName().toLowerCase().contains(q)) filteredP.add(p);
@@ -319,7 +309,6 @@ public class MainActivity extends AppCompatActivity {
                             WhatsAppHelper.openChat(MainActivity.this, s.getWhatsappNumber(), null);
                         }
                     }
-
                     @Override
                     public void onCancelled(DatabaseError error) {}
                 });
@@ -327,12 +316,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void requireBuyerLogin(Runnable action) {
         if (!session.isLoggedIn()) {
-            Toast.makeText(this, "Please login first", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "براہ کرم پہلے لاگ ان کریں", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(this, LoginActivity.class));
             return;
         }
         if (!session.isBuyer()) {
-            Toast.makeText(this, "Only buyers can place orders.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "صرف خریدار آرڈر دے سکتے ہیں۔", Toast.LENGTH_LONG).show();
             startActivity(new Intent(this, BuyerRegisterActivity.class));
             return;
         }
