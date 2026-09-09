@@ -1,21 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- ✅ Primary Rose Pink (as per prompt) -->
-    <color name="primary_pink">#E91E8C</color>
-
-    <!-- ✅ Light Pink shades -->
-    <color name="light_pink">#FCE4EC</color>
+    <color name="primary_pink">#FF4081</color>
+    <color name="light_pink">#FFE4EC</color>
     <color name="lighter_pink">#FFF0F5</color>
-
-    <!-- ✅ Brand Colors -->
     <color name="whatsapp_green">#25D366</color>
     <color name="success_green">#4CAF50</color>
     <color name="error_red">#F44336</color>
     <color name="warning_amber">#FFA000</color>
-
-    <!-- ✅ Text Colors -->
+    <color name="star_gold">#FFA000</color>
     <color name="text_dark">#333333</color>
     <color name="text_gray">#888888</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
+    <!-- Purani/default Android Studio launcher icon isi color ko dhoondhti hai -->
+    <color name="ic_launcher_background">#FF4081</color>
 </resources>

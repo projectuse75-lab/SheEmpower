@@ -21,12 +21,12 @@ public class SellerAdapter extends RecyclerView.Adapter<SellerAdapter.VH> {
     private final OnSellerClick listener;
 
     public SellerAdapter(List<Seller> sellers, OnSellerClick listener) {
-        this.sellers = sellers;
+        this.sellers = sellers != null ? sellers : new ArrayList<>();
         this.listener = listener;
     }
 
     public void updateList(List<Seller> newList) {
-        this.sellers = new ArrayList<>(newList);
+        this.sellers = newList != null ? new ArrayList<>(newList) : new ArrayList<>();
         notifyDataSetChanged();
     }
 
@@ -38,17 +38,47 @@ public class SellerAdapter extends RecyclerView.Adapter<SellerAdapter.VH> {
 
     @Override
     public void onBindViewHolder(@NonNull VH holder, int position) {
-        Seller s = sellers.get(position);
-        holder.tvName.setText(s.getBusinessName());
-        holder.tvCity.setText(s.getCategory() + " · " + s.getCity());
-        holder.tvRating.setText("⭐ " + s.getRating());
-        if (s.getImageUrl() != null && !s.getImageUrl().isEmpty()) {
-            Glide.with(holder.itemView).load(s.getImageUrl()).into(holder.ivAvatar);
+        // ✅ SAFETY: Check position and list
+        if (position >= sellers.size() || sellers.get(position) == null) {
+            return;
         }
-        holder.itemView.setOnClickListener(v -> listener.onClick(s));
+
+        Seller s = sellers.get(position);
+
+        // ✅ Null safety for name
+        holder.tvName.setText(s.getBusinessName() != null ? s.getBusinessName() : "Unknown");
+
+        // ✅ Null safety for city
+        String city = s.getCity() != null ? s.getCity() : "";
+        String category = s.getCategory() != null ? s.getCategory() : "";
+        holder.tvCity.setText(category + " · " + city);
+
+        // ✅ Null safety for rating
+        if (s.getRating() > 0) {
+            holder.tvRating.setText("⭐ " + s.getRating());
+        } else {
+            holder.tvRating.setText("⭐ N/A");
+        }
+
+        // ✅ Null safety for image
+        if (s.getImageUrl() != null && !s.getImageUrl().isEmpty()) {
+            Glide.with(holder.itemView.getContext())
+                    .load(s.getImageUrl())
+                    .placeholder(R.drawable.ic_profile_placeholder)
+                    .error(R.drawable.ic_profile_placeholder)
+                    .into(holder.ivAvatar);
+        } else {
+            holder.ivAvatar.setImageResource(R.drawable.ic_profile_placeholder);
+        }
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onClick(s);
+            }
+        });
     }
 
-    @Override public int getItemCount() { return sellers.size(); }
+    @Override public int getItemCount() { return sellers != null ? sellers.size() : 0; }
 
     static class VH extends RecyclerView.ViewHolder {
         CircleImageView ivAvatar;

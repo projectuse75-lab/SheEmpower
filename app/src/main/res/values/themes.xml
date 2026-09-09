@@ -3,11 +3,14 @@
     <style name="Theme.SheEmpower" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primary_pink</item>
         <item name="colorPrimaryVariant">@color/primary_pink</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">@color/whatsapp_green</item>
-        <item name="colorSecondaryVariant">@color/whatsapp_green</item>
-        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorOnPrimary">@android:color/white</item>
         <item name="android:statusBarColor">@color/primary_pink</item>
-        <item name="android:windowBackground">@color/white</item>
+        <item name="android:windowBackground">@android:color/white</item>
+    </style>
+
+    <style name="Theme.SheEmpower.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@android:color/white</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/logo_512</item>
+        <item name="postSplashScreenTheme">@style/Theme.SheEmpower</item>
     </style>
 </resources>

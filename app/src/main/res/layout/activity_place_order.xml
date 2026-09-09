@@ -1,247 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#FFF8E1">
-
+    android:layout_width="match_parent" android:layout_height="match_parent">
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
-        <!-- Dynamic Form Fields Container -->
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:padding="20dp">
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="🛒 نیا آرڈر دیں" android:textSize="20sp" android:textStyle="bold" android:textColor="#FF4081" android:layout_marginBottom="10dp" />
+
+        <TextView android:id="@+id/tvCategoryHeader"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:textColor="#FF4081" android:textStyle="bold" android:textSize="13sp" android:layout_marginBottom="10dp" />
+
         <LinearLayout
-            android:id="@+id/llFormFields"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginTop="8dp" />
-
-        <!-- ============================================================ -->
-        <!-- ✅ TOOLBAR WITH SPEAKER ICON -->
-        <!-- ============================================================ -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#E91E8C"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:padding="12dp">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="🛒 نیا آرڈر دیں"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <!-- ✅ Speaker Icon -->
-            <ImageButton
-                android:id="@+id/btnSpeaker"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/ic_speaker"
-                android:background="@android:color/transparent"
-                android:scaleType="centerInside" />
-        </LinearLayout>
-
-        <!-- ============================================================ -->
-        <!-- ✅ SELLER INFO -->
-        <!-- ============================================================ -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#FFFFFF"
-            android:padding="12dp"
-            android:layout_marginTop="12dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tvSellerName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:textSize="16sp"
-                    android:textColor="#333333" />
-
-                <TextView
-                    android:id="@+id/tvSellerMeta"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="#888888"
-                    android:textSize="13sp" />
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:background="@drawable/bg_rounded_pink"
+            android:padding="14dp" android:gravity="center_vertical">
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                <TextView android:id="@+id/tvSellerName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textStyle="bold" android:textSize="16sp" />
+                <TextView android:id="@+id/tvSellerMeta" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#777777" />
             </LinearLayout>
-
-            <TextView
-                android:id="@+id/tvSellerVerified"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#4CAF50"
-                android:textStyle="bold"
-                android:text="✅ منظور شدہ" />
+            <TextView android:id="@+id/tvSellerVerified" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#4CAF50" android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- ============================================================ -->
-        <!-- ✅ SELECTED PRODUCT -->
-        <!-- ============================================================ -->
-        <TextView
-            android:id="@+id/tvSelectedItem"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#FFFFFF"
-            android:padding="12dp"
-            android:layout_marginTop="8dp"
-            android:textStyle="bold"
-            android:textColor="#333333"
-            android:visibility="gone" />
+        <TextView android:id="@+id/tvDeliveryInfo"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:background="@drawable/bg_rounded_pink_light" android:padding="12dp"
+            android:layout_marginTop="10dp" android:textSize="13sp" />
 
-        <!-- ============================================================ -->
-        <!-- ✅ DYNAMIC FORM FIELDS (CORRECT ID: llFormFields) -->
-        <!-- ============================================================ -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="📝 آرڈر کی تفصیلات"
-            android:textStyle="bold"
-            android:textSize="14sp"
-            android:textColor="#E91E8C"
-            android:layout_marginTop="12dp" />
+        <TextView android:id="@+id/tvSelectedItem"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:background="@drawable/bg_rounded_pink_light" android:padding="14dp"
+            android:layout_marginTop="10dp" android:textStyle="bold" />
 
+        <LinearLayout android:id="@+id/layoutDynamicFields"
+            android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" />
 
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="💰 رقم (روپے)" android:textColor="#AA3366" android:layout_marginTop="16dp" />
+        <com.google.android.material.textfield.TextInputEditText android:id="@+id/etAmount"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:inputType="number" android:padding="14dp" android:background="@drawable/bg_rounded_pink" android:layout_marginTop="6dp" />
 
-        <!-- ============================================================ -->
-        <!-- ✅ AMOUNT -->
-        <!-- ============================================================ -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="💰 رقم (روپے) / Amount (PKR)"
-            android:textStyle="bold"
-            android:textColor="#E91E8C"
-            android:layout_marginTop="12dp" />
+        <LinearLayout android:id="@+id/layoutBuyerAddress"
+            android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="📍 آپ کا ڈیلیوری پتہ" android:textColor="#AA3366" android:layout_marginTop="16dp" />
+            <com.google.android.material.textfield.TextInputEditText android:id="@+id/etAddress"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:padding="14dp" android:background="@drawable/bg_rounded_pink" android:layout_marginTop="6dp" />
+        </LinearLayout>
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etAmount"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="مثال: 3500"
-            android:inputType="number"
-            android:padding="14dp"
-            android:background="#FFFFFF"
-            android:layout_marginTop="4dp" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="📝 اضافی نوٹس (اختیاری)" android:textColor="#AA3366" android:layout_marginTop="16dp" />
+        <com.google.android.material.textfield.TextInputEditText android:id="@+id/etNotes"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:padding="14dp" android:background="@drawable/bg_rounded_pink" android:layout_marginTop="6dp" />
 
-        <!-- ============================================================ -->
-        <!-- ✅ ADDRESS -->
-        <!-- ============================================================ -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="📍 ڈیلیوری کا پتہ / Delivery Address"
-            android:textStyle="bold"
-            android:textColor="#E91E8C"
-            android:layout_marginTop="12dp" />
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etAddress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="اپنا پورا پتہ لکھیں"
-            android:padding="14dp"
-            android:background="#FFFFFF"
-            android:layout_marginTop="4dp" />
-
-        <!-- ============================================================ -->
-        <!-- ✅ DELIVERY DATE -->
-        <!-- ============================================================ -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="📅 ڈیلیوری کی تاریخ / Delivery Date"
-            android:textStyle="bold"
-            android:textColor="#E91E8C"
-            android:layout_marginTop="12dp" />
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etDeliveryDate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="مثال: 25/07/2024"
-            android:padding="14dp"
-            android:background="#FFFFFF"
-            android:layout_marginTop="4dp" />
-
-        <!-- ============================================================ -->
-        <!-- ✅ NOTES -->
-        <!-- ============================================================ -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="📝 اضافی نوٹس (اختیاری) / Additional Notes"
-            android:textStyle="bold"
-            android:textColor="#E91E8C"
-            android:layout_marginTop="12dp" />
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etNotes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="کوئی خاص ہدایت ہو تو لکھیں"
-            android:padding="14dp"
-            android:background="#FFFFFF"
-            android:layout_marginTop="4dp" />
-
-        <!-- ============================================================ -->
-        <!-- ✅ RECEIPT UPLOAD (NEW - Previously Missing) -->
-        <!-- ============================================================ -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="💳 ادائیگی کی رسید / Payment Receipt"
-            android:textStyle="bold"
-            android:textColor="#E91E8C"
-            android:layout_marginTop="12dp" />
-
-        <Button
-            android:id="@+id/btnUploadReceipt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="📷 رسید اپ لوڈ کریں / Upload Receipt"
-            android:backgroundTint="#E91E8C"
-            android:textColor="#FFFFFF"
-            android:padding="14dp"
-            android:layout_marginTop="4dp" />
-
-        <ImageView
-            android:id="@+id/ivReceiptPreview"
-            android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:scaleType="centerCrop"
-            android:visibility="gone"
-            android:layout_marginTop="8dp"
-            android:background="#FCE4EC" />
-
-        <!-- ============================================================ -->
-        <!-- ✅ SUBMIT BUTTON (Single Line) -->
-        <!-- ============================================================ -->
-        <Button
-            android:id="@+id/btnSubmitOrder"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="✅ آرڈر جمع کروائیں"
-            android:textSize="16sp"
-            android:backgroundTint="#E91E8C"
-            android:textColor="#FFFFFF"
-            android:padding="14dp"
-            android:layout_marginTop="16dp" />
+        <Button android:id="@+id/btnSubmitOrder"
+            android:layout_width="match_parent" android:layout_height="60dp"
+            android:text="✅ آرڈر جمع کروائیں" android:backgroundTint="#FF4081" android:textColor="#FFFFFF"
+            android:layout_marginTop="24dp" android:layout_marginBottom="20dp" />
 
     </LinearLayout>
 </ScrollView>

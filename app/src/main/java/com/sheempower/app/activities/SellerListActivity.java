@@ -46,9 +46,9 @@ public class SellerListActivity extends AppCompatActivity {
         rvSellers       = findViewById(R.id.rvSellers);
         rvProducts      = findViewById(R.id.rvProducts);
 
-        tvCategoryTitle.setText(category);
+        tvCategoryTitle.setText(Constants.getUrduLabel(category) + " (" + category + ")");
 
-        rvSellers.setLayoutManager(new GridLayoutManager(this, 3));
+        rvSellers.setLayoutManager(new GridLayoutManager(this, 2));
         sellerAdapter = new SellerAdapter(sellerList, seller -> {
             Intent i = new Intent(this, SellerProfileActivity.class);
             i.putExtra(SellerProfileActivity.EXTRA_SELLER_ID, seller.getUid());
@@ -78,81 +78,66 @@ public class SellerListActivity extends AppCompatActivity {
         loadData();
     }
 
+    @Override protected void onResume() { super.onResume(); loadData(); }
+
     private void loadData() {
         FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS)
                 .orderByChild("category").equalTo(category)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
+                    @Override public void onDataChange(DataSnapshot snapshot) {
                         sellerList.clear();
                         List<String> sellerIds = new ArrayList<>();
                         for (DataSnapshot child : snapshot.getChildren()) {
                             Seller s = child.getValue(Seller.class);
-                            // ✅ FIXED: "verified" → "approved"
-                            if (s != null && "approved".equals(s.getVerificationStatus())) {
+                            if (s != null && Constants.isApproved(s.getVerificationStatus())) {
+                                // ✅ FIX: UID from Key if missing
+                                if (s.getUid() == null || s.getUid().isEmpty()) s.setUid(child.getKey());
                                 sellerList.add(s);
                                 sellerIds.add(s.getUid());
                             }
                         }
                         sellerAdapter.notifyDataSetChanged();
-                        tvSellerCount.setText(sellerList.size() + " verified seller(s)");
+                        tvSellerCount.setText(sellerList.size() + " تصدیق شدہ بیچنے والیاں");
                         loadProductsForSellers(sellerIds);
                     }
-                    @Override
-                    public void onCancelled(DatabaseError error) {}
+                    @Override public void onCancelled(DatabaseError error) {
+                        Toast.makeText(SellerListActivity.this, "خرابی: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                    }
                 });
     }
 
     private void loadProductsForSellers(List<String> sellerIds) {
-        if (sellerIds.isEmpty()) {
-            productList.clear();
-            productAdapter.notifyDataSetChanged();
-            return;
-        }
-
         FirebaseDatabase.getInstance().getReference().child(Constants.NODE_PRODUCTS)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
+                    @Override public void onDataChange(DataSnapshot snapshot) {
                         productList.clear();
                         for (DataSnapshot child : snapshot.getChildren()) {
                             Product p = child.getValue(Product.class);
-                            if (p != null && sellerIds.contains(p.getSellerId())) {
-                                productList.add(p);
+                            if (p != null) {
+                                // ✅ FIX: ID from Key if missing
+                                if (p.getId() == null || p.getId().isEmpty()) p.setId(child.getKey());
+                                if (sellerIds.contains(p.getSellerId())) productList.add(p);
                             }
                         }
                         productAdapter.notifyDataSetChanged();
                     }
-                    @Override
-                    public void onCancelled(DatabaseError error) {}
+                    @Override public void onCancelled(DatabaseError error) {}
                 });
     }
 
     private void chatWithSellerOfProduct(String sellerId) {
         FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS).child(sellerId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
+                    @Override public void onDataChange(DataSnapshot snapshot) {
                         Seller s = snapshot.getValue(Seller.class);
-                        if (s != null) {
-                            WhatsAppHelper.openChat(SellerListActivity.this, s.getWhatsappNumber(), null);
-                        }
+                        if (s != null) WhatsAppHelper.openChat(SellerListActivity.this, s.getWhatsappNumber(), null);
                     }
-                    @Override
-                    public void onCancelled(DatabaseError error) {}
+                    @Override public void onCancelled(DatabaseError error) {}
                 });
     }
 
     private void requireBuyerLogin(Runnable action) {
-        if (session.isLoggedIn()) {
-            if (session.isSeller()) {
-                Toast.makeText(this, "Sellers cannot place orders. Please login as Buyer.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            action.run();
-        } else {
-            Toast.makeText(this, "Pehle login karein", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(this, LoginActivity.class));
-        }
+        if (session.isLoggedIn()) action.run();
+        else { Toast.makeText(this, "پہلے لاگ ان کریں", Toast.LENGTH_SHORT).show(); startActivity(new Intent(this, LoginActivity.class)); }
     }
 }

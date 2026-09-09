@@ -2,33 +2,19 @@ package com.sheempower.app.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.database.*;
 import com.sheempower.app.R;
-import com.sheempower.app.adapters.OrderAdapter;
 import com.sheempower.app.models.Order;
 import com.sheempower.app.models.Seller;
 import com.sheempower.app.utils.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class SellerDashboardActivity extends AppCompatActivity {
 
-    private TextView tvWelcome, tvStatus, tvEmpty;
-    private RecyclerView rvOrders;
-    private Button btnLogout, btnAddProduct;
-    private OrderAdapter adapter;
-    private final List<Order> orderList = new ArrayList<>();
+    private TextView tvWelcome, tvStatus, tvTotalOrders, tvPendingOrders, tvCompletedOrders, tvEarnings;
+    private Button btnAddProduct;
     private SessionManager session;
-    private TTSHelper tts;
-    private ValueEventListener ordersListener;
-    private ValueEventListener sellerStatusListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,135 +22,70 @@ public class SellerDashboardActivity extends AppCompatActivity {
         setContentView(R.layout.activity_seller_dashboard);
 
         session = new SessionManager(this);
-        tts = TTSHelper.getInstance(this);
 
-        tvWelcome = findViewById(R.id.tvWelcome);
-        tvStatus = findViewById(R.id.tvStatus);
-        tvEmpty = findViewById(R.id.tvEmpty);
-        rvOrders = findViewById(R.id.rvOrders);
-        btnLogout = findViewById(R.id.btnLogout);
-        btnAddProduct = findViewById(R.id.btnAddProduct);
+        tvWelcome         = findViewById(R.id.tvWelcome);
+        tvStatus          = findViewById(R.id.tvStatus);
+        tvTotalOrders     = findViewById(R.id.tvTotalOrders);
+        tvPendingOrders   = findViewById(R.id.tvPendingOrders);
+        tvCompletedOrders = findViewById(R.id.tvCompletedOrders);
+        tvEarnings        = findViewById(R.id.tvEarnings);
+        btnAddProduct     = findViewById(R.id.btnAddProduct);
 
         tvWelcome.setText("👋 " + session.getName());
 
-        findViewById(R.id.btnSpeaker).setOnClickListener(v -> {
-            tts.speak("Seller Dashboard. View and manage your orders.");
-        });
-
-        rvOrders.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new OrderAdapter(orderList, true);
-        adapter.setOnStatusChangeListener((order, newStatus) -> {
-            FirebaseDatabase.getInstance().getReference()
-                    .child(Constants.NODE_ORDERS)
-                    .child(order.getId())
-                    .child("status")
-                    .setValue(newStatus)
-                    .addOnSuccessListener(v -> {
-                        Toast.makeText(this, "Status updated to: " + newStatus, Toast.LENGTH_SHORT).show();
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(this, "Failed to update status", Toast.LENGTH_SHORT).show();
-                    });
-        });
-        rvOrders.setAdapter(adapter);
-
-        btnLogout.setOnClickListener(v -> {
-            session.logout();
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
-        });
-
-        btnAddProduct.setOnClickListener(v -> {
-            startActivity(new Intent(this, AddProductActivity.class));
-        });
+        btnAddProduct.setOnClickListener(v -> startActivity(new Intent(this, AddProductActivity.class)));
 
         loadSellerStatus();
-        loadOrders();
+        loadStats();
 
-        tts.speak("Seller Dashboard loaded.");
+        BottomNavHelper.setupForSeller(this, findViewById(R.id.bottomNav), 1);
 
-        // ✅ BOTTOM NAVIGATION (SELLER)
-        BottomNavHelper.setupBottomNav(this, session);
-        BottomNavHelper.setSelectedTab(this, 2);
+        findViewById(R.id.btnSpeaker).setOnClickListener(v ->
+                VoiceGuide.announceScreen(this, "خوش آمدید! یہ آپ کا ڈیش بورڈ ہے۔ یہاں آپ اپنے آرڈرز، کمائی اور نئی اشیاء شامل کر سکتی ہیں۔"));
     }
+
+    @Override protected void onResume() { super.onResume(); loadSellerStatus(); loadStats(); }
 
     private void loadSellerStatus() {
-        sellerStatusListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                Seller s = snapshot.getValue(Seller.class);
-                if (s == null) return;
-
-                if ("approved".equals(s.getVerificationStatus())) {
-                    tvStatus.setText("✅ Verified Seller");
-                    tvStatus.setTextColor(0xFF4CAF50);
-                    btnAddProduct.setEnabled(true);
-                } else if ("pending".equals(s.getVerificationStatus())) {
-                    tvStatus.setText("⏳ Pending approval");
-                    tvStatus.setTextColor(0xFFFFA000);
-                    btnAddProduct.setEnabled(false);
-                } else {
-                    tvStatus.setText("❌ Rejected");
-                    tvStatus.setTextColor(0xFFF44336);
-                    btnAddProduct.setEnabled(false);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                Toast.makeText(SellerDashboardActivity.this, "Error loading status", Toast.LENGTH_SHORT).show();
-            }
-        };
-
-        FirebaseDatabase.getInstance().getReference()
-                .child(Constants.NODE_SELLERS)
-                .child(session.getUid())
-                .addValueEventListener(sellerStatusListener);
-    }
-
-    private void loadOrders() {
-        ordersListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                orderList.clear();
-                for (DataSnapshot child : snapshot.getChildren()) {
-                    Order o = child.getValue(Order.class);
-                    if (o != null) {
-                        orderList.add(o);
+        FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS).child(session.getUid())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override public void onDataChange(DataSnapshot snapshot) {
+                        Seller s = snapshot.getValue(Seller.class);
+                        if (s == null) return;
+                        if ("verified".equals(s.getVerificationStatus())) {
+                            tvStatus.setText("✅ تصدیق شدہ — آپ کی دکان خریداروں کو نظر آ رہی ہے");
+                            tvStatus.setTextColor(0xFF4CAF50);
+                            btnAddProduct.setEnabled(true);
+                        } else {
+                            tvStatus.setText("⏳ ایڈمن کی منظوری کا انتظار");
+                            tvStatus.setTextColor(0xFFFFA000);
+                            btnAddProduct.setEnabled(false);
+                        }
                     }
-                }
-                orderList.sort((a, b) -> Long.compare(b.getTimestamp(), a.getTimestamp()));
-                adapter.notifyDataSetChanged();
-                tvEmpty.setVisibility(orderList.isEmpty() ? View.VISIBLE : View.GONE);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                Toast.makeText(SellerDashboardActivity.this, "Error loading orders", Toast.LENGTH_SHORT).show();
-            }
-        };
-
-        FirebaseDatabase.getInstance().getReference()
-                .child(Constants.NODE_ORDERS)
-                .orderByChild("sellerId")
-                .equalTo(session.getUid())
-                .addValueEventListener(ordersListener);
+                    @Override public void onCancelled(DatabaseError error) {}
+                });
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (ordersListener != null) {
-            FirebaseDatabase.getInstance().getReference()
-                    .child(Constants.NODE_ORDERS)
-                    .removeEventListener(ordersListener);
-        }
-        if (sellerStatusListener != null) {
-            FirebaseDatabase.getInstance().getReference()
-                    .child(Constants.NODE_SELLERS)
-                    .child(session.getUid())
-                    .removeEventListener(sellerStatusListener);
-        }
-        if (tts != null) tts.shutdown();
+    private void loadStats() {
+        FirebaseDatabase.getInstance().getReference().child(Constants.NODE_ORDERS)
+                .orderByChild("sellerId").equalTo(session.getUid())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override public void onDataChange(DataSnapshot snapshot) {
+                        int total = 0, pending = 0, completed = 0;
+                        double earnings = 0;
+                        for (DataSnapshot child : snapshot.getChildren()) {
+                            Order o = child.getValue(Order.class);
+                            if (o == null) continue;
+                            total++;
+                            if (Constants.STATUS_PENDING.equals(o.getStatus())) pending++;
+                            if (Constants.STATUS_COMPLETED.equals(o.getStatus())) { completed++; earnings += o.getAmount(); }
+                        }
+                        tvTotalOrders.setText(String.valueOf(total));
+                        tvPendingOrders.setText(String.valueOf(pending));
+                        tvCompletedOrders.setText(String.valueOf(completed));
+                        tvEarnings.setText("PKR " + (long) earnings);
+                    }
+                    @Override public void onCancelled(DatabaseError error) {}
+                });
     }
 }

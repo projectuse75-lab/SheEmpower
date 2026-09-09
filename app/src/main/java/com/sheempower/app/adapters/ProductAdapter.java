@@ -18,9 +18,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
     public interface OnProductClick { void onClick(Product product); }
 
     private List<Product> products;
-    private final OnProductClick onOpen;
-    private final OnProductClick onOrder;
-    private final OnProductClick onChat;
+    private final OnProductClick onOpen, onOrder, onChat;
 
     public ProductAdapter(List<Product> products, OnProductClick onOpen,
                           OnProductClick onOrder, OnProductClick onChat) {
@@ -37,8 +35,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
 
     @NonNull @Override
     public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_product, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_product, parent, false);
         return new VH(v);
     }
 
@@ -54,7 +51,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
         }
         holder.itemView.setOnClickListener(v -> onOpen.onClick(p));
         holder.btnOrder.setOnClickListener(v -> onOrder.onClick(p));
-        // "Chat" button — in-app chat screen NAHI khulta, seedha WhatsApp khulta hai
         holder.btnChat.setOnClickListener(v -> onChat.onClick(p));
     }
 

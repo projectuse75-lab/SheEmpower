@@ -26,7 +26,7 @@ public class TTSHelper {
     }
 
     public static synchronized TTSHelper getInstance(Context ctx) {
-        if (instance == null) instance = new TTSHelper(ctx);
+        if (instance == null || instance.tts == null) instance = new TTSHelper(ctx);
         return instance;
     }
 

@@ -1,44 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="100dp"
-    android:layout_height="wrap_content"
-    android:layout_margin="6dp"
-    app:cardCornerRadius="14dp"
-    app:cardElevation="2dp">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="10dp">
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/ivCategoryImage"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:src="@drawable/placeholder_product"
-            android:scaleType="centerCrop" />
-
-        <TextView
-            android:id="@+id/tvCategoryName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="11sp"
-            android:textStyle="bold"
-            android:textColor="#333333"
-            android:layout_marginTop="6dp"
-            android:maxLines="2" />
-
-        <TextView
-            android:id="@+id/tvCategoryCount"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="10sp"
-            android:textColor="#E91E8C" />
-
+    android:layout_width="100dp" android:layout_height="wrap_content" android:layout_margin="6dp"
+    app:cardCornerRadius="14dp" app:cardElevation="2dp">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:gravity="center" android:padding="8dp">
+        <de.hdodenhof.circleimageview.CircleImageView android:id="@+id/ivCategoryImage"
+            android:layout_width="56dp" android:layout_height="56dp" android:src="@drawable/placeholder_product" />
+        <TextView android:id="@+id/tvCategoryName" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:gravity="center" android:textSize="12sp" android:textStyle="bold" android:layout_marginTop="6dp" />
+        <TextView android:id="@+id/tvCategoryNameEn" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:gravity="center" android:textSize="9sp" android:textColor="#888888" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

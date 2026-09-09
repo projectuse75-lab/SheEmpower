@@ -7,23 +7,14 @@ import android.widget.Toast;
 
 public class WhatsAppHelper {
 
-    /** Chat button click par yeh call hota hai — seedha WhatsApp khulta hai, in-app chat nahi */
-    public static void openChat(Context ctx, String whatsappNumber, String prefilledMessage) {
-        if (whatsappNumber == null || whatsappNumber.trim().isEmpty()) {
-            Toast.makeText(ctx, "Seller ka WhatsApp number available nahi hai", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        String number = whatsappNumber.replaceAll("[^0-9]", "");
-        String msg = prefilledMessage == null
-                ? "Assalam o Alaikum! Mujhe She Empower app se aapki profile mili."
-                : prefilledMessage;
-
-        String url = "https://wa.me/" + number + "?text=" + Uri.encode(msg);
+    public static void openChat(Context context, String phoneNumber, String message) {
         try {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-            ctx.startActivity(intent);
+            String url = "https://api.whatsapp.com/send?phone=" + phoneNumber + "&text=" + Uri.encode(message);
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(url));
+            context.startActivity(intent);
         } catch (Exception e) {
-            Toast.makeText(ctx, "WhatsApp install nahi hai is device par", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "WhatsApp not installed or error occurred", Toast.LENGTH_SHORT).show();
         }
     }
 }

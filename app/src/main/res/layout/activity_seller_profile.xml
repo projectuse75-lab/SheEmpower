@@ -1,166 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:layout_width="match_parent" android:layout_height="match_parent" android:background="#FFFFFF">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
-
-        <!-- ============================================================ -->
-        <!-- ✅ TOOLBAR WITH SPEAKER ICON -->
-        <!-- ============================================================ -->
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="12dp">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="👤 بیچنے والی کا پروفائل"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="#FF4081" />
-
-            <!-- ✅ Speaker Icon -->
+            android:layout_height="wrap_content">
+            <de.hdodenhof.circleimageview.CircleImageView android:id="@+id/ivSellerAvatar"
+                android:layout_width="90dp" android:layout_height="90dp" android:layout_centerHorizontal="true" android:src="@drawable/placeholder_avatar" />
             <ImageButton
                 android:id="@+id/btnSpeaker"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_speaker"
-                android:background="@android:color/transparent"
-                android:scaleType="centerInside" />
-        </LinearLayout>
+                android:contentDescription="Speaker" />
+        </RelativeLayout>
 
-        <!-- ============================================================ -->
-        <!-- ✅ SELLER AVATAR -->
-        <!-- ============================================================ -->
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/ivSellerAvatar"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
-            android:layout_gravity="center"
-            android:src="@drawable/placeholder_avatar" />
+        <TextView android:id="@+id/tvSellerName" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:gravity="center" android:textSize="20sp" android:textStyle="bold" android:textColor="#333333" android:layout_marginTop="8dp" />
 
-        <!-- ============================================================ -->
-        <!-- ✅ SELLER INFO -->
-        <!-- ============================================================ -->
-        <TextView
-            android:id="@+id/tvSellerName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#333333"
-            android:layout_marginTop="8dp" />
+        <TextView android:id="@+id/tvSellerCategory" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:gravity="center" android:textColor="#FF4081" />
 
-        <TextView
-            android:id="@+id/tvSellerCategory"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textColor="#FF4081"
-            android:textSize="15sp" />
+        <TextView android:id="@+id/tvSellerCity" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:gravity="center" android:textColor="#888888" />
 
-        <TextView
-            android:id="@+id/tvSellerCity"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textColor="#888888"
-            android:textSize="14sp" />
+        <TextView android:id="@+id/tvSellerRating" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:gravity="center" android:textColor="#FFA000" android:layout_marginTop="4dp" />
 
-        <TextView
-            android:id="@+id/tvSellerRating"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textColor="#FFA000"
-            android:textStyle="bold"
-            android:layout_marginTop="4dp" />
+        <TextView android:id="@+id/tvSellerStatus" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:gravity="center" android:textColor="#4CAF50" android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/tvSellerStatus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textColor="#4CAF50"
-            android:textStyle="bold"
-            android:textSize="14sp" />
+        <!-- YEH NAYA HAI — seller khud delivery kar sakti hai ya nahi, saaf saaf profile par dikhta hai -->
+        <TextView android:id="@+id/tvSellerDeliveryBadge" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:gravity="center" android:layout_marginTop="10dp" android:padding="10dp" android:textStyle="bold" android:textSize="13sp" />
 
-        <TextView
-            android:id="@+id/tvSellerBio"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_marginTop="10dp"
-            android:textColor="#555555"
-            android:textSize="14sp" />
+        <TextView android:id="@+id/tvSellerBio" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:gravity="center" android:layout_marginTop="10dp" android:textColor="#555555" />
 
-        <!-- ============================================================ -->
-        <!-- ✅ CAPACITY DESCRIPTION (NEW) -->
-        <!-- ============================================================ -->
-        <TextView
-            android:id="@+id/tvSellerCapacity"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_marginTop="8dp"
-            android:textColor="#FF4081"
-            android:background="#FCE4EC"
-            android:padding="10dp"
-            android:textSize="13sp"
-            android:visibility="gone" />
+        <TextView android:id="@+id/tvSellerCapacity" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:gravity="center" android:layout_marginTop="8dp" android:textColor="#FF4081"
+            android:background="@drawable/bg_rounded_pink_light" android:padding="10dp" android:textSize="13sp" />
 
-        <!-- ============================================================ -->
-        <!-- ✅ BUTTONS -->
-        <!-- ============================================================ -->
-        <Button
-            android:id="@+id/btnPlaceOrder"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:text="🛒 آرڈر دیں / Place Order"
-            android:textSize="15sp"
-            android:backgroundTint="#FF4081"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="16dp" />
+        <Button android:id="@+id/btnPlaceOrder" android:layout_width="match_parent" android:layout_height="56dp"
+            android:text="🛒 آرڈر دیں" android:textSize="15sp" android:backgroundTint="#FF4081" android:textColor="#FFFFFF" android:layout_marginTop="16dp" />
 
-        <Button
-            android:id="@+id/btnWhatsAppChat"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:text="💬 واٹس ایپ پر بات کریں / Chat on WhatsApp"
-            android:textSize="14sp"
-            android:backgroundTint="#25D366"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="8dp" />
+        <Button android:id="@+id/btnWhatsAppChat" android:layout_width="match_parent" android:layout_height="56dp"
+            android:text="💬 واٹس ایپ پر بات کریں" android:textSize="14sp" android:backgroundTint="#25D366" android:textColor="#FFFFFF" android:layout_marginTop="8dp" />
 
-        <!-- ============================================================ -->
-        <!-- ✅ PRODUCTS SECTION -->
-        <!-- ============================================================ -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="🛍️ اشیاء / Products"
-            android:textStyle="bold"
-            android:textSize="16sp"
-            android:textColor="#FF4081"
-            android:layout_marginTop="20dp" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="🛍️ اشیاء" android:textStyle="bold" android:textSize="16sp" android:textColor="#FF4081" android:layout_marginTop="20dp" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvSellerProducts"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="false"
-            android:layout_marginTop="8dp" />
+        <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvSellerProducts"
+            android:layout_width="match_parent" android:layout_height="wrap_content" android:nestedScrollingEnabled="false" android:layout_marginTop="8dp" />
 
     </LinearLayout>
 </ScrollView>

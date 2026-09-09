@@ -1,26 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">She Empower</string>
-
-    <string name="chat_button_label">💬 Chat on WhatsApp</string>
-    <string name="chat_hint">Buyers is number par WhatsApp se seedha aap se chat karenge. App mein koi alag chat system nahi hai — sirf yeh number hi buyer ko dikhega.</string>
-    <string name="whatsapp_number_required">WhatsApp Number (Required)</string>
-    <string name="whatsapp_hint_input">e.g. 923001234567 (with country code)</string>
-
-    <string name="place_order">🛒 Place Order</string>
-    <string name="submit_order">✅ Submit Order</string>
-    <string name="login">Login</string>
-    <string name="join">Join</string>
+    <string name="no_orders">No orders yet.</string>
+    <string name="no_chats">No chats yet.</string>
+    <string name="search_hint">Search...</string>
+    <string name="place_order">Place Order</string>
+    <string name="submit_order">Submit Order</string>
+    <string name="upload_receipt">Upload Receipt</string>
+    <string name="contact">Contact</string>
+    <string name="profile">Profile</string>
     <string name="logout">Logout</string>
-    <string name="save_changes">Save Changes</string>
-    <string name="submit_registration">Submit Registration</string>
-
-    <string name="pending_approval">Pending admin approval</string>
-    <string name="verified_seller">Verified Seller</string>
-
-    <string name="voice_guidance">Voice Guidance</string>
-    <string name="search_hint">Search products or sellers...</string>
-    <string name="top_rated_sellers">Top Rated Sellers</string>
-    <string name="latest_products">Latest Products</string>
-    <string name="all_sellers">All Sellers</string>
+    <string name="save">Save</string>
+    <string name="under_review">⏳ آپ کا اکاؤنٹ زیرِ جائزہ ہے۔ ایڈمن جلد منظوری دے گا۔</string>
 </resources>

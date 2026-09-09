@@ -2,10 +2,7 @@ package com.sheempower.app.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,155 +10,187 @@ import com.google.firebase.database.*;
 import com.sheempower.app.R;
 import com.sheempower.app.adapters.PendingSellerAdapter;
 import com.sheempower.app.models.Seller;
-import com.sheempower.app.utils.*;
+import com.sheempower.app.utils.BottomNavHelper;
+import com.sheempower.app.utils.Constants;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AdminDashboardActivity extends AppCompatActivity {
 
-    private RecyclerView rvPending;
-    private TextView tvEmpty, tvCount;
-    private Button btnLogout;
-    private PendingSellerAdapter adapter;
+    private TextView tvTotalSellers, tvTotalProducts, tvTotalBuyers, tvPendingCount;
+    private RecyclerView rvPending, rvAllSellers;
+    private TextView tvEmptyPending;
+
+    private PendingSellerAdapter pendingAdapter;
     private final List<Seller> pendingList = new ArrayList<>();
-    private SessionManager session;
-    private TTSHelper tts;
-    private ValueEventListener pendingListener;
+
+    private AllSellerManageAdapter allSellerAdapter;
+    private final List<Seller> allSellerList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_dashboard);
 
-        session = new SessionManager(this);
-        tts = TTSHelper.getInstance(this);
-
-        if (!session.isLoggedIn() || !session.isAdmin()) {
-            Toast.makeText(this, "Admin access only!", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
-            return;
-        }
-
-        rvPending = findViewById(R.id.rvPending);
-        tvEmpty = findViewById(R.id.tvEmpty);
-        tvCount = findViewById(R.id.tvCount);
-        btnLogout = findViewById(R.id.btnLogout);
-
-        findViewById(R.id.btnSpeaker).setOnClickListener(v -> {
-            tts.speak("Admin Dashboard. Manage pending seller approvals.");
-        });
+        tvTotalSellers  = findViewById(R.id.tvTotalSellers);
+        tvTotalProducts = findViewById(R.id.tvTotalProducts);
+        tvTotalBuyers   = findViewById(R.id.tvTotalBuyers);
+        tvPendingCount  = findViewById(R.id.tvPendingCount);
+        rvPending       = findViewById(R.id.rvPending);
+        rvAllSellers    = findViewById(R.id.rvAllSellers);
+        tvEmptyPending  = findViewById(R.id.tvEmptyPending);
 
         rvPending.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new PendingSellerAdapter(pendingList, new PendingSellerAdapter.OnSellerAction() {
-            @Override
-            public void onApprove(Seller seller) {
-                updateStatus(seller, "approved");
-            }
+        pendingAdapter = new PendingSellerAdapter(pendingList,
+                seller -> updateStatus(seller, "verified"),
+                seller -> updateStatus(seller, "rejected"));
+        rvPending.setAdapter(pendingAdapter);
 
-            @Override
-            public void onReject(Seller seller) {
-                updateStatus(seller, "rejected");
-            }
+        rvAllSellers.setLayoutManager(new LinearLayoutManager(this));
+        allSellerAdapter = new AllSellerManageAdapter(allSellerList, this::toggleSellerBlock);
+        rvAllSellers.setAdapter(allSellerAdapter);
 
-            @Override
-            public void onToggleTopRated(Seller seller) {
-                toggleTopRated(seller);
-            }
-        });
-        rvPending.setAdapter(adapter);
+        BottomNavHelper.setupForAdmin(this, findViewById(R.id.bottomNav), 1);
 
-        btnLogout.setOnClickListener(v -> {
-            session.logout();
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
-        });
-
+        loadStats();
         loadPendingSellers();
+        loadAllSellers();
+    }
 
-        tts.speak("Admin Dashboard loaded.");
+    @Override protected void onResume() {
+        super.onResume();
+        loadStats();
+        loadPendingSellers();
+        loadAllSellers();
+    }
 
-        // ✅ BOTTOM NAVIGATION (ADMIN)
-        BottomNavHelper.setupBottomNav(this, session);
-        BottomNavHelper.setSelectedTab(this, 2);
+    private void loadStats() {
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
+
+        dbRef.child(Constants.NODE_SELLERS).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override public void onDataChange(DataSnapshot snapshot) {
+                tvTotalSellers.setText(String.valueOf(snapshot.getChildrenCount()));
+            }
+            @Override public void onCancelled(DatabaseError error) {}
+        });
+
+        dbRef.child(Constants.NODE_PRODUCTS).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override public void onDataChange(DataSnapshot snapshot) {
+                tvTotalProducts.setText(String.valueOf(snapshot.getChildrenCount()));
+            }
+            @Override public void onCancelled(DatabaseError error) {}
+        });
+
+        dbRef.child(Constants.NODE_USERS).orderByChild("role").equalTo("buyer")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override public void onDataChange(DataSnapshot snapshot) {
+                        tvTotalBuyers.setText(String.valueOf(snapshot.getChildrenCount()));
+                    }
+                    @Override public void onCancelled(DatabaseError error) {
+                        tvTotalBuyers.setText("—");
+                    }
+                });
     }
 
     private void loadPendingSellers() {
-        pendingListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                pendingList.clear();
-                for (DataSnapshot child : snapshot.getChildren()) {
-                    Seller s = child.getValue(Seller.class);
-                    if (s != null) pendingList.add(s);
-                }
-                adapter.notifyDataSetChanged();
-                tvCount.setText(pendingList.size() + " pending approval(s)");
-                tvEmpty.setVisibility(pendingList.isEmpty() ? View.VISIBLE : View.GONE);
-            }
+        FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS)
+                .orderByChild("verificationStatus").equalTo("pending")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override public void onDataChange(DataSnapshot snapshot) {
+                        pendingList.clear();
+                        for (DataSnapshot child : snapshot.getChildren()) {
+                            Seller s = child.getValue(Seller.class);
+                            if (s != null) {
+                                // ✅ FIX: UID from Key
+                                if (s.getUid() == null) s.setUid(child.getKey());
+                                pendingList.add(s);
+                            }
+                        }
+                        pendingAdapter.notifyDataSetChanged();
+                        tvPendingCount.setText(pendingList.size() + " منظوری کے منتظر");
+                        tvEmptyPending.setVisibility(pendingList.isEmpty() ? android.view.View.VISIBLE : android.view.View.GONE);
+                    }
+                    @Override public void onCancelled(DatabaseError error) {
+                        tvEmptyPending.setVisibility(android.view.View.VISIBLE);
+                        tvEmptyPending.setText("خرابی: " + error.getMessage());
+                    }
+                });
+    }
 
-            @Override
-            public void onCancelled(DatabaseError error) {
-                Toast.makeText(AdminDashboardActivity.this, "Error loading pending sellers", Toast.LENGTH_SHORT).show();
-            }
-        };
-
-        FirebaseDatabase.getInstance().getReference()
-                .child(Constants.NODE_SELLERS)
-                .orderByChild("verificationStatus")
-                .equalTo("pending")
-                .addValueEventListener(pendingListener);
+    private void loadAllSellers() {
+        FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override public void onDataChange(DataSnapshot snapshot) {
+                        allSellerList.clear();
+                        for (DataSnapshot child : snapshot.getChildren()) {
+                            Seller s = child.getValue(Seller.class);
+                            if (s != null) {
+                                // ✅ FIX: UID from Key
+                                if (s.getUid() == null) s.setUid(child.getKey());
+                                allSellerList.add(s);
+                            }
+                        }
+                        allSellerAdapter.notifyDataSetChanged();
+                    }
+                    @Override public void onCancelled(DatabaseError error) {}
+                });
     }
 
     private void updateStatus(Seller seller, String status) {
-        if (!session.isAdmin()) {
-            Toast.makeText(this, "Unauthorized!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        FirebaseDatabase.getInstance().getReference()
-                .child(Constants.NODE_SELLERS)
-                .child(seller.getUid())
-                .child("verificationStatus")
-                .setValue(status)
+        FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS)
+                .child(seller.getUid()).child("verificationStatus").setValue(status)
                 .addOnSuccessListener(v -> {
                     Toast.makeText(this, seller.getBusinessName() + " → " + status, Toast.LENGTH_SHORT).show();
-                    tts.speak(seller.getBusinessName() + " " + status);
+                    loadPendingSellers();
+                    loadAllSellers();
                 })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+                .addOnFailureListener(e -> Toast.makeText(this, "خرابی: " + e.getMessage(), Toast.LENGTH_LONG).show());
     }
 
-    private void toggleTopRated(Seller seller) {
-        if (!session.isAdmin()) {
-            Toast.makeText(this, "Unauthorized!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        boolean newStatus = !seller.isTopRated();
-        FirebaseDatabase.getInstance().getReference()
-                .child(Constants.NODE_SELLERS)
-                .child(seller.getUid())
-                .child("isTopRated")
-                .setValue(newStatus)
-                .addOnSuccessListener(v -> {
-                    Toast.makeText(this, seller.getBusinessName() + " → " +
-                            (newStatus ? "⭐ Top Rated (ON)" : "⭐ Top Rated (OFF)"), Toast.LENGTH_SHORT).show();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+    /** Admin kisi bhi verified seller ko block/unblock kar sakta hai — is se
+     *  woh Home aur Category screens se turant ghayab/wapas ho jati hai */
+    private void toggleSellerBlock(Seller seller) {
+        String newStatus = Constants.isApproved(seller.getVerificationStatus()) ? "blocked" : "verified";
+        updateStatus(seller, newStatus);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (pendingListener != null) {
-            FirebaseDatabase.getInstance().getReference()
-                    .child(Constants.NODE_SELLERS)
-                    .removeEventListener(pendingListener);
+    // --- Chhota inline adapter, sirf admin ke "All Sellers" section ke liye ---
+    static class AllSellerManageAdapter extends RecyclerView.Adapter<AllSellerManageAdapter.VH> {
+        interface OnToggle { void onToggle(Seller seller); }
+        private final List<Seller> list;
+        private final OnToggle onToggle;
+
+        AllSellerManageAdapter(List<Seller> list, OnToggle onToggle) {
+            this.list = list; this.onToggle = onToggle;
         }
-        if (tts != null) tts.shutdown();
+
+        @Override public VH onCreateViewHolder(android.view.ViewGroup parent, int viewType) {
+            android.view.View v = android.view.LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_admin_seller_manage, parent, false);
+            return new VH(v);
+        }
+
+        @Override public void onBindViewHolder(VH holder, int position) {
+            Seller s = list.get(position);
+            holder.tvName.setText(s.getBusinessName() + " (" + s.getCategory() + ")");
+            boolean approved = Constants.isApproved(s.getVerificationStatus());
+            holder.tvStatus.setText(approved ? "✅ فعال" : "🚫 غیر فعال / " + s.getVerificationStatus());
+            holder.tvStatus.setTextColor(approved ? 0xFF4CAF50 : 0xFFF44336);
+            holder.btnToggle.setText(approved ? "بند کریں" : "فعال کریں");
+            holder.btnToggle.setOnClickListener(v -> onToggle.onToggle(s));
+        }
+
+        @Override public int getItemCount() { return list.size(); }
+
+        static class VH extends RecyclerView.ViewHolder {
+            TextView tvName, tvStatus;
+            Button btnToggle;
+            VH(android.view.View itemView) {
+                super(itemView);
+                tvName    = itemView.findViewById(R.id.tvAdminSellerName);
+                tvStatus  = itemView.findViewById(R.id.tvAdminSellerStatus);
+                btnToggle = itemView.findViewById(R.id.btnAdminToggle);
+            }
+        }
     }
 }

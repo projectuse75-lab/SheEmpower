@@ -5,7 +5,7 @@ public class OrderField {
     public String labelEnglish;
     public String hintUrdu;
     public String type; // "text", "number", "spinner"
-    public String[] options; // sirf spinner ke liye
+    public String[] options;
 
     public OrderField(String labelUrdu, String labelEnglish, String hintUrdu, String type) {
         this.labelUrdu = labelUrdu;

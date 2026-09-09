@@ -14,7 +14,9 @@ public class CloudinaryHelper {
 
     private static final String TAG = "CloudinaryHelper";
 
-    public interface UploadCallback { void onResult(String url); }
+    public interface UploadCallback {
+        void onResult(String url, String errorMessage); // errorMessage null = success
+    }
 
     public static void upload(Context ctx, Uri fileUri, String folder, UploadCallback callback) {
         new Thread(() -> {
@@ -32,32 +34,30 @@ public class CloudinaryHelper {
                         .addFormDataPart("folder", folder)
                         .build();
 
-                Request request = new Request.Builder()
-                        .url(Constants.CLOUDINARY_URL)
-                        .post(body)
-                        .build();
-
+                Request request = new Request.Builder().url(Constants.CLOUDINARY_URL).post(body).build();
                 Response response = client.newCall(request).execute();
                 String resStr = response.body() != null ? response.body().string() : null;
 
-                if (!response.isSuccessful()) {
-                    Log.e(TAG, "Upload failed. HTTP " + response.code() + " — Response: " + resStr
-                            + "\nCheck: cloud name = '" + Constants.CLOUDINARY_CLOUD_NAME
-                            + "', preset = '" + Constants.CLOUDINARY_UPLOAD_PRESET + "' (must be Unsigned mode in Cloudinary dashboard)");
-                }
-
-                String secureUrl = null;
                 if (response.isSuccessful() && resStr != null) {
                     JSONObject json = new JSONObject(resStr);
-                    secureUrl = json.optString("secure_url", null);
+                    String secureUrl = json.optString("secure_url", null);
+                    new Handler(Looper.getMainLooper()).post(() -> callback.onResult(secureUrl, null));
+                } else {
+                    String errMsg = "HTTP " + response.code();
+                    if (resStr != null) {
+                        try {
+                            JSONObject errJson = new JSONObject(resStr);
+                            errMsg = errJson.optJSONObject("error") != null
+                                    ? errJson.optJSONObject("error").optString("message", errMsg) : errMsg;
+                        } catch (Exception ignored) {}
+                    }
+                    final String finalErr = errMsg;
+                    Log.e(TAG, "Upload failed: " + finalErr);
+                    new Handler(Looper.getMainLooper()).post(() -> callback.onResult(null, finalErr));
                 }
-
-                final String finalUrl = secureUrl;
-                new Handler(Looper.getMainLooper()).post(() -> callback.onResult(finalUrl));
-
             } catch (Exception e) {
                 Log.e(TAG, "Upload exception: " + e.getMessage(), e);
-                new Handler(Looper.getMainLooper()).post(() -> callback.onResult(null));
+                new Handler(Looper.getMainLooper()).post(() -> callback.onResult(null, e.getMessage()));
             }
         }).start();
     }

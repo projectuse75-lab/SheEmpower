@@ -1,93 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="64dp"
-    android:orientation="horizontal"
-    android:background="#FFFFFF"
-    android:elevation="12dp">
+    android:layout_width="match_parent" android:layout_height="64dp"
+    android:orientation="horizontal" android:background="#FFFFFF" android:elevation="12dp">
 
-    <!-- Tab 1: Home -->
-    <LinearLayout
-        android:id="@+id/navHome"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:clickable="true"
-        android:focusable="true">
-
-        <TextView
-            android:id="@+id/navIcon1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="🏠"
-            android:textSize="22sp" />
-
-        <TextView
-            android:id="@+id/navLabel1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="براؤز"
-            android:textSize="10sp"
-            android:textColor="#FF4081"
-            android:gravity="center" />
+    <LinearLayout android:id="@+id/navItem1" android:layout_width="0dp" android:layout_height="match_parent"
+        android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:clickable="true" android:focusable="true">
+        <TextView android:id="@+id/navIcon1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="20sp" />
+        <TextView android:id="@+id/navLabel1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="10sp" />
     </LinearLayout>
 
-    <!-- Tab 2: Center (dynamic) -->
-    <LinearLayout
-        android:id="@+id/navCenter"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:clickable="true"
-        android:focusable="true">
-
-        <TextView
-            android:id="@+id/navIcon2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="📦"
-            android:textSize="22sp" />
-
-        <TextView
-            android:id="@+id/navLabel2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="آرڈرز"
-            android:textSize="10sp"
-            android:textColor="#888888"
-            android:gravity="center" />
+    <LinearLayout android:id="@+id/navItem2" android:layout_width="0dp" android:layout_height="match_parent"
+        android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:clickable="true" android:focusable="true">
+        <TextView android:id="@+id/navIcon2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="20sp" />
+        <TextView android:id="@+id/navLabel2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="10sp" />
     </LinearLayout>
 
-    <!-- Tab 3: Profile -->
-    <LinearLayout
-        android:id="@+id/navProfile"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:clickable="true"
-        android:focusable="true">
-
-        <TextView
-            android:id="@+id/navIcon3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="👤"
-            android:textSize="22sp" />
-
-        <TextView
-            android:id="@+id/navLabel3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="پروفائل"
-            android:textSize="10sp"
-            android:textColor="#888888"
-            android:gravity="center" />
+    <LinearLayout android:id="@+id/navItem3" android:layout_width="0dp" android:layout_height="match_parent"
+        android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:clickable="true" android:focusable="true">
+        <TextView android:id="@+id/navIcon3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="20sp" />
+        <TextView android:id="@+id/navLabel3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="10sp" />
     </LinearLayout>
 
 </LinearLayout>

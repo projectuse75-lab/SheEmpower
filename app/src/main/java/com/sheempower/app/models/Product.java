@@ -3,7 +3,6 @@ package com.sheempower.app.models;
 public class Product {
     private String id, sellerId, name, description, imageUrl, category;
     private double price;
-    private boolean isTop;
 
     public Product() {}
 
@@ -21,14 +20,12 @@ public class Product {
     public double getPrice()       { return price; }
     public String getImageUrl()    { return imageUrl; }
     public String getCategory()    { return category; }
-    public boolean isTop()         { return isTop; }
 
-    public void setId(String id)             { this.id = id; }
-    public void setSellerId(String s)        { this.sellerId = s; }
-    public void setName(String n)            { this.name = n; }
-    public void setDescription(String d)     { this.description = d; }
-    public void setPrice(double p)           { this.price = p; }
-    public void setImageUrl(String u)        { this.imageUrl = u; }
-    public void setCategory(String c)        { this.category = c; }
-    public void setTop(boolean t)            { this.isTop = t; }
+    public void setId(String id)          { this.id = id; }
+    public void setSellerId(String s)     { this.sellerId = s; }
+    public void setName(String n)         { this.name = n; }
+    public void setDescription(String d)  { this.description = d; }
+    public void setPrice(double p)        { this.price = p; }
+    public void setImageUrl(String u)     { this.imageUrl = u; }
+    public void setCategory(String c)     { this.category = c; }
 }

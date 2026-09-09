@@ -1,90 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#FFFFFF"
-    android:orientation="vertical">
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="#FFFFFF" android:orientation="vertical">
 
-    <!-- Toolbar -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#FF4081"
-        android:padding="16dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:background="#FF4081" android:padding="16dp" android:orientation="vertical">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="🛡️ ایڈمن ڈیش بورڈ" android:textColor="#FFFFFF" android:textSize="18sp" android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Stats -->
+            <GridLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:columnCount="3" android:padding="12dp">
+                <LinearLayout android:layout_width="0dp" android:layout_columnWeight="1" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:background="@drawable/bg_rounded_pink_light" android:padding="12dp" android:layout_margin="4dp" android:gravity="center">
+                    <TextView android:id="@+id/tvTotalSellers" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="22sp" android:textStyle="bold" android:textColor="#FF4081" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="بیچنے والیاں" android:textSize="11sp" />
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp" android:layout_columnWeight="1" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:background="@drawable/bg_rounded_pink_light" android:padding="12dp" android:layout_margin="4dp" android:gravity="center">
+                    <TextView android:id="@+id/tvTotalProducts" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="22sp" android:textStyle="bold" android:textColor="#4CAF50" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="اشیاء" android:textSize="11sp" />
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp" android:layout_columnWeight="1" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:background="@drawable/bg_rounded_pink_light" android:padding="12dp" android:layout_margin="4dp" android:gravity="center">
+                    <TextView android:id="@+id/tvTotalBuyers" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="22sp" android:textStyle="bold" android:textColor="#FFA000" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="خریدار" android:textSize="11sp" />
+                </LinearLayout>
+            </GridLayout>
+
+            <TextView android:id="@+id/tvPendingCount"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="⏳ منظوری کے منتظر / Pending Approvals" android:textStyle="bold" android:textColor="#FF4081"
+                android:layout_margin="16dp" />
+
+            <TextView android:id="@+id/tvEmptyPending"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="کوئی درخواست منظوری کے لیے نہیں" android:gravity="center"
+                android:textColor="#888888" android:layout_marginHorizontal="16dp" android:visibility="gone" />
+
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvPending"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:padding="8dp" android:nestedScrollingEnabled="false" />
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🛡️ ایڈمن ڈیش بورڈ"
-                android:textColor="#FFFFFF"
-                android:textSize="17sp"
-                android:textStyle="bold" />
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="🏪 تمام بیچنے والیاں / All Sellers" android:textStyle="bold" android:textColor="#FF4081"
+                android:layout_margin="16dp" />
 
-            <TextView
-                android:id="@+id/tvCount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#FFE0EC"
-                android:textSize="12sp" />
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvAllSellers"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:padding="8dp" android:nestedScrollingEnabled="false" android:layout_marginBottom="20dp" />
+
         </LinearLayout>
+    </ScrollView>
 
-        <ImageButton
-            android:id="@+id/btnSpeaker"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/ic_speaker"
-            android:background="@android:color/transparent"
-            android:scaleType="centerInside" />
-
-        <Button
-            android:id="@+id/btnLogout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="🚪"
-            android:backgroundTint="@android:color/transparent"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:layout_marginStart="8dp" />
-    </LinearLayout>
-
-    <!-- Content -->
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <TextView
-            android:id="@+id/tvEmpty"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="🎉 کوئی درخواست منظوری کے لیے نہیں\n\nNo pending sellers"
-            android:gravity="center"
-            android:textColor="#888888"
-            android:textSize="16sp"
-            android:visibility="gone"
-            android:layout_gravity="center" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvPending"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="8dp" />
-
-    </FrameLayout>
-
-    <!-- ✅ Bottom Navigation -->
-    <include
-        layout="@layout/bottom_nav_bar"
-        android:id="@+id/bottomNav"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
+    <include layout="@layout/bottom_nav_bar" android:id="@+id/bottomNav" />
 </LinearLayout>

@@ -1,177 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:layout_width="match_parent" android:layout_height="match_parent" android:background="#FFFFFF">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        <ImageView android:id="@+id/ivProduct"
+            android:layout_width="match_parent" android:layout_height="260dp" android:scaleType="centerCrop" android:background="#FFF0F5" />
 
-        <!-- ============================================================ -->
-        <!-- ✅ TOOLBAR WITH SPEAKER ICON -->
-        <!-- ============================================================ -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#FF4081"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:padding="16dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="📦 چیز کی تفصیل"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+            <TextView android:id="@+id/tvProductName" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textSize="20sp" android:textStyle="bold" android:textColor="#333333" />
 
-            <!-- ✅ Speaker Icon -->
-            <ImageButton
-                android:id="@+id/btnSpeaker"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/ic_speaker"
-                android:background="@android:color/transparent"
-                android:scaleType="centerInside" />
-        </LinearLayout>
+            <TextView android:id="@+id/tvProductPrice" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textSize="18sp" android:textColor="#FF4081" android:textStyle="bold" android:layout_marginTop="4dp" />
 
-        <!-- ============================================================ -->
-        <!-- ✅ PRODUCT IMAGE -->
-        <!-- ============================================================ -->
-        <ImageView
-            android:id="@+id/ivProduct"
-            android:layout_width="match_parent"
-            android:layout_height="260dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/placeholder_product"
-            android:background="#FCE4EC" />
-
-        <!-- ============================================================ -->
-        <!-- ✅ PRODUCT DETAILS -->
-        <!-- ============================================================ -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
-
-            <!-- Product Name -->
-            <TextView
-                android:id="@+id/tvProductName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="#333333" />
-
-            <!-- Product Price -->
-            <TextView
-                android:id="@+id/tvProductPrice"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="18sp"
-                android:textColor="#FF4081"
-                android:textStyle="bold"
-                android:layout_marginTop="4dp" />
-
-            <!-- ============================================================ -->
-            <!-- ✅ SELLER INFO CARD -->
-            <!-- ============================================================ -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="#FCE4EC"
-                android:padding="12dp"
-                android:layout_marginTop="16dp"
-                android:gravity="center_vertical">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/tvSellerName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textStyle="bold"
-                        android:textSize="15sp"
-                        android:textColor="#333333" />
-
-                    <TextView
-                        android:id="@+id/tvSellerMeta"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="#777777"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:id="@+id/tvSellerRating"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="#FFA000"
-                        android:textSize="12sp" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal"
+                android:background="@drawable/bg_rounded_pink" android:padding="12dp" android:layout_marginTop="16dp" android:gravity="center_vertical">
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                    <TextView android:id="@+id/tvSellerName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textStyle="bold" android:textSize="15sp" />
+                    <TextView android:id="@+id/tvSellerMeta" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#777777" android:textSize="12sp" />
+                    <TextView android:id="@+id/tvSellerRating" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#FFA000" android:textSize="12sp" />
                 </LinearLayout>
-
-                <Button
-                    android:id="@+id/btnViewSeller"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="دیکھیں →"
-                    android:backgroundTint="#FF4081"
-                    android:textColor="#FFFFFF" />
+                <Button android:id="@+id/btnViewSeller" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="دیکھیں →" android:backgroundTint="#FF4081" android:textColor="#FFFFFF" />
             </LinearLayout>
 
-            <!-- ============================================================ -->
-            <!-- ✅ DESCRIPTION -->
-            <!-- ============================================================ -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="📝 تفصیل / Description"
-                android:textStyle="bold"
-                android:textSize="15sp"
-                android:textColor="#FF4081"
-                android:layout_marginTop="20dp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="📝 تفصیل" android:textStyle="bold" android:textSize="15sp" android:textColor="#FF4081" android:layout_marginTop="20dp" />
 
-            <TextView
-                android:id="@+id/tvDescription"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#666666"
-                android:layout_marginTop="6dp" />
+            <TextView android:id="@+id/tvDescription" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textColor="#666666" android:layout_marginTop="6dp" />
 
-            <!-- ============================================================ -->
-            <!-- ✅ BUTTONS -->
-            <!-- ============================================================ -->
+            <Button android:id="@+id/btnPlaceOrder" android:layout_width="match_parent" android:layout_height="56dp"
+                android:text="🛒 آرڈر دیں" android:textSize="15sp" android:backgroundTint="#FF4081" android:textColor="#FFFFFF" android:layout_marginTop="20dp" />
 
-            <!-- Place Order -->
-            <Button
-                android:id="@+id/btnPlaceOrder"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:text="🛒 آرڈر دیں / Place Order"
-                android:textSize="15sp"
-                android:backgroundTint="#FF4081"
-                android:textColor="#FFFFFF"
-                android:layout_marginTop="20dp" />
-
-            <!-- WhatsApp -->
-            <Button
-                android:id="@+id/btnWhatsApp"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:text="📱 واٹس ایپ پر بات کریں / WhatsApp"
-                android:textSize="14sp"
-                android:backgroundTint="#25D366"
-                android:textColor="#FFFFFF"
-                android:layout_marginTop="10dp" />
+            <Button android:id="@+id/btnWhatsApp" android:layout_width="match_parent" android:layout_height="56dp"
+                android:text="📱 واٹس ایپ پر بات کریں" android:textSize="14sp" android:backgroundTint="#25D366" android:textColor="#FFFFFF" android:layout_marginTop="10dp" />
 
         </LinearLayout>
     </LinearLayout>

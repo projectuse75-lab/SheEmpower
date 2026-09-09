@@ -33,5 +33,7 @@ public class SessionManager {
     public boolean isBuyer()    { return "buyer".equals(getRole()); }
     public boolean isAdmin()    { return "admin".equals(getRole()); }
 
-    public void logout() { prefs.edit().clear().apply(); }
+    public void logout() {
+        prefs.edit().clear().apply();
+    }
 }

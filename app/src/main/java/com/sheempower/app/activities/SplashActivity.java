@@ -5,45 +5,61 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.splashscreen.SplashScreen;
+import com.google.firebase.auth.FirebaseAuth;
 import com.sheempower.app.R;
 import com.sheempower.app.utils.DemoDataSeeder;
 import com.sheempower.app.utils.SessionManager;
-import com.sheempower.app.utils.VoiceGuide;
 
 public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SplashScreen.installSplashScreen(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+        // ✅ Seed only if no real data yet
+        // DemoDataSeeder.forceSeed(this);
+
         try {
-            DemoDataSeeder.seedIfNeeded(this);
+            FirebaseAuth auth = FirebaseAuth.getInstance();
+            if (auth.getCurrentUser() == null) {
+                auth.signInAnonymously().addOnCompleteListener(task -> {
+                    navigate();
+                });
+            } else {
+                navigate();
+            }
         } catch (Exception e) {
-            Log.e("SplashActivity", "Demo seeding failed: " + e.getMessage(), e);
+            Log.e("Splash", "Auth error", e);
+            navigate();
         }
+    }
 
-        VoiceGuide.announceScreen(this, "شی ایمپاور میں خوش آمدید");
-
-        SessionManager session = new SessionManager(this);
-
+    private void navigate() {
         new Handler().postDelayed(() -> {
             try {
+                SessionManager session = new SessionManager(this);
                 Intent intent;
                 if (session.isLoggedIn()) {
-                    if (session.isSeller()) intent = new Intent(this, SellerDashboardActivity.class);
-                    else if (session.isAdmin()) intent = new Intent(this, AdminDashboardActivity.class);
-                    else intent = new Intent(this, MainActivity.class);
+                    if (session.isSeller()) {
+                        intent = new Intent(this, SellerDashboardActivity.class);
+                    } else if (session.isAdmin()) {
+                        intent = new Intent(this, AdminDashboardActivity.class);
+                    } else {
+                        intent = new Intent(this, MainActivity.class);
+                    }
                 } else {
                     intent = new Intent(this, MainActivity.class);
                 }
                 startActivity(intent);
+                finish();
             } catch (Exception e) {
-                Log.e("SplashActivity", "Navigation failed: " + e.getMessage(), e);
+                Log.e("Splash", "Navigation error", e);
                 startActivity(new Intent(this, MainActivity.class));
-            } finally {
                 finish();
             }
-        }, 800);
+        }, 1000);
     }
 }
