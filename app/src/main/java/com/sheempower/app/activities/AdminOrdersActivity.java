@@ -11,6 +11,7 @@ import com.sheempower.app.adapters.OrderAdapter;
 import com.sheempower.app.models.Order;
 import com.sheempower.app.utils.BottomNavHelper;
 import com.sheempower.app.utils.Constants;
+import com.sheempower.app.utils.VoiceGuide;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +26,8 @@ public class AdminOrdersActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_orders);
+
+        VoiceGuide.announceScreen(this, "یہ نظام کے تمام آرڈرز کی فہرست ہے۔");
 
         rvOrders = findViewById(R.id.rvOrders);
         tvEmpty  = findViewById(R.id.tvEmpty);
@@ -52,7 +55,10 @@ public class AdminOrdersActivity extends AppCompatActivity {
                         adapter.notifyDataSetChanged();
                         tvEmpty.setVisibility(orderList.isEmpty() ? android.view.View.VISIBLE : android.view.View.GONE);
                     }
-                    @Override public void onCancelled(DatabaseError error) {}
+                    @Override public void onCancelled(DatabaseError error) {
+                        tvEmpty.setVisibility(android.view.View.VISIBLE);
+                        tvEmpty.setText("خرابی: " + error.getMessage());
+                    }
                 });
     }
 }

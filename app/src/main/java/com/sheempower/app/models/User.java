@@ -1,7 +1,7 @@
 package com.sheempower.app.models;
 
 public class User {
-    private String uid, name, email, phone, role;
+    private String uid, name, email, phone, role, imageUrl;
 
     public User() {}
 
@@ -10,15 +10,17 @@ public class User {
         this.phone = phone; this.role = role;
     }
 
-    public String getUid()   { return uid; }
-    public String getName()  { return name; }
-    public String getEmail() { return email; }
-    public String getPhone() { return phone; }
-    public String getRole()  { return role; }
+    public String getUid()      { return uid; }
+    public String getName()     { return name; }
+    public String getEmail()    { return email; }
+    public String getPhone()    { return phone; }
+    public String getRole()     { return role; }
+    public String getImageUrl() { return imageUrl; }
 
-    public void setUid(String v)   { uid = v; }
-    public void setName(String v)  { name = v; }
-    public void setEmail(String v) { email = v; }
-    public void setPhone(String v) { phone = v; }
-    public void setRole(String v)  { role = v; }
+    public void setUid(String v)      { uid = v; }
+    public void setName(String v)     { name = v; }
+    public void setEmail(String v)    { email = v; }
+    public void setPhone(String v)    { phone = v; }
+    public void setRole(String v)     { role = v; }
+    public void setImageUrl(String v) { imageUrl = v; }
 }

@@ -15,6 +15,7 @@ import com.sheempower.app.models.Product;
 import com.sheempower.app.utils.CloudinaryHelper;
 import com.sheempower.app.utils.Constants;
 import com.sheempower.app.utils.SessionManager;
+import com.sheempower.app.utils.VoiceGuide;
 
 public class AddProductActivity extends AppCompatActivity {
 
@@ -42,6 +43,9 @@ public class AddProductActivity extends AppCompatActivity {
 
         session = new SessionManager(this);
 
+        VoiceGuide.announceScreen(this,
+                "یہاں اپنی نئی چیز کا نام، تفصیل اور قیمت لکھیں۔ ہر سروس یا سائز کے لیے الگ چیز شامل کریں۔");
+
         etProductName = findViewById(R.id.etProductName);
         etDescription = findViewById(R.id.etDescription);
         etPrice       = findViewById(R.id.etPrice);
@@ -64,7 +68,6 @@ public class AddProductActivity extends AppCompatActivity {
         double price;
         try { price = Double.parseDouble(priceStr); } catch (Exception e) { etPrice.setError("غلط قیمت"); return; }
 
-        // Seller ki apni category le kar product mein bhi wahi category tag karte hain
         FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS).child(session.getUid())
                 .child("category").get().addOnSuccessListener(snapshot -> {
                     String category = snapshot.getValue(String.class);
@@ -77,10 +80,11 @@ public class AddProductActivity extends AppCompatActivity {
                     product.setCategory(category);
                     dbRef.child(Constants.NODE_PRODUCTS).child(productId).setValue(product)
                             .addOnSuccessListener(v -> {
-                                Toast.makeText(this, "چیز شامل ہو گئی!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, "چیز شامل ہو گئی! یہ قیمت خریدار تبدیل نہیں کر سکے گا۔", Toast.LENGTH_LONG).show();
                                 finish();
                             })
                             .addOnFailureListener(e -> Toast.makeText(this, "خرابی: " + e.getMessage(), Toast.LENGTH_LONG).show());
-                });
+                })
+                .addOnFailureListener(e -> Toast.makeText(this, "خرابی: " + e.getMessage(), Toast.LENGTH_LONG).show());
     }
 }

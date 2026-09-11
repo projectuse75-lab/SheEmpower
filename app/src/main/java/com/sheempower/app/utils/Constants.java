@@ -1,5 +1,6 @@
 package com.sheempower.app.utils;
 
+import com.sheempower.app.R;
 import java.util.Arrays;
 import java.util.List;
 
@@ -11,8 +12,8 @@ public class Constants {
     public static final String NODE_META     = "meta";
 
     // ⚠️ Cloudinary Dashboard → Settings → Upload → apna Cloud Name aur Unsigned Preset yahan dalein
-    public static final String CLOUDINARY_CLOUD_NAME    = "YOUR_CLOUD_NAME";
-    public static final String CLOUDINARY_UPLOAD_PRESET = "YOUR_PRESET_NAME";
+    public static final String CLOUDINARY_CLOUD_NAME    = "lstovyxq";
+    public static final String CLOUDINARY_UPLOAD_PRESET = "sheempower_preset";
     public static final String CLOUDINARY_URL =
             "https://api.cloudinary.com/v1_1/" + CLOUDINARY_CLOUD_NAME + "/auto/upload";
 
@@ -56,6 +57,15 @@ public class Constants {
             "https://images.unsplash.com/photo-1622398925373-3f91b1e275f5?w=300&q=60",
             "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=300&q=60",
             "https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=300&q=60"
+    };
+
+    // ✅ NAYA ARRAY — Local drawable images ke liye
+    public static final int[] CATEGORY_IMAGE_RES = {
+            R.drawable.cat_cooking,
+            R.drawable.cat_stitching,
+            R.drawable.cat_mehndi,
+            R.drawable.cat_makeup,
+            R.drawable.cat_embroidery
     };
 
     private static final List<String> TRAVEL_TYPE_CATEGORIES = Arrays.asList("Mehndi", "Makeup");

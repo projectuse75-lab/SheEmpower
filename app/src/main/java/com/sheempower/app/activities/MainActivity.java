@@ -102,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < Constants.CATEGORIES.length; i++) {
             String cat = Constants.CATEGORIES[i];
             String urduLabel = Constants.CATEGORY_LABELS_UR[i];
-            String imgUrl = Constants.CATEGORY_IMAGES[i];
 
             View card = LayoutInflater.from(this).inflate(R.layout.item_category, layoutCategories, false);
             de.hdodenhof.circleimageview.CircleImageView iv = card.findViewById(R.id.ivCategoryImage);
@@ -112,10 +111,8 @@ public class MainActivity extends AppCompatActivity {
             tvName.setText(urduLabel);
             tvNameEn.setText(cat);
 
-            Glide.with(this).load(imgUrl)
-                    .placeholder(R.drawable.placeholder_product)
-                    .error(R.drawable.placeholder_product)
-                    .into(iv);
+            // ✅ CHANGED: Local drawable use karo (no internet needed)
+            iv.setImageResource(Constants.CATEGORY_IMAGE_RES[i]);
 
             card.setOnClickListener(v -> {
                 Intent intent = new Intent(this, SellerListActivity.class);
@@ -166,7 +163,6 @@ public class MainActivity extends AppCompatActivity {
                             Seller s = child.getValue(Seller.class);
                             if (s == null || !Constants.isApproved(s.getVerificationStatus())) continue;
 
-                            // ✅ FIX: If UID is missing in manual JSON import, take it from the Firebase Key
                             if (s.getUid() == null || s.getUid().isEmpty()) s.setUid(child.getKey());
 
                             allSellers.add(s);
@@ -192,7 +188,6 @@ public class MainActivity extends AppCompatActivity {
                         for (DataSnapshot child : snapshot.getChildren()) {
                             Product p = child.getValue(Product.class);
                             if (p != null) {
-                                // ✅ FIX: If ID is missing in manual JSON import, take it from the Firebase Key
                                 if (p.getId() == null || p.getId().isEmpty()) p.setId(child.getKey());
 
                                 if (verifiedSellerIds.contains(p.getSellerId())) allProducts.add(p);

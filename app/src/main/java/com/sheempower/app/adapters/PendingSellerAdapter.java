@@ -16,13 +16,13 @@ public class PendingSellerAdapter extends RecyclerView.Adapter<PendingSellerAdap
     public interface OnAction { void onAction(Seller seller); }
 
     private final List<Seller> sellers;
-    private final OnAction onApprove;
-    private final OnAction onReject;
+    private final OnAction onApprove, onReject, onRowClick;
 
-    public PendingSellerAdapter(List<Seller> sellers, OnAction onApprove, OnAction onReject) {
+    public PendingSellerAdapter(List<Seller> sellers, OnAction onApprove, OnAction onReject, OnAction onRowClick) {
         this.sellers = sellers;
         this.onApprove = onApprove;
         this.onReject = onReject;
+        this.onRowClick = onRowClick;
     }
 
     @NonNull @Override
@@ -39,6 +39,7 @@ public class PendingSellerAdapter extends RecyclerView.Adapter<PendingSellerAdap
         holder.tvWhatsApp.setText("📱 " + s.getWhatsappNumber());
         holder.btnApprove.setOnClickListener(v -> onApprove.onAction(s));
         holder.btnReject.setOnClickListener(v -> onReject.onAction(s));
+        holder.itemView.setOnClickListener(v -> onRowClick.onAction(s));
     }
 
     @Override public int getItemCount() { return sellers.size(); }

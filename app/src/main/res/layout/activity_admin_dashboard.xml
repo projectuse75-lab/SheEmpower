@@ -19,11 +19,15 @@
                     <TextView android:id="@+id/tvTotalSellers" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="22sp" android:textStyle="bold" android:textColor="#FF4081" />
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="بیچنے والیاں" android:textSize="11sp" />
                 </LinearLayout>
-                <LinearLayout android:layout_width="0dp" android:layout_columnWeight="1" android:layout_height="wrap_content"
-                    android:orientation="vertical" android:background="@drawable/bg_rounded_pink_light" android:padding="12dp" android:layout_margin="4dp" android:gravity="center">
+
+                <!-- ✅ Products stat card — clickable banaya -->
+                <LinearLayout android:id="@+id/layoutProductsStat" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:background="@drawable/bg_rounded_pink_light" android:padding="12dp" android:layout_margin="4dp" android:gravity="center"
+                    android:clickable="true" android:focusable="true">
                     <TextView android:id="@+id/tvTotalProducts" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="22sp" android:textStyle="bold" android:textColor="#4CAF50" />
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="اشیاء" android:textSize="11sp" />
                 </LinearLayout>
+
                 <LinearLayout android:layout_width="0dp" android:layout_columnWeight="1" android:layout_height="wrap_content"
                     android:orientation="vertical" android:background="@drawable/bg_rounded_pink_light" android:padding="12dp" android:layout_margin="4dp" android:gravity="center">
                     <TextView android:id="@+id/tvTotalBuyers" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="22sp" android:textStyle="bold" android:textColor="#FFA000" />
