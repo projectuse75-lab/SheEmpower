@@ -33,7 +33,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_dashboard);
 
-        VoiceGuide.announceScreen(this, "یہ ایڈمن ڈیش بورڈ ہے۔ نئی بیچنے والیاں منظور کریں اور تمام ڈیٹا کا جائزہ لیں۔");
+        VoiceGuide.announceScreen(this,
+                "یہ ایڈمن ڈیش بورڈ ہے۔ اوپر آپ کو اعداد و شمار نظر آئیں گے۔ منظوری کے منتظر بیچنے والیوں کو منظور یا مسترد کریں۔ نیچے تمام بیچنے والیوں کی فہرست میں کسی کو بند یا فعال بھی کر سکتی ہیں۔ کسی بھی نام پر کلک کر کے پوری پروفائل دیکھیں۔");
 
         tvTotalSellers  = findViewById(R.id.tvTotalSellers);
         tvTotalProducts = findViewById(R.id.tvTotalProducts);
@@ -43,7 +44,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
         rvAllSellers    = findViewById(R.id.rvAllSellers);
         tvEmptyPending  = findViewById(R.id.tvEmptyPending);
 
-        // Products stat card click → poori list dikhati hai
         findViewById(R.id.layoutProductsStat).setOnClickListener(v ->
                 startActivity(new Intent(this, AdminProductsActivity.class)));
 
@@ -51,7 +51,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
         pendingAdapter = new PendingSellerAdapter(pendingList,
                 seller -> updateStatus(seller, "verified"),
                 seller -> updateStatus(seller, "rejected"),
-                this::openSellerProfile // row click → profile
+                this::openSellerProfile
         );
         rvPending.setAdapter(pendingAdapter);
 
@@ -104,7 +104,11 @@ public class AdminDashboardActivity extends AppCompatActivity {
                         pendingList.clear();
                         for (DataSnapshot child : snapshot.getChildren()) {
                             Seller s = child.getValue(Seller.class);
-                            if (s != null) pendingList.add(s);
+                            if (s != null) {
+                                // ✅ FIX: UID fallback
+                                if (s.getUid() == null || s.getUid().isEmpty()) s.setUid(child.getKey());
+                                pendingList.add(s);
+                            }
                         }
                         pendingAdapter.notifyDataSetChanged();
                         tvPendingCount.setText(pendingList.size() + " منظوری کے منتظر");
@@ -124,7 +128,11 @@ public class AdminDashboardActivity extends AppCompatActivity {
                         allSellerList.clear();
                         for (DataSnapshot child : snapshot.getChildren()) {
                             Seller s = child.getValue(Seller.class);
-                            if (s != null) allSellerList.add(s);
+                            if (s != null) {
+                                // ✅ FIX: UID fallback
+                                if (s.getUid() == null || s.getUid().isEmpty()) s.setUid(child.getKey());
+                                allSellerList.add(s);
+                            }
                         }
                         allSellerAdapter.notifyDataSetChanged();
                     }

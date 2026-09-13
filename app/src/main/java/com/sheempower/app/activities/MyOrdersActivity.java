@@ -15,6 +15,7 @@ import com.sheempower.app.models.Order;
 import com.sheempower.app.utils.BottomNavHelper;
 import com.sheempower.app.utils.Constants;
 import com.sheempower.app.utils.SessionManager;
+import com.sheempower.app.utils.VoiceGuide;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +35,9 @@ public class MyOrdersActivity extends AppCompatActivity {
         session  = new SessionManager(this);
         rvOrders = findViewById(R.id.rvOrders);
         tvEmpty  = findViewById(R.id.tvEmpty);
+
+        VoiceGuide.announceScreen(this,
+                "یہ آپ کے تمام آرڈرز کی فہرست ہے۔ ہر آرڈر کے ساتھ اس کی موجودہ حالت لکھی ہے، جیسے کام شروع نہیں ہوا، کام جاری ہے، یا مکمل ہو گیا۔");
 
         rvOrders.setLayoutManager(new LinearLayoutManager(this));
         adapter = new OrderAdapter(orderList, false);

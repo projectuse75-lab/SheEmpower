@@ -44,7 +44,7 @@ public class AddProductActivity extends AppCompatActivity {
         session = new SessionManager(this);
 
         VoiceGuide.announceScreen(this,
-                "یہاں اپنی نئی چیز کا نام، تفصیل اور قیمت لکھیں۔ ہر سروس یا سائز کے لیے الگ چیز شامل کریں۔");
+                "یہاں اپنی نئی چیز شامل کریں۔ پہلے چیز کا نام لکھیں، پھر تفصیل، پھر اس کی حتمی قیمت لکھیں — یہ قیمت خریدار تبدیل نہیں کر سکے گا۔ اگر ایک سے زیادہ اقسام ہیں، جیسے مختلف سائز یا مختلف خدمات، تو ہر ایک کے لیے الگ چیز شامل کریں۔");
 
         etProductName = findViewById(R.id.etProductName);
         etDescription = findViewById(R.id.etDescription);
@@ -81,6 +81,7 @@ public class AddProductActivity extends AppCompatActivity {
                     dbRef.child(Constants.NODE_PRODUCTS).child(productId).setValue(product)
                             .addOnSuccessListener(v -> {
                                 Toast.makeText(this, "چیز شامل ہو گئی! یہ قیمت خریدار تبدیل نہیں کر سکے گا۔", Toast.LENGTH_LONG).show();
+                                VoiceGuide.explain(this, "نئی چیز کامیابی سے شامل ہو گئی ہے");
                                 finish();
                             })
                             .addOnFailureListener(e -> Toast.makeText(this, "خرابی: " + e.getMessage(), Toast.LENGTH_LONG).show());

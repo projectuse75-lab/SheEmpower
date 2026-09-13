@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private final Set<String> verifiedSellerIds = new HashSet<>();
 
     private SessionManager session;
+    private boolean voiceAnnounced = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,9 +72,6 @@ public class MainActivity extends AppCompatActivity {
 
         loadSellersThenProducts();
         BottomNavHelper.setupForBuyerOrVisitor(this, findViewById(R.id.bottomNav), 1);
-
-        findViewById(R.id.btnSpeaker).setOnClickListener(v ->
-                VoiceGuide.announceScreen(this, "خوش آمدید! یہاں آپ مختلف کیٹیگریز اور بہترین بیچنے والیوں کی اشیاء دیکھ سکتے ہیں۔"));
     }
 
     @Override
@@ -81,6 +79,13 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         setupTopButtons();
         loadSellersThenProducts();
+        if (!voiceAnnounced) {
+            voiceAnnounced = true;
+            VoiceGuide.announceScreen(this,
+                    session.isLoggedIn()
+                            ? "شی ایمپاور میں خوش آمدید۔ یہاں سے کسی زمرے کو منتخب کر کے بیچنے والیاں اور اشیاء دیکھیں، اور آرڈر دیں۔"
+                            : "شی ایمپاور میں خوش آمدید۔ خریداری کے لیے لاگ ان کریں، یا اپنا کام شروع کرنے کے لیے رجسٹر کریں۔");
+        }
     }
 
     private void setupTopButtons() {
@@ -111,7 +116,6 @@ public class MainActivity extends AppCompatActivity {
             tvName.setText(urduLabel);
             tvNameEn.setText(cat);
 
-            // ✅ CHANGED: Local drawable use karo (no internet needed)
             iv.setImageResource(Constants.CATEGORY_IMAGE_RES[i]);
 
             card.setOnClickListener(v -> {
@@ -152,8 +156,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /** Pehle sellers load karo (isApproved wale hi), phir unhi ke IDs ki products —
-     *  is se agar admin kisi seller ko block kare to uske products bhi khud gayab ho jayenge */
     private void loadSellersThenProducts() {
         FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -163,10 +165,12 @@ public class MainActivity extends AppCompatActivity {
                             Seller s = child.getValue(Seller.class);
                             if (s == null || !Constants.isApproved(s.getVerificationStatus())) continue;
 
-                            if (s.getUid() == null || s.getUid().isEmpty()) s.setUid(child.getKey());
+                            String uid = child.getKey();
+                            if (uid == null) continue;
+                            s.setUid(uid.trim());
 
                             allSellers.add(s);
-                            verifiedSellerIds.add(s.getUid());
+                            verifiedSellerIds.add(uid.trim());
                             if (s.isTopRated()) topSellers.add(s);
                         }
                         Collections.sort(topSellers, (a, b) -> Double.compare(b.getRating(), a.getRating()));
@@ -188,9 +192,14 @@ public class MainActivity extends AppCompatActivity {
                         for (DataSnapshot child : snapshot.getChildren()) {
                             Product p = child.getValue(Product.class);
                             if (p != null) {
-                                if (p.getId() == null || p.getId().isEmpty()) p.setId(child.getKey());
+                                String pid = child.getKey();
+                                if (pid != null) p.setId(pid.trim());
 
-                                if (verifiedSellerIds.contains(p.getSellerId())) allProducts.add(p);
+                                String sId = p.getSellerId() != null ? p.getSellerId().trim() : "";
+                                if (verifiedSellerIds.contains(sId)) {
+                                    p.setSellerId(sId);
+                                    allProducts.add(p);
+                                }
                             }
                         }
                         productAdapter.notifyDataSetChanged();

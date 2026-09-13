@@ -42,10 +42,15 @@ public class Constants {
         }
     }
 
-    /** YEH ZAROORI FIX HAI — aapki JSON mein "approved" likha hai, code "verified"
-     *  check karta tha. Ab dono qabool hote hain, isliye Firebase data waisa hi rahega jaisa aapne daala */
+    /**
+     * ✅ ROBUST CHECK: Manual JSON import ke liye asani.
+     * Agar status "verified", "approved" ya KHALI (null) hai toh approved tasawwur hoga.
+     */
     public static boolean isApproved(String verificationStatus) {
-        return "verified".equalsIgnoreCase(verificationStatus) || "approved".equalsIgnoreCase(verificationStatus);
+        if (verificationStatus == null || verificationStatus.isEmpty()) return true;
+        return "verified".equalsIgnoreCase(verificationStatus) ||
+                "approved".equalsIgnoreCase(verificationStatus) ||
+                "active".equalsIgnoreCase(verificationStatus);
     }
 
     public static final String[] CATEGORIES = {"Cooking", "Stitching", "Mehndi", "Makeup", "Embroidery"};

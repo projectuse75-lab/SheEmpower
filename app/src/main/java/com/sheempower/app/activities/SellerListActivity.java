@@ -15,6 +15,7 @@ import com.sheempower.app.models.Product;
 import com.sheempower.app.models.Seller;
 import com.sheempower.app.utils.Constants;
 import com.sheempower.app.utils.SessionManager;
+import com.sheempower.app.utils.VoiceGuide;
 import com.sheempower.app.utils.WhatsAppHelper;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +48,9 @@ public class SellerListActivity extends AppCompatActivity {
         rvProducts      = findViewById(R.id.rvProducts);
 
         tvCategoryTitle.setText(Constants.getUrduLabel(category) + " (" + category + ")");
+
+        VoiceGuide.announceScreen(this,
+                Constants.getUrduLabel(category) + " کی بیچنے والیاں اور اشیاء کی فہرست ہے۔ کسی بیچنے والی کی تصویر پر کلک کر کے اس کی پوری پروفائل دیکھیں، یا کسی چیز پر کلک کر کے اس کی تفصیل دیکھیں۔");
 
         rvSellers.setLayoutManager(new GridLayoutManager(this, 2));
         sellerAdapter = new SellerAdapter(sellerList, seller -> {
@@ -90,7 +94,7 @@ public class SellerListActivity extends AppCompatActivity {
                         for (DataSnapshot child : snapshot.getChildren()) {
                             Seller s = child.getValue(Seller.class);
                             if (s != null && Constants.isApproved(s.getVerificationStatus())) {
-                                // ✅ FIX: UID from Key if missing
+                                // ✅ FIX: UID fallback
                                 if (s.getUid() == null || s.getUid().isEmpty()) s.setUid(child.getKey());
                                 sellerList.add(s);
                                 sellerIds.add(s.getUid());
@@ -114,8 +118,9 @@ public class SellerListActivity extends AppCompatActivity {
                         for (DataSnapshot child : snapshot.getChildren()) {
                             Product p = child.getValue(Product.class);
                             if (p != null) {
-                                // ✅ FIX: ID from Key if missing
+                                // ✅ FIX: ID fallback
                                 if (p.getId() == null || p.getId().isEmpty()) p.setId(child.getKey());
+
                                 if (sellerIds.contains(p.getSellerId())) productList.add(p);
                             }
                         }

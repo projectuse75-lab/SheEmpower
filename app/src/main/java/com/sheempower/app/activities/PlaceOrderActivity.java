@@ -3,6 +3,7 @@ package com.sheempower.app.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.textfield.TextInputEditText;
@@ -10,9 +11,12 @@ import com.google.firebase.database.*;
 import com.sheempower.app.R;
 import com.sheempower.app.models.Order;
 import com.sheempower.app.models.OrderField;
+import com.sheempower.app.models.Product;
 import com.sheempower.app.models.Seller;
 import com.sheempower.app.utils.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,8 +27,9 @@ public class PlaceOrderActivity extends AppCompatActivity {
     public static final String EXTRA_PRODUCT_NAME  = "productName";
     public static final String EXTRA_PRODUCT_PRICE = "productPrice";
 
-    private TextView tvSellerName, tvSellerMeta, tvSellerVerified, tvSelectedItem, tvDeliveryInfo, tvCategoryHeader;
-    private LinearLayout layoutDynamicFields, layoutBuyerAddress;
+    private TextView tvSellerName, tvSellerMeta, tvSellerVerified, tvSelectedItem, tvDeliveryInfo,
+            tvCategoryHeader, tvAmountLockedNote, tvChecklistHeader, tvChecklistEmpty;
+    private LinearLayout layoutDynamicFields, layoutBuyerAddress, layoutProductChecklist;
     private TextInputEditText etAmount, etAddress, etNotes;
     private Button btnSubmitOrder;
 
@@ -34,8 +39,15 @@ public class PlaceOrderActivity extends AppCompatActivity {
     private SessionManager session;
     private String resolvedDeliveryMethod = Constants.DELIVERY_METHOD_PICKUP;
 
+    /** Agar buyer seedha ek product select karke aaya ho (single, fixed price) */
+    private boolean singleProductMode;
+
     private final Map<String, EditText> dynamicTextInputs = new HashMap<>();
     private final Map<String, Spinner> dynamicSpinners = new HashMap<>();
+    private final Map<String, List<CheckBox>> dynamicCheckboxGroups = new HashMap<>();
+
+    /** Seller Profile se order karte waqt — seller ki saari products checklist yahan track hoti hai */
+    private final Map<CheckBox, Product> checklistMap = new LinkedHashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +60,7 @@ public class PlaceOrderActivity extends AppCompatActivity {
         productId    = getIntent().getStringExtra(EXTRA_PRODUCT_ID);
         productName  = getIntent().getStringExtra(EXTRA_PRODUCT_NAME);
         productPrice = getIntent().getDoubleExtra(EXTRA_PRODUCT_PRICE, 0);
+        singleProductMode = (productId != null);
 
         tvSellerName        = findViewById(R.id.tvSellerName);
         tvSellerMeta        = findViewById(R.id.tvSellerMeta);
@@ -55,8 +68,12 @@ public class PlaceOrderActivity extends AppCompatActivity {
         tvSelectedItem      = findViewById(R.id.tvSelectedItem);
         tvDeliveryInfo      = findViewById(R.id.tvDeliveryInfo);
         tvCategoryHeader    = findViewById(R.id.tvCategoryHeader);
+        tvAmountLockedNote  = findViewById(R.id.tvAmountLockedNote);
+        tvChecklistHeader   = findViewById(R.id.tvChecklistHeader);
+        tvChecklistEmpty    = findViewById(R.id.tvChecklistEmpty);
         layoutDynamicFields = findViewById(R.id.layoutDynamicFields);
         layoutBuyerAddress  = findViewById(R.id.layoutBuyerAddress);
+        layoutProductChecklist = findViewById(R.id.layoutProductChecklist);
         etAmount            = findViewById(R.id.etAmount);
         etAddress           = findViewById(R.id.etAddress);
         etNotes             = findViewById(R.id.etNotes);
@@ -70,11 +87,28 @@ public class PlaceOrderActivity extends AppCompatActivity {
         }
         if (sellerId == null) { Toast.makeText(this, "بیچنے والی نہیں ملی", Toast.LENGTH_LONG).show(); finish(); return; }
 
-        if (productName != null) {
+        // ہمیشہ قیمت کا خانہ بند رکھتے ہیں — خریدار کبھی خود قیمت تبدیل نہیں کر سکے گا
+        etAmount.setEnabled(false);
+        etAmount.setFocusable(false);
+        tvAmountLockedNote.setVisibility(android.view.View.VISIBLE);
+
+        if (singleProductMode) {
+            VoiceGuide.announceScreen(this,
+                    "یہ آرڈر کی سکرین ہے۔ آپ نے ایک مخصوص چیز منتخب کی ہے، اس کی قیمت بیچنے والی نے پہلے سے مقرر کی ہے اور اسے تبدیل نہیں کیا جا سکتا۔ نیچے تفصیلات بھر کر آرڈر جمع کریں۔");
             tvSelectedItem.setText("منتخب کردہ چیز:\n" + productName);
             etAmount.setText(String.valueOf((long) productPrice));
+            tvAmountLockedNote.setText("🔒 یہ قیمت بیچنے والی نے مقرر کی ہے");
             tvSelectedItem.setVisibility(android.view.View.VISIBLE);
-        } else tvSelectedItem.setVisibility(android.view.View.GONE);
+            layoutProductChecklist.setVisibility(android.view.View.GONE);
+            tvChecklistHeader.setVisibility(android.view.View.GONE);
+        } else {
+            VoiceGuide.announceScreen(this,
+                    "یہ آرڈر کی سکرین ہے۔ نیچے دی گئی فہرست میں سے وہ چیزیں منتخب کریں جو آپ منگوانا چاہتی ہیں، ہر چیز کے آگے اس کی قیمت لکھی ہے۔ منتخب کردہ چیزوں کی کل قیمت خود بخود جمع ہو جائے گی۔");
+            tvSelectedItem.setVisibility(android.view.View.GONE);
+            tvChecklistHeader.setVisibility(android.view.View.VISIBLE);
+            etAmount.setText("0");
+            tvAmountLockedNote.setText("🔒 یہ رقم آپ کی منتخب کردہ چیزوں کے مطابق خود بخود بنتی ہے");
+        }
 
         loadSellerAndBuildForm();
         btnSubmitOrder.setOnClickListener(v -> submitOrder());
@@ -94,12 +128,12 @@ public class PlaceOrderActivity extends AppCompatActivity {
                         tvSellerMeta.setText(currentSeller.getCategory() + " · ⭐ " + currentSeller.getRating());
                         tvSellerVerified.setText("✓ تصدیق شدہ");
 
-                        // ISI LINE SE category-specific form guaranteed banta hai —
-                        // yeh hamesha seller ki apni asal category se aata hai, kabhi generic nahi
                         String category = currentSeller.getCategory();
-                        tvCategoryHeader.setText("📋 " + Constants.getUrduLabel(category) + " کی تفصیلات / " + category + " Order Details");
+                        tvCategoryHeader.setText("📋 " + Constants.getUrduLabel(category) + " کی تفصیلات");
                         buildDynamicForm(category);
                         buildDeliveryBlock(currentSeller);
+
+                        if (!singleProductMode) buildProductChecklist(sellerId);
                     }
                     @Override public void onCancelled(DatabaseError error) {
                         Toast.makeText(PlaceOrderActivity.this, "خرابی: " + error.getMessage(), Toast.LENGTH_LONG).show();
@@ -107,13 +141,72 @@ public class PlaceOrderActivity extends AppCompatActivity {
                 });
     }
 
+    /** YEH ASAL FEATURE HAI — seller ki saari products, har ek ki apni fixed price ke sath.
+     *  Buyer jo bhi tick karta hai, uski total qeemat khud-ba-khud jud kar etAmount mein aa jati hai */
+    private void buildProductChecklist(String sellerId) {
+        FirebaseDatabase.getInstance().getReference().child(Constants.NODE_PRODUCTS)
+                .orderByChild("sellerId").equalTo(sellerId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override public void onDataChange(DataSnapshot snapshot) {
+                        layoutProductChecklist.removeAllViews();
+                        checklistMap.clear();
+
+                        List<Product> products = new ArrayList<>();
+                        for (DataSnapshot child : snapshot.getChildren()) {
+                            Product p = child.getValue(Product.class);
+                            if (p != null) products.add(p);
+                        }
+
+                        if (products.isEmpty()) {
+                            tvChecklistEmpty.setVisibility(android.view.View.VISIBLE);
+                            return;
+                        }
+                        tvChecklistEmpty.setVisibility(android.view.View.GONE);
+
+                        for (Product p : products) {
+                            LinearLayout row = new LinearLayout(PlaceOrderActivity.this);
+                            row.setOrientation(LinearLayout.HORIZONTAL);
+                            row.setGravity(Gravity.CENTER_VERTICAL);
+                            row.setPadding(0, 12, 0, 12);
+
+                            CheckBox cb = new CheckBox(PlaceOrderActivity.this);
+                            cb.setText(p.getName());
+                            cb.setTextSize(14);
+                            LinearLayout.LayoutParams cbParams = new LinearLayout.LayoutParams(
+                                    0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+                            cb.setLayoutParams(cbParams);
+
+                            TextView tvPrice = new TextView(PlaceOrderActivity.this);
+                            tvPrice.setText("PKR " + (long) p.getPrice());
+                            tvPrice.setTextColor(0xFFFF4081);
+                            tvPrice.setTypeface(null, android.graphics.Typeface.BOLD);
+
+                            cb.setOnCheckedChangeListener((buttonView, isChecked) -> recalcTotal());
+
+                            row.addView(cb);
+                            row.addView(tvPrice);
+                            layoutProductChecklist.addView(row);
+
+                            checklistMap.put(cb, p);
+                        }
+                    }
+                    @Override public void onCancelled(DatabaseError error) {}
+                });
+    }
+
+    private void recalcTotal() {
+        double total = 0;
+        for (Map.Entry<CheckBox, Product> entry : checklistMap.entrySet()) {
+            if (entry.getKey().isChecked()) total += entry.getValue().getPrice();
+        }
+        etAmount.setText(String.valueOf((long) total));
+    }
+
     private void buildDeliveryBlock(Seller seller) {
         boolean travelType = Constants.isTravelType(seller.getCategory());
         if (seller.isCanDeliver()) {
             resolvedDeliveryMethod = Constants.DELIVERY_METHOD_DELIVERY;
-            tvDeliveryInfo.setText(travelType
-                    ? "✅ یہ بیچنے والی خود آپ کے پاس آ سکتی ہیں"
-                    : "✅ یہ بیچنے والی گھر ڈیلیوری کر سکتی ہیں");
+            tvDeliveryInfo.setText(travelType ? "✅ یہ بیچنے والی خود آپ کے پاس آ سکتی ہیں" : "✅ یہ بیچنے والی گھر ڈیلیوری کر سکتی ہیں");
             tvDeliveryInfo.setTextColor(0xFF4CAF50);
             layoutBuyerAddress.setVisibility(android.view.View.VISIBLE);
         } else {
@@ -131,6 +224,7 @@ public class PlaceOrderActivity extends AppCompatActivity {
         layoutDynamicFields.removeAllViews();
         dynamicTextInputs.clear();
         dynamicSpinners.clear();
+        dynamicCheckboxGroups.clear();
         List<OrderField> fields = CategoryFormConfig.getFieldsForCategory(category);
 
         for (OrderField field : fields) {
@@ -148,6 +242,21 @@ public class PlaceOrderActivity extends AppCompatActivity {
                 spinner.setAdapter(adapter);
                 layoutDynamicFields.addView(spinner);
                 dynamicSpinners.put(field.labelEnglish, spinner);
+
+            } else if ("multi".equals(field.type)) {
+                List<CheckBox> group = new ArrayList<>();
+                LinearLayout checkboxContainer = new LinearLayout(this);
+                checkboxContainer.setOrientation(LinearLayout.VERTICAL);
+                for (String option : field.options) {
+                    CheckBox cb = new CheckBox(this);
+                    cb.setText(option);
+                    cb.setTextSize(14);
+                    checkboxContainer.addView(cb);
+                    group.add(cb);
+                }
+                layoutDynamicFields.addView(checkboxContainer);
+                dynamicCheckboxGroups.put(field.labelEnglish, group);
+
             } else {
                 EditText input = new EditText(this);
                 input.setHint(field.hintUrdu);
@@ -168,14 +277,32 @@ public class PlaceOrderActivity extends AppCompatActivity {
         String address = needsBuyerAddress ? etAddress.getText().toString().trim()
                 : (currentSeller.getShopAddress() != null ? currentSeller.getShopAddress() : currentSeller.getCity());
 
-        if (TextUtils.isEmpty(amountStr)) { etAmount.setError("ضروری ہے"); return; }
+        // Checklist mode mein kam az kam ek cheez tick honi chahiye
+        String finalProductName = productName;
+        if (!singleProductMode) {
+            List<String> chosenNames = new ArrayList<>();
+            for (Map.Entry<CheckBox, Product> entry : checklistMap.entrySet()) {
+                if (entry.getKey().isChecked()) chosenNames.add(entry.getValue().getName() + " (PKR " + (long) entry.getValue().getPrice() + ")");
+            }
+            if (chosenNames.isEmpty()) {
+                Toast.makeText(this, "کم از کم ایک چیز منتخب کریں", Toast.LENGTH_LONG).show();
+                return;
+            }
+            finalProductName = String.join(" + ", chosenNames);
+        }
+
         if (needsBuyerAddress && TextUtils.isEmpty(address)) { etAddress.setError("ضروری ہے"); return; }
 
         double amount;
-        try { amount = Double.parseDouble(amountStr); } catch (Exception e) { etAmount.setError("غلط رقم"); return; }
+        try { amount = Double.parseDouble(amountStr); } catch (Exception e) { amount = 0; }
+        if (amount <= 0) {
+            Toast.makeText(this, "رقم صفر نہیں ہو سکتی", Toast.LENGTH_LONG).show();
+            return;
+        }
         final double finalAmount = amount;
         final String finalAddress = address;
         final String finalDeliveryMethod = resolvedDeliveryMethod;
+        final String finalProductNameCopy = finalProductName;
 
         StringBuilder detailsBuilder = new StringBuilder();
         for (Map.Entry<String, EditText> entry : dynamicTextInputs.entrySet()) {
@@ -186,22 +313,26 @@ public class PlaceOrderActivity extends AppCompatActivity {
             Object selected = entry.getValue().getSelectedItem();
             if (selected != null) detailsBuilder.append(entry.getKey()).append(": ").append(selected).append("\n");
         }
+        for (Map.Entry<String, List<CheckBox>> entry : dynamicCheckboxGroups.entrySet()) {
+            List<String> chosen = new ArrayList<>();
+            for (CheckBox cb : entry.getValue()) if (cb.isChecked()) chosen.add(cb.getText().toString());
+            if (!chosen.isEmpty()) detailsBuilder.append(entry.getKey()).append(": ").append(String.join(", ", chosen)).append("\n");
+        }
         if (!notes.isEmpty()) detailsBuilder.append("Notes: ").append(notes);
         String detailsTemp = detailsBuilder.toString().trim();
-        if (detailsTemp.isEmpty()) detailsTemp = productName != null ? productName : "Order";
+        if (detailsTemp.isEmpty()) detailsTemp = finalProductNameCopy;
         final String details = detailsTemp;
 
         btnSubmitOrder.setEnabled(false);
 
-        // Buyer ka naam nikal ke order ke saath save karte hain (denormalized — extra reads bachte hain)
         FirebaseDatabase.getInstance().getReference().child(Constants.NODE_USERS).child(session.getUid())
                 .get().addOnSuccessListener(userSnap -> {
                     String buyerName = userSnap.child("name").getValue(String.class);
-                    saveOrder(finalAmount, finalAddress, finalDeliveryMethod, details, notes, buyerName);
-                }).addOnFailureListener(e -> saveOrder(finalAmount, finalAddress, finalDeliveryMethod, details, notes, session.getName()));
+                    saveOrder(finalAmount, finalAddress, finalDeliveryMethod, details, notes, buyerName, finalProductNameCopy);
+                }).addOnFailureListener(e -> saveOrder(finalAmount, finalAddress, finalDeliveryMethod, details, notes, session.getName(), finalProductNameCopy));
     }
 
-    private void saveOrder(double amount, String address, String deliveryMethod, String details, String notes, String buyerName) {
+    private void saveOrder(double amount, String address, String deliveryMethod, String details, String notes, String buyerName, String finalProductName) {
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
         String orderId = dbRef.child(Constants.NODE_ORDERS).push().getKey();
         if (orderId == null) return;
@@ -212,8 +343,8 @@ public class PlaceOrderActivity extends AppCompatActivity {
         order.setBuyerName(buyerName != null ? buyerName : "خریدار");
         order.setSellerId(sellerId);
         order.setSellerName(currentSeller.getBusinessName());
-        order.setProductId(productId);
-        order.setProductName(productName != null ? productName : details);
+        order.setProductId(productId != null ? productId : "multiple");
+        order.setProductName(finalProductName);
         order.setDetails(details);
         order.setAddress(address);
         order.setNotes(notes);
@@ -226,6 +357,7 @@ public class PlaceOrderActivity extends AppCompatActivity {
                 .addOnSuccessListener(v -> {
                     DemoDataSeeder.clearDemoDataOnFirstRealUse(this);
                     Toast.makeText(this, "آرڈر جمع ہو گیا! ✅", Toast.LENGTH_LONG).show();
+                    VoiceGuide.explain(this, "آپ کا آرڈر کامیابی سے جمع ہو گیا ہے۔ بیچنے والی سے واٹس ایپ پر رابطہ ہو رہا ہے۔");
                     String msg = "السلام علیکم! میں نے شی ایمپاور ایپ سے آرڈر دیا ہے:\n"
                             + order.getProductName() + " — PKR " + (long) amount + "\n" + details;
                     WhatsAppHelper.openChat(this, currentSeller.getWhatsappNumber(), msg);

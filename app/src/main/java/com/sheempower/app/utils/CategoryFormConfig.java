@@ -57,6 +57,10 @@ public class CategoryFormConfig {
         makeup.add(new OrderField("کتنے لوگوں کا میک اپ چاہیے؟", "Number of People", "مثال: دلہن اور 3 مہمان", "number"));
         makeup.add(new OrderField("میک اپ کا انداز", "Makeup Style", "spinner",
                 new String[]{"ہلکا / نیچرل میک اپ", "بھاری / HD میک اپ", "پارٹی میک اپ"}));
+        // ✅ YEH LINE ADD KI
+        makeup.add(new OrderField("اضافی خدمات (اختیاری)", "Additional Services", "multi",
+                new String[]{"ویکسنگ / Waxing", "تھریڈنگ / Threading", "آئی برو / Eyebrow Plucking",
+                        "فیشل / Facial", "نیل آرٹ / Nail Art", "ہیئر اسٹائل / Hair Styling"}));
         makeup.add(new OrderField("کس دن چاہیے؟", "Which Day", "مثال: 22 اگست", "text"));
         makeup.add(new OrderField("کس وقت چاہیے؟", "Time Needed", "مثال: صبح 9 بجے", "text"));
         FORMS.put("Makeup", makeup);

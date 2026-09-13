@@ -31,14 +31,14 @@ public class LoginActivity extends AppCompatActivity {
         mAuth   = FirebaseAuth.getInstance();
         session = new SessionManager(this);
 
+        VoiceGuide.announceScreen(this,
+                "یہ لاگ ان سکرین ہے۔ سب سے پہلے خانے میں اپنا ای میل لکھیں، پھر نیچے والے خانے میں اپنا پاس ورڈ لکھیں، اور آخر میں لاگ ان کے بٹن پر کلک کریں۔ اگر آپ کا اکاؤنٹ نہیں ہے تو نیچے دیے گئے آپشن سے نیا اکاؤنٹ بنائیں۔");
+
         etEmail    = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         btnLogin   = findViewById(R.id.btnLogin);
         tvGoBuyerRegister  = findViewById(R.id.tvGoBuyerRegister);
         tvGoSellerRegister = findViewById(R.id.tvGoSellerRegister);
-
-        findViewById(R.id.btnSpeaker).setOnClickListener(v ->
-                VoiceGuide.announceScreen(this, "لاگ ان سکرین: یہاں اپنا ای میل اور پاس ورڈ لکھ کر لاگ ان کریں۔"));
 
         btnLogin.setOnClickListener(v -> attemptLogin());
         tvGoBuyerRegister.setOnClickListener(v -> startActivity(new Intent(this, BuyerRegisterActivity.class)));
@@ -49,7 +49,11 @@ public class LoginActivity extends AppCompatActivity {
         String email = etEmail.getText().toString().trim();
         String pass  = etPassword.getText().toString().trim();
 
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) { etEmail.setError("درست ای میل"); return; }
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            etEmail.setError("درست ای میل لکھیں");
+            VoiceGuide.explain(this, "براہ کرم درست ای میل درج کریں");
+            return;
+        }
         if (TextUtils.isEmpty(pass)) { etPassword.setError("ضروری ہے"); return; }
 
         if (email.equalsIgnoreCase(Constants.ADMIN_EMAIL.trim()) && pass.equals(Constants.ADMIN_PASSWORD)) {
@@ -67,10 +71,11 @@ public class LoginActivity extends AppCompatActivity {
                                     User user = snapshot.getValue(User.class);
                                     btnLogin.setEnabled(true);
                                     if (user == null) {
-                                        Toast.makeText(LoginActivity.this, "صارف کا ریکارڈ نہیں ملا (UID mismatch)\nUID: " + uid, Toast.LENGTH_LONG).show();
+                                        Toast.makeText(LoginActivity.this, "صارف کا ریکارڈ نہیں ملا", Toast.LENGTH_SHORT).show();
                                         return;
                                     }
                                     session.saveUser(uid, user.getRole(), user.getName());
+                                    VoiceGuide.explain(LoginActivity.this, "خوش آمدید " + user.getName());
                                     Intent intent = Constants.ROLE_SELLER.equals(user.getRole())
                                             ? new Intent(LoginActivity.this, SellerDashboardActivity.class)
                                             : new Intent(LoginActivity.this, MainActivity.class);
@@ -86,6 +91,7 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> {
                     btnLogin.setEnabled(true);
                     Toast.makeText(this, "لاگ ان ناکام: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    VoiceGuide.explain(this, "لاگ ان ناکام ہو گیا، دوبارہ کوشش کریں");
                 });
     }
 

@@ -38,7 +38,8 @@ public class ProfileActivity extends AppCompatActivity {
 
         session = new SessionManager(this);
 
-        VoiceGuide.announceScreen(this, "یہ آپ کی پروفائل ہے۔ تصویر بدلنے کے لیے کیمرہ آئیکن دبائیں۔");
+        VoiceGuide.announceScreen(this,
+                "یہ آپ کی پروفائل ہے۔ تصویر بدلنے کے لیے کیمرے کے آئیکن پر کلک کریں۔ نیچے اپنا نام اور فون نمبر بدل کر محفوظ کریں کا بٹن دبائیں۔ میرے آرڈرز پر کلک کر کے اپنے آرڈرز کی حالت دیکھیں۔");
 
         ivProfilePic = findViewById(R.id.ivProfilePic);
         btnChangePic = findViewById(R.id.btnChangePic);

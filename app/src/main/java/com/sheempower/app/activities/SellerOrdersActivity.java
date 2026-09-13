@@ -33,6 +33,9 @@ public class SellerOrdersActivity extends AppCompatActivity {
         rvOrders = findViewById(R.id.rvOrders);
         tvEmpty  = findViewById(R.id.tvEmpty);
 
+        VoiceGuide.announceScreen(this,
+                "یہاں آپ کو ملنے والے آرڈرز کی فہرست ہے۔ ہر آرڈر پر نیچے بٹن دبا کر اس کی حالت آگے بڑھائیں — پہلے کام شروع کریں دبائیں، پھر جب کام مکمل ہو جائے تو مکمل کا بٹن دبائیں۔");
+
         rvOrders.setLayoutManager(new LinearLayoutManager(this));
         adapter = new OrderAdapter(orderList, true);
         adapter.setOnStatusChangeListener((order, newStatus) -> {
@@ -43,9 +46,6 @@ public class SellerOrdersActivity extends AppCompatActivity {
         rvOrders.setAdapter(adapter);
 
         BottomNavHelper.setupForSeller(this, findViewById(R.id.bottomNav), 2);
-
-        findViewById(R.id.btnSpeaker).setOnClickListener(v ->
-                VoiceGuide.announceScreen(this, "یہ آپ کے آرڈرز کی فہرست ہے۔ یہاں آپ دیکھ سکتی ہیں کہ کون سا کام نیا ہے اور کون سا مکمل ہو چکا ہے۔"));
 
         loadOrders();
     }

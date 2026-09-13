@@ -45,6 +45,9 @@ public class SellerProfileActivity extends AppCompatActivity {
             finish(); return;
         }
 
+        VoiceGuide.announceScreen(this,
+                "یہ بیچنے والی کی پروفائل ہے۔ نیچے اس کی تمام اشیاء نظر آئیں گی۔ آرڈر دیں کا بٹن دبا کر آپ کئی چیزیں ایک ساتھ منتخب کر سکتی ہیں، یا کسی ایک چیز پر آرڈر کا بٹن دبا کر صرف وہی چیز منگوا سکتی ہیں۔ چیٹ کے بٹن سے واٹس ایپ پر براہ راست بات کریں۔");
+
         ivSellerAvatar  = findViewById(R.id.ivSellerAvatar);
         tvName          = findViewById(R.id.tvSellerName);
         tvCategory      = findViewById(R.id.tvSellerCategory);
@@ -65,21 +68,17 @@ public class SellerProfileActivity extends AppCompatActivity {
                     i.putExtra(ProductDetailActivity.EXTRA_PRODUCT_ID, product.getId());
                     startActivity(i);
                 },
-                product -> requireBuyerLogin(() -> goToOrder(product)),
+                product -> requireBuyerLogin(() -> goToSingleProductOrder(product)),
                 product -> WhatsAppHelper.openChat(this,
                         currentSeller != null ? currentSeller.getWhatsappNumber() : null,
                         "السلام علیکم! مجھے " + product.getName() + " کے بارے میں پوچھنا تھا۔")
         );
         rvProducts.setAdapter(productAdapter);
 
-        findViewById(R.id.btnSpeaker).setOnClickListener(v -> {
-            if (currentSeller != null) {
-                VoiceGuide.announceScreen(this, "یہ " + currentSeller.getBusinessName() + " کا پروفائل ہے۔ یہاں آپ ان کی اشیاء دیکھ سکتے ہیں اور انہیں آرڈر دے سکتے ہیں۔");
-            }
-        });
-
         loadSellerData();
 
+        // Yahan sirf sellerId jata hai (koi ek product nahi) — is se PlaceOrderActivity
+        // saari products ki checklist dikhaye gi, price-with-checkbox tareeqe se
         btnPlaceOrder.setOnClickListener(v -> requireBuyerLogin(() -> {
             Intent i = new Intent(this, PlaceOrderActivity.class);
             i.putExtra(PlaceOrderActivity.EXTRA_SELLER_ID, sellerId);
@@ -94,19 +93,15 @@ public class SellerProfileActivity extends AppCompatActivity {
         FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS).child(sellerId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override public void onDataChange(DataSnapshot snapshot) {
-                        // ✅ ADDED: Check if seller exists
-                        if (!snapshot.exists()) {
-                            Toast.makeText(SellerProfileActivity.this, "یہ بیچنے والی اب دستیاب نہیں ہے", Toast.LENGTH_LONG).show();
-                            finish();
-                            return;
-                        }
                         currentSeller = snapshot.getValue(Seller.class);
                         if (currentSeller == null) {
                             Toast.makeText(SellerProfileActivity.this, "یہ بیچنے والی اب دستیاب نہیں ہے", Toast.LENGTH_LONG).show();
                             return;
                         }
-                        // ✅ FIX: UID from Key
-                        if (currentSeller.getUid() == null) currentSeller.setUid(snapshot.getKey());
+                        // ✅ FIX: UID fallback
+                        if (currentSeller.getUid() == null || currentSeller.getUid().isEmpty())
+                            currentSeller.setUid(snapshot.getKey());
+
                         bindSellerData();
                         loadSellerProducts();
                     }
@@ -121,30 +116,9 @@ public class SellerProfileActivity extends AppCompatActivity {
         tvCategory.setText(Constants.getUrduLabel(currentSeller.getCategory()) + " (" + currentSeller.getCategory() + ")");
         tvCity.setText(currentSeller.getCity());
         tvBio.setText(currentSeller.getBio());
+        tvRating.setText(String.format("⭐ %.1f (%d)", currentSeller.getRating(), currentSeller.getRatingCount()));
+        tvStatus.setText("✓ تصدیق شدہ");
 
-        // ✅ CHANGED: Rating null safety
-        double rating = currentSeller.getRating();
-        long count = currentSeller.getRatingCount();
-        if (rating > 0) {
-            tvRating.setText(String.format("⭐ %.1f (%d)", rating, count));
-        } else {
-            tvRating.setText("⭐ N/A");
-        }
-
-        // ✅ CHANGED: Verification status check
-        String status = currentSeller.getVerificationStatus();
-        if (Constants.isApproved(status)) {
-            tvStatus.setText("✓ تصدیق شدہ");
-            tvStatus.setTextColor(0xFF4CAF50);
-        } else if ("pending".equalsIgnoreCase(status)) {
-            tvStatus.setText("⏳ زیرِ جائزہ");
-            tvStatus.setTextColor(0xFFFF9800);
-        } else {
-            tvStatus.setText("❌ مسترد");
-            tvStatus.setTextColor(0xFFF44336);
-        }
-
-        // Delivery capability
         boolean travelType = Constants.isTravelType(currentSeller.getCategory());
         if (currentSeller.isCanDeliver()) {
             tvDeliveryBadge.setText(travelType ? "✅ یہ خود آپ کے پاس آ سکتی ہیں" : "✅ گھر ڈیلیوری دستیاب ہے");
@@ -167,16 +141,21 @@ public class SellerProfileActivity extends AppCompatActivity {
 
     private void loadSellerProducts() {
         FirebaseDatabase.getInstance().getReference().child(Constants.NODE_PRODUCTS)
-                .orderByChild("sellerId").equalTo(sellerId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override public void onDataChange(DataSnapshot snapshot) {
                         productList.clear();
                         for (DataSnapshot child : snapshot.getChildren()) {
                             Product p = child.getValue(Product.class);
                             if (p != null) {
-                                // ✅ FIX: ID from Key
-                                if (p.getId() == null) p.setId(child.getKey());
-                                productList.add(p);
+                                // ✅ FIX: ID fallback & Trim
+                                String pid = child.getKey() != null ? child.getKey().trim() : "";
+                                p.setId(pid);
+
+                                // Filter by sellerId (trimmed for safety)
+                                String pSellerId = p.getSellerId() != null ? p.getSellerId().trim() : "";
+                                if (pSellerId.equals(sellerId.trim())) {
+                                    productList.add(p);
+                                }
                             }
                         }
                         productAdapter.notifyDataSetChanged();
@@ -185,7 +164,7 @@ public class SellerProfileActivity extends AppCompatActivity {
                 });
     }
 
-    private void goToOrder(Product product) {
+    private void goToSingleProductOrder(Product product) {
         Intent i = new Intent(this, PlaceOrderActivity.class);
         i.putExtra(PlaceOrderActivity.EXTRA_SELLER_ID, sellerId);
         i.putExtra(PlaceOrderActivity.EXTRA_PRODUCT_ID, product.getId());

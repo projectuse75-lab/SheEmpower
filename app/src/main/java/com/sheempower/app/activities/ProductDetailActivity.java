@@ -33,6 +33,9 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         if (productId == null) { Toast.makeText(this, "چیز نہیں ملی", Toast.LENGTH_LONG).show(); finish(); return; }
 
+        VoiceGuide.announceScreen(this,
+                "یہ چیز کی مکمل تفصیل ہے۔ اس کی قیمت پہلے سے مقرر ہے۔ آرڈر دینے کے لیے نیچے بٹن دبائیں، یا واٹس ایپ پر بات کرنے کے لیے سبز بٹن دبائیں۔");
+
         ivProduct      = findViewById(R.id.ivProduct);
         tvName         = findViewById(R.id.tvProductName);
         tvPrice        = findViewById(R.id.tvProductPrice);
@@ -62,28 +65,51 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     private void loadProduct(String productId) {
-        FirebaseDatabase.getInstance().getReference().child(Constants.NODE_PRODUCTS).child(productId)
+        DatabaseReference prodRef = FirebaseDatabase.getInstance().getReference().child(Constants.NODE_PRODUCTS);
+        
+        // 1. Pehle direct key se check karein
+        prodRef.child(productId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override public void onDataChange(DataSnapshot snapshot) {
+                currentProduct = snapshot.getValue(Product.class);
+                if (currentProduct != null) {
+                    setupProductUI(snapshot.getKey());
+                } else {
+                    // 2. Agar direct nahi mila (ID mismatch), toh poori list scan karein
+                    scanAllProductsForId(productId);
+                }
+            }
+            @Override public void onCancelled(DatabaseError error) {}
+        });
+    }
+
+    private void scanAllProductsForId(String targetId) {
+        FirebaseDatabase.getInstance().getReference().child(Constants.NODE_PRODUCTS)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override public void onDataChange(DataSnapshot snapshot) {
-                        currentProduct = snapshot.getValue(Product.class);
-                        if (currentProduct == null) {
-                            Toast.makeText(ProductDetailActivity.this, "چیز اب دستیاب نہیں ہے", Toast.LENGTH_LONG).show();
-                            return;
+                        for (DataSnapshot child : snapshot.getChildren()) {
+                            String key = child.getKey();
+                            if (key != null && key.trim().equals(targetId.trim())) {
+                                currentProduct = child.getValue(Product.class);
+                                if (currentProduct != null) {
+                                    setupProductUI(key);
+                                    return;
+                                }
+                            }
                         }
-                        // ✅ FIX: ID from Key
-                        if (currentProduct.getId() == null) currentProduct.setId(snapshot.getKey());
-
-                        tvName.setText(currentProduct.getName());
-                        tvPrice.setText("PKR " + (long) currentProduct.getPrice());
-                        tvDescription.setText(currentProduct.getDescription());
-                        if (currentProduct.getImageUrl() != null && !currentProduct.getImageUrl().isEmpty())
-                            Glide.with(ProductDetailActivity.this).load(currentProduct.getImageUrl()).into(ivProduct);
-                        loadSeller(currentProduct.getSellerId());
+                        Toast.makeText(ProductDetailActivity.this, "چیز اب دستیاب نہیں ہے", Toast.LENGTH_LONG).show();
                     }
-                    @Override public void onCancelled(DatabaseError error) {
-                        Toast.makeText(ProductDetailActivity.this, "خرابی: " + error.getMessage(), Toast.LENGTH_LONG).show();
-                    }
+                    @Override public void onCancelled(DatabaseError error) {}
                 });
+    }
+
+    private void setupProductUI(String actualId) {
+        if (currentProduct.getId() == null) currentProduct.setId(actualId);
+        tvName.setText(currentProduct.getName());
+        tvPrice.setText("PKR " + (long) currentProduct.getPrice());
+        tvDescription.setText(currentProduct.getDescription());
+        if (currentProduct.getImageUrl() != null && !currentProduct.getImageUrl().isEmpty())
+            Glide.with(ProductDetailActivity.this).load(currentProduct.getImageUrl()).into(ivProduct);
+        loadSeller(currentProduct.getSellerId());
     }
 
     private void loadSeller(String sellerId) {
@@ -92,8 +118,10 @@ public class ProductDetailActivity extends AppCompatActivity {
                     @Override public void onDataChange(DataSnapshot snapshot) {
                         currentSeller = snapshot.getValue(Seller.class);
                         if (currentSeller == null) return;
-                        // ✅ FIX: UID from Key
-                        if (currentSeller.getUid() == null) currentSeller.setUid(snapshot.getKey());
+
+                        // ✅ FIX: UID fallback
+                        if (currentSeller.getUid() == null || currentSeller.getUid().isEmpty())
+                            currentSeller.setUid(snapshot.getKey());
 
                         tvSellerName.setText(currentSeller.getBusinessName());
                         tvSellerMeta.setText(Constants.getUrduLabel(currentSeller.getCategory()) + " · " + currentSeller.getCity());

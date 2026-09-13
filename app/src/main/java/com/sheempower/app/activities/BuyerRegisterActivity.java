@@ -30,14 +30,14 @@ public class BuyerRegisterActivity extends AppCompatActivity {
         mAuth   = FirebaseAuth.getInstance();
         session = new SessionManager(this);
 
+        VoiceGuide.announceScreen(this,
+                "یہ نیا اکاؤنٹ بنانے کی سکرین ہے۔ باری باری اپنا نام، ای میل، اور کم از کم چھ حروف کا پاس ورڈ لکھیں، پھر اکاؤنٹ بنائیں کا بٹن دبائیں۔");
+
         etName      = findViewById(R.id.etName);
         etEmail     = findViewById(R.id.etEmail);
         etPassword  = findViewById(R.id.etPassword);
         etPhone     = findViewById(R.id.etPhone);
         btnRegister = findViewById(R.id.btnRegister);
-
-        findViewById(R.id.btnSpeaker).setOnClickListener(v ->
-                VoiceGuide.announceScreen(this, "خریدار رجسٹریشن: یہاں اپنا نام، ای میل اور پاس ورڈ لکھ کر اکاؤنٹ بنائیں۔"));
 
         btnRegister.setOnClickListener(v -> attemptRegister());
     }
@@ -48,9 +48,17 @@ public class BuyerRegisterActivity extends AppCompatActivity {
         String pass  = etPassword.getText().toString().trim();
         String phone = etPhone.getText().toString().trim();
 
-        if (TextUtils.isEmpty(name)) { etName.setError("ضروری ہے"); return; }
+        if (TextUtils.isEmpty(name)) {
+            etName.setError("ضروری ہے");
+            VoiceGuide.explain(this, "براہ کرم اپنا نام لکھیں");
+            return;
+        }
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) { etEmail.setError("درست ای میل"); return; }
-        if (pass.length() < 6) { etPassword.setError("کم از کم 6 حروف"); return; }
+        if (pass.length() < 6) {
+            etPassword.setError("کم از کم 6 حروف");
+            VoiceGuide.explain(this, "پاس ورڈ کم از کم چھ حروف کا ہونا چاہیے");
+            return;
+        }
 
         btnRegister.setEnabled(false);
         mAuth.createUserWithEmailAndPassword(email, pass)
@@ -61,6 +69,7 @@ public class BuyerRegisterActivity extends AppCompatActivity {
                             .child(Constants.NODE_USERS).child(uid).setValue(user)
                             .addOnSuccessListener(v -> {
                                 session.saveUser(uid, Constants.ROLE_BUYER, name);
+                                VoiceGuide.explain(this, "خوش آمدید " + name + "، آپ کا اکاؤنٹ بن گیا ہے");
                                 startActivity(new Intent(this, MainActivity.class));
                                 finish();
                             })

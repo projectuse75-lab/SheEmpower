@@ -23,6 +23,9 @@ public class SellerDashboardActivity extends AppCompatActivity {
 
         session = new SessionManager(this);
 
+        VoiceGuide.announceScreen(this,
+                "یہ آپ کی دکان کا ڈیش بورڈ ہے۔ یہاں آپ اپنی کل کمائی اور آرڈرز کی تعداد دیکھ سکتی ہیں۔ نئی چیز شامل کرنے کے لیے نیچے بٹن دبائیں۔ آرڈرز دیکھنے کے لیے نیچے مینو سے آرڈرز پر جائیں۔");
+
         tvWelcome         = findViewById(R.id.tvWelcome);
         tvStatus          = findViewById(R.id.tvStatus);
         tvTotalOrders     = findViewById(R.id.tvTotalOrders);
@@ -39,9 +42,6 @@ public class SellerDashboardActivity extends AppCompatActivity {
         loadStats();
 
         BottomNavHelper.setupForSeller(this, findViewById(R.id.bottomNav), 1);
-
-        findViewById(R.id.btnSpeaker).setOnClickListener(v ->
-                VoiceGuide.announceScreen(this, "خوش آمدید! یہ آپ کا ڈیش بورڈ ہے۔ یہاں آپ اپنے آرڈرز، کمائی اور نئی اشیاء شامل کر سکتی ہیں۔"));
     }
 
     @Override protected void onResume() { super.onResume(); loadSellerStatus(); loadStats(); }
@@ -52,7 +52,7 @@ public class SellerDashboardActivity extends AppCompatActivity {
                     @Override public void onDataChange(DataSnapshot snapshot) {
                         Seller s = snapshot.getValue(Seller.class);
                         if (s == null) return;
-                        if ("verified".equals(s.getVerificationStatus())) {
+                        if (Constants.isApproved(s.getVerificationStatus())) {
                             tvStatus.setText("✅ تصدیق شدہ — آپ کی دکان خریداروں کو نظر آ رہی ہے");
                             tvStatus.setTextColor(0xFF4CAF50);
                             btnAddProduct.setEnabled(true);
