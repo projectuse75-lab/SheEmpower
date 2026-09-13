@@ -6,7 +6,10 @@ import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.InputType;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.*;
@@ -34,11 +37,15 @@ public class SellerRegistrationActivity extends AppCompatActivity {
     private TextView tvDeliverLabel, tvWhatsAppHint;
     private Button btnPickCnic, btnRecord, btnPickAudio, btnRegister;
     private TextView tvCnicStatus, tvVoiceStatus;
+    private ImageButton togglePasswordVisibility, btnSpeaker;
+    private ProgressBar passwordStrengthBar;
+    private TextView passwordStrengthText;
 
     private Uri cnicUri;
     private String cnicCloudUrl = "", voiceCloudUrl = "";
     private String audioFilePath;
     private boolean isRecording = false;
+    private boolean isPasswordVisible = false;
     private MediaRecorder mediaRecorder;
 
     private FirebaseAuth mAuth;
@@ -72,25 +79,14 @@ public class SellerRegistrationActivity extends AppCompatActivity {
         dbRef   = FirebaseDatabase.getInstance().getReference();
         session = new SessionManager(this);
 
-        etName         = findViewById(R.id.etSellerName);
-        etEmail        = findViewById(R.id.etSellerEmail);
-        etPassword     = findViewById(R.id.etSellerPassword);
-        etBusiness     = findViewById(R.id.etBusinessName);
-        etBio          = findViewById(R.id.etBio);
-        etCity         = findViewById(R.id.etCity);
-        etWhatsApp     = findViewById(R.id.etWhatsApp);
-        etCapacity     = findViewById(R.id.etCapacity);
-        etShopAddress  = findViewById(R.id.etShopAddress);
-        tvWhatsAppHint = findViewById(R.id.tvWhatsAppHint);
-        tvDeliverLabel = findViewById(R.id.tvDeliverLabel);
-        spinnerCategory   = findViewById(R.id.spinnerCategory);
-        spinnerCanDeliver = findViewById(R.id.spinnerCanDeliver);
-        btnPickCnic    = findViewById(R.id.btnPickCnic);
-        btnRecord      = findViewById(R.id.btnRecord);
-        btnPickAudio   = findViewById(R.id.btnPickAudio);
-        btnRegister    = findViewById(R.id.btnSellerRegister);
-        tvCnicStatus   = findViewById(R.id.tvCnicStatus);
-        tvVoiceStatus  = findViewById(R.id.tvVoiceStatus);
+        // ============ Initialize Views ============
+        initializeViews();
+
+        // ============ Setup Password Visibility Toggle ============
+        setupPasswordVisibilityToggle();
+
+        // ============ Setup Password Strength Listener ============
+        setupPasswordStrengthListener();
 
         tvWhatsAppHint.setText("✅ خریدار اسی نمبر پر واٹس ایپ سے آپ سے بات کریں گے۔");
 
@@ -118,13 +114,170 @@ public class SellerRegistrationActivity extends AppCompatActivity {
 
         updateDeliverLabel(Constants.CATEGORIES[0]); // default label
 
-        findViewById(R.id.btnSpeaker).setOnClickListener(v -> 
-            VoiceGuide.announceScreen(this, "یہ رجسٹریشن کی سکرین ہے۔ اپنا نام، کاروبار اور واٹس ایپ نمبر لکھیں۔"));
+        btnSpeaker.setOnClickListener(v ->
+                VoiceGuide.announceScreen(this, "یہ رجسٹریشن کی سکرین ہے۔ اپنا نام، کاروبار اور واٹس ایپ نمبر لکھیں۔"));
 
         btnPickCnic.setOnClickListener(v -> cnicPicker.launch("image/*"));
         btnRecord.setOnClickListener(v -> toggleRecording());
         btnPickAudio.setOnClickListener(v -> audioPicker.launch("audio/*"));
         btnRegister.setOnClickListener(v -> attemptRegister());
+    }
+
+    // ============ Initialize All Views ============
+    private void initializeViews() {
+        etName              = findViewById(R.id.etSellerName);
+        etEmail             = findViewById(R.id.etSellerEmail);
+        etPassword          = findViewById(R.id.etSellerPassword);
+        etBusiness          = findViewById(R.id.etBusinessName);
+        etBio               = findViewById(R.id.etBio);
+        etCity              = findViewById(R.id.etCity);
+        etWhatsApp          = findViewById(R.id.etWhatsApp);
+        etCapacity          = findViewById(R.id.etCapacity);
+        etShopAddress       = findViewById(R.id.etShopAddress);
+        tvWhatsAppHint      = findViewById(R.id.tvWhatsAppHint);
+        tvDeliverLabel      = findViewById(R.id.tvDeliverLabel);
+        spinnerCategory     = findViewById(R.id.spinnerCategory);
+        spinnerCanDeliver   = findViewById(R.id.spinnerCanDeliver);
+        btnPickCnic         = findViewById(R.id.btnPickCnic);
+        btnRecord           = findViewById(R.id.btnRecord);
+        btnPickAudio        = findViewById(R.id.btnPickAudio);
+        btnRegister         = findViewById(R.id.btnSellerRegister);
+        tvCnicStatus        = findViewById(R.id.tvCnicStatus);
+        tvVoiceStatus       = findViewById(R.id.tvVoiceStatus);
+        btnSpeaker          = findViewById(R.id.btnSpeaker);
+        togglePasswordVisibility = findViewById(R.id.togglePasswordVisibility);
+        passwordStrengthBar = findViewById(R.id.passwordStrengthBar);
+        passwordStrengthText = findViewById(R.id.passwordStrengthText);
+    }
+
+    // ============ PASSWORD SHOW/HIDE LOGIC ============
+    private void setupPasswordVisibilityToggle() {
+        togglePasswordVisibility.setOnClickListener(v -> {
+            if (isPasswordVisible) {
+                // Hide Password
+                etPassword.setInputType(InputType.TYPE_CLASS_TEXT |
+                        InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                togglePasswordVisibility.setImageResource(R.drawable.ic_eye_closed);
+                isPasswordVisible = false;
+                VoiceGuide.explain(this, "پاس ورڈ چھپایا گیا");
+            } else {
+                // Show Password
+                etPassword.setInputType(InputType.TYPE_CLASS_TEXT |
+                        InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                togglePasswordVisibility.setImageResource(R.drawable.ic_eye_open);
+                isPasswordVisible = true;
+                VoiceGuide.explain(this, "پاس ورڈ دیکھایا گیا");
+            }
+            // Cursor ko end mein rakhne ke liye
+            etPassword.setSelection(etPassword.length());
+        });
+    }
+
+    // ============ PASSWORD STRENGTH LISTENER ============
+    private void setupPasswordStrengthListener() {
+        etPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                updatePasswordStrength(s.toString());
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+    }
+
+    // ============ PASSWORD STRENGTH CALCULATION ============
+    private int getPasswordStrength(String password) {
+        if (password == null || password.length() < 8) {
+            return 0; // WEAK
+        }
+
+        int strength = 0;
+
+        // Check uppercase letter
+        if (password.matches(".*[A-Z].*")) {
+            strength++;
+        }
+
+        // Check lowercase letter
+        if (password.matches(".*[a-z].*")) {
+            strength++;
+        }
+
+        // Check numbers
+        if (password.matches(".*[0-9].*")) {
+            strength++;
+        }
+
+        // Check special characters
+        if (password.matches(".*[!@#$%^&*()_+\\-=\\[\\]{};:'\",.<>?/\\\\|`~].*")) {
+            strength++;
+        }
+
+        // Length bonus (12+ characters)
+        if (password.length() >= 12) {
+            strength++;
+        }
+
+        return strength;
+    }
+
+    // ============ PASSWORD STRENGTH LABEL ============
+    private String getStrengthLabel(int strength) {
+        switch (strength) {
+            case 0:
+                return "بہت کمزور ❌❌";
+            case 1:
+                return "کمزور ❌";
+            case 2:
+                return "درمیانی ⚠️";
+            case 3:
+                return "اچھا ✓";
+            case 4:
+            case 5:
+                return "بہت مضبوط ✅✅";
+            default:
+                return "نامعلوم";
+        }
+    }
+
+    // ============ GET STRENGTH COLOR ============
+    private int getStrengthColor(int strength) {
+        switch (strength) {
+            case 0:
+            case 1:
+                return getResources().getColor(android.R.color.holo_red_light); // Red
+            case 2:
+                return getResources().getColor(android.R.color.holo_orange_light); // Orange
+            case 3:
+                return getResources().getColor(android.R.color.holo_green_light); // Yellow-Green
+            case 4:
+            case 5:
+                return getResources().getColor(android.R.color.holo_green_dark); // Dark Green
+            default:
+                return getResources().getColor(android.R.color.darker_gray);
+        }
+    }
+
+    // ============ UPDATE PASSWORD STRENGTH UI ============
+    private void updatePasswordStrength(String password) {
+        int strength = getPasswordStrength(password);
+
+        // Update Progress Bar
+        int progress = strength * 20; // 0, 20, 40, 60, 80, 100
+        passwordStrengthBar.setProgress(progress);
+
+        // Update Color
+        int color = getStrengthColor(strength);
+        passwordStrengthBar.setProgressDrawable(
+                new android.graphics.drawable.ColorDrawable(color));
+
+        // Update Label Text
+        passwordStrengthText.setText(getStrengthLabel(strength));
+        passwordStrengthText.setTextColor(color);
     }
 
     /** Category ke hisaab se "delivery" ka sawal contextually badalta hai */
@@ -210,6 +363,7 @@ public class SellerRegistrationActivity extends AppCompatActivity {
         }
     }
 
+    // ============ REGISTER BUTTON LOGIC (Firebase) ============
     private void attemptRegister() {
         String name      = etName.getText().toString().trim();
         String email     = etEmail.getText().toString().trim();
@@ -224,9 +378,25 @@ public class SellerRegistrationActivity extends AppCompatActivity {
         String category  = Constants.CATEGORIES[catIndex];
         boolean canDeliver = spinnerCanDeliver.getSelectedItemPosition() == 0; // "جی ہاں" = index 0
 
+        // ============ VALIDATION ============
         if (TextUtils.isEmpty(name))     { etName.setError("ضروری ہے"); return; }
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) { etEmail.setError("درست ای میل"); return; }
-        if (password.length() < 6)       { etPassword.setError("کم از کم 6 حروف"); return; }
+
+        // ============ PASSWORD VALIDATION (8+ characters) ============
+        if (password.length() < 8) {
+            etPassword.setError("کم از کم 8 حروف");
+            VoiceGuide.explain(this, "پاس ورڈ کم از کم آٹھ حروف کا ہونا چاہیے");
+            return;
+        }
+
+        // ============ PASSWORD STRENGTH CHECK ============
+        int strength = getPasswordStrength(password);
+        if (strength < 3) {
+            Toast.makeText(this, "براہ کرم ایک مضبوط پاس ورڈ بنائیں", Toast.LENGTH_SHORT).show();
+            VoiceGuide.explain(this, "پاس ورڈ میں حروف، نمبر اور علامت شامل کریں");
+            return;
+        }
+
         if (TextUtils.isEmpty(business)) { etBusiness.setError("ضروری ہے"); return; }
         if (TextUtils.isEmpty(city))     { etCity.setError("ضروری ہے"); return; }
         if (whatsapp.length() < 10)      { etWhatsApp.setError("درست واٹس ایپ نمبر"); return; }
@@ -239,6 +409,7 @@ public class SellerRegistrationActivity extends AppCompatActivity {
         btnRegister.setEnabled(false);
         btnRegister.setText("اکاؤنٹ بن رہا ہے...");
 
+        // ============ FIREBASE REGISTRATION ============
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener(authResult -> {
                     String uid = authResult.getUser().getUid();
