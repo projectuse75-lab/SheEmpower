@@ -33,6 +33,14 @@ public class SessionManager {
     public boolean isBuyer()    { return "buyer".equals(getRole()); }
     public boolean isAdmin()    { return "admin".equals(getRole()); }
 
+    public void saveName(String name) {
+        prefs.edit().putString(KEY_NAME, name).apply();
+    }
+
+    public void saveRole(String role) {
+        prefs.edit().putString(KEY_ROLE, role).apply();
+    }
+
     public void logout() {
         prefs.edit().clear().apply();
     }
