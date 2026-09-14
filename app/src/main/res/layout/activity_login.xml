@@ -2,7 +2,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="#FFFFFF"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -10,9 +11,7 @@
         android:orientation="vertical"
         android:paddingBottom="24dp">
 
-        <!-- ============================================================ -->
-        <!-- HEADER SECTION - Logo + Speaker -->
-        <!-- ============================================================ -->
+        <!-- HEADER -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -44,6 +43,7 @@
                     android:src="@drawable/ic_speaker"
                     android:contentDescription="Speaker"
                     android:scaleType="centerInside" />
+
             </RelativeLayout>
 
             <TextView
@@ -53,42 +53,41 @@
                 android:textSize="12sp"
                 android:textColor="#FFE0EC"
                 android:layout_marginTop="8dp" />
+
         </LinearLayout>
 
-        <!-- ============================================================ -->
+
         <!-- MAIN CONTENT -->
-        <!-- ============================================================ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="20dp">
 
-            <!-- ============================================================ -->
-            <!-- LOGIN TYPE SELECTOR CARD -->
-            <!-- ============================================================ -->
+
+            <!-- LOGIN TYPE -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="@drawable/bg_rounded_pink"
-                android:padding="12dp"
-                android:layout_marginBottom="24dp">
+                android:padding="14dp"
+                android:layout_marginBottom="22dp">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="🔑 کون ہو؟ / Who are you?"
-                    android:textSize="14sp"
+                    android:textSize="15sp"
                     android:textStyle="bold"
                     android:textColor="#FF4081"
+                    android:gravity="center"
                     android:layout_marginBottom="12dp" />
 
-                <!-- Buyer Button -->
                 <Button
                     android:id="@+id/btnBuyerLogin"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="50dp"
                     android:text="🛍️ خریدار / BUYER"
                     android:textSize="13sp"
                     android:textStyle="bold"
@@ -96,36 +95,35 @@
                     android:backgroundTint="#FF4081"
                     android:layout_marginBottom="8dp" />
 
-                <!-- Seller Button -->
                 <Button
                     android:id="@+id/btnSellerLogin"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="50dp"
                     android:text="🏪 بیچنے والی / SELLER"
                     android:textSize="13sp"
                     android:textStyle="bold"
                     android:textColor="#FF4081"
                     android:backgroundTint="#FFFFFF" />
+
             </LinearLayout>
 
-            <!-- ============================================================ -->
+
             <!-- LOGIN TITLE -->
-            <!-- ============================================================ -->
             <TextView
                 android:id="@+id/tvLoginTitle"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="خریدار کے لیے لاگ ان / Buyer Login"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="#FF4081"
-                android:layout_marginBottom="20dp" />
+                android:gravity="center"
+                android:layout_marginBottom="22dp" />
 
-            <!-- ============================================================ -->
-            <!-- EMAIL SECTION -->
-            <!-- ============================================================ -->
+
+            <!-- EMAIL -->
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="📧 ای میل ایڈریس / Email Address"
                 android:textSize="13sp"
@@ -136,19 +134,18 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etEmail"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="50dp"
                 android:hint="apna_email@example.com"
                 android:textSize="14sp"
                 android:padding="12dp"
                 android:background="@drawable/bg_rounded_pink"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="18dp"
                 android:inputType="textEmailAddress" />
 
-            <!-- ============================================================ -->
-            <!-- PASSWORD SECTION -->
-            <!-- ============================================================ -->
+
+            <!-- PASSWORD -->
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="🔐 پاس ورڈ / Password"
                 android:textSize="13sp"
@@ -156,10 +153,9 @@
                 android:textColor="#AA3366"
                 android:layout_marginBottom="8dp" />
 
-            <!-- Password Field with Eye Icon -->
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="50dp"
                 android:layout_marginBottom="8dp">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -173,7 +169,6 @@
                     android:paddingEnd="48dp"
                     android:background="@drawable/bg_rounded_pink" />
 
-                <!-- Eye Icon -->
                 <ImageButton
                     android:id="@+id/togglePasswordVisibility"
                     android:layout_width="44dp"
@@ -184,11 +179,11 @@
                     android:src="@drawable/ic_eye_closed"
                     android:contentDescription="Show/Hide Password"
                     android:scaleType="centerInside" />
+
             </FrameLayout>
 
-            <!-- ============================================================ -->
-            <!-- PASSWORD STRENGTH INDICATOR -->
-            <!-- ============================================================ -->
+
+            <!-- PASSWORD STRENGTH -->
             <ProgressBar
                 android:id="@+id/passwordStrengthBar"
                 android:layout_width="match_parent"
@@ -201,7 +196,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="20dp">
+                android:layout_marginBottom="18dp">
 
                 <TextView
                     android:layout_width="0dp"
@@ -219,25 +214,24 @@
                     android:textSize="11sp"
                     android:textStyle="bold"
                     android:textColor="#FF4081" />
+
             </LinearLayout>
 
-            <!-- ============================================================ -->
+
             <!-- LOGIN BUTTON -->
-            <!-- ============================================================ -->
             <Button
                 android:id="@+id/btnLogin"
                 android:layout_width="match_parent"
-                android:layout_height="52dp"
+                android:layout_height="54dp"
                 android:text="🔑 لاگ ان کریں / LOGIN"
                 android:textSize="15sp"
                 android:textStyle="bold"
                 android:textColor="#FFFFFF"
                 android:backgroundTint="#FF4081"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginBottom="10dp" />
 
-            <!-- ============================================================ -->
-            <!-- FORGOT PASSWORD LINK -->
-            <!-- ============================================================ -->
+
+            <!-- FORGOT PASSWORD -->
             <TextView
                 android:id="@+id/tvForgotPassword"
                 android:layout_width="match_parent"
@@ -247,45 +241,48 @@
                 android:textColor="#FF4081"
                 android:textStyle="bold"
                 android:gravity="center"
-                android:padding="12dp" />
+                android:padding="12dp"
+                android:layout_marginBottom="4dp" />
 
-            <!-- ============================================================ -->
+
             <!-- DIVIDER -->
-            <!-- ============================================================ -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#FFE0EC"
-                android:layout_marginVertical="16dp" />
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="18dp" />
 
-            <!-- ============================================================ -->
-            <!-- REGISTRATION SECTION -->
-            <!-- ============================================================ -->
+
+            <!-- REGISTRATION TITLE -->
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="📝 نیا اکاؤنٹ بنائیں / Create Account"
-                android:textSize="14sp"
+                android:textSize="15sp"
                 android:textStyle="bold"
                 android:textColor="#FF4081"
+                android:gravity="center"
                 android:layout_marginBottom="12dp" />
 
-            <!-- Buyer Registration Card -->
+
+            <!-- BUYER REGISTRATION -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="@drawable/bg_rounded_pink"
-                android:padding="12dp"
+                android:padding="14dp"
                 android:layout_marginBottom="12dp">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="🛍️ خریدار / Buyer"
                     android:textSize="13sp"
                     android:textStyle="bold"
                     android:textColor="#FF4081"
+                    android:gravity="center"
                     android:layout_marginBottom="8dp" />
 
                 <TextView
@@ -295,26 +292,29 @@
                     android:text="نیا خریدار ہوں - اکاؤنٹ بنائیں\nNew buyer - Create account"
                     android:textSize="12sp"
                     android:textColor="#666666"
-                    android:padding="8dp"
+                    android:padding="10dp"
                     android:background="#FFFFFF"
                     android:gravity="center" />
+
             </LinearLayout>
 
-            <!-- Seller Registration Card -->
+
+            <!-- SELLER REGISTRATION -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="@drawable/bg_rounded_pink"
-                android:padding="12dp">
+                android:padding="14dp">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="🏪 بیچنے والی / Seller"
                     android:textSize="13sp"
                     android:textStyle="bold"
                     android:textColor="#FF4081"
+                    android:gravity="center"
                     android:layout_marginBottom="8dp" />
 
                 <TextView
@@ -324,12 +324,14 @@
                     android:text="کام شروع کرنا چاہتی ہیں - رجسٹر کریں\nWant to sell - Register"
                     android:textSize="12sp"
                     android:textColor="#666666"
-                    android:padding="8dp"
+                    android:padding="10dp"
                     android:background="#FFFFFF"
                     android:gravity="center" />
+
             </LinearLayout>
 
         </LinearLayout>
 
     </LinearLayout>
+
 </ScrollView>
