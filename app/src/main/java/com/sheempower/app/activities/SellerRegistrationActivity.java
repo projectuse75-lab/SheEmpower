@@ -449,6 +449,9 @@ public class SellerRegistrationActivity extends AppCompatActivity {
                 });
     }
 
-    @Override protected void onDestroy() { super.onDestroy(); TTSHelper.getInstance(this).shutdown(); }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 }
 

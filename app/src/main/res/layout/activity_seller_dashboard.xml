@@ -7,6 +7,22 @@
         android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"
         android:orientation="vertical">
 
+        <!-- ============================================================ -->
+        <!-- CATEGORY HEADER -->
+        <!-- ============================================================ -->
+        <LinearLayout
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:background="#FF4081" android:padding="12dp" android:orientation="vertical"
+            android:gravity="center">
+            <TextView android:id="@+id/tvCategory"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textColor="#FFFFFF" android:textSize="18sp" android:textStyle="bold"
+                android:text="🎨 Mehendi / مہندی" />
+        </LinearLayout>
+
+        <!-- ============================================================ -->
+        <!-- WELCOME + SPEAKER HEADER -->
+        <!-- ============================================================ -->
         <LinearLayout
             android:layout_width="match_parent" android:layout_height="wrap_content"
             android:background="#FF4081" android:padding="20dp" android:orientation="vertical">
@@ -31,41 +47,150 @@
                 android:textColor="#FFE0EC" android:textSize="12sp" android:layout_marginTop="4dp" />
         </LinearLayout>
 
-        <GridLayout
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:columnCount="2" android:padding="16dp">
+        <!-- ============================================================ -->
+        <!-- SCROLLABLE CONTENT -->
+        <!-- ============================================================ -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
 
-            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"
-                android:orientation="vertical" android:background="@drawable/bg_rounded_pink_light" android:padding="16dp" android:layout_margin="6dp">
-                <TextView android:id="@+id/tvTotalOrders" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="24sp" android:textStyle="bold" android:textColor="#FF4081" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="کل آرڈرز" android:textSize="12sp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- ============================================================ -->
+                <!-- STATS CARDS - FULL WIDTH (1 COLUMN) -->
+                <!-- ============================================================ -->
+
+                <!-- Total Orders -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_rounded_pink_light"
+                    android:padding="16dp"
+                    android:layout_marginBottom="12dp">
+                    <TextView
+                        android:id="@+id/tvTotalOrders"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:textColor="#FF4081" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="کل آرڈرز / Total Orders"
+                        android:textSize="13sp"
+                        android:textColor="#666666"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+
+                <!-- Pending Orders -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_rounded_pink_light"
+                    android:padding="16dp"
+                    android:layout_marginBottom="12dp">
+                    <TextView
+                        android:id="@+id/tvPendingOrders"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:textColor="#FFA000" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="زیر التوا / Pending Orders"
+                        android:textSize="13sp"
+                        android:textColor="#666666"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+
+                <!-- Completed Orders -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_rounded_pink_light"
+                    android:padding="16dp"
+                    android:layout_marginBottom="12dp">
+                    <TextView
+                        android:id="@+id/tvCompletedOrders"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:textColor="#4CAF50" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="مکمل / Completed Orders"
+                        android:textSize="13sp"
+                        android:textColor="#666666"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+
+                <!-- Earnings -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_rounded_pink_light"
+                    android:padding="16dp"
+                    android:layout_marginBottom="16dp">
+                    <TextView
+                        android:id="@+id/tvEarnings"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:textColor="#8B2942" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="کل کمائی / Total Earnings"
+                        android:textSize="13sp"
+                        android:textColor="#666666"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+
+                <!-- ============================================================ -->
+                <!-- ADD PRODUCT BUTTON - FIXED SIZE -->
+                <!-- ============================================================ -->
+                <Button
+                    android:id="@+id/btnAddProduct"
+                    android:layout_width="match_parent"
+                    android:layout_height="58dp"
+                    android:layout_marginBottom="8dp"
+                    android:backgroundTint="#FF4081"
+                    android:gravity="center"
+                    android:lines="2"
+                    android:singleLine="false"
+                    android:text="➕ نئی چیز شامل کریں\nADD PRODUCT"
+                    android:textColor="#FFFFFF"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
             </LinearLayout>
 
-            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"
-                android:orientation="vertical" android:background="@drawable/bg_rounded_pink_light" android:padding="16dp" android:layout_margin="6dp">
-                <TextView android:id="@+id/tvPendingOrders" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="24sp" android:textStyle="bold" android:textColor="#FFA000" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="زیر التواء" android:textSize="12sp" />
-            </LinearLayout>
-
-            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"
-                android:orientation="vertical" android:background="@drawable/bg_rounded_pink_light" android:padding="16dp" android:layout_margin="6dp">
-                <TextView android:id="@+id/tvCompletedOrders" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="24sp" android:textStyle="bold" android:textColor="#4CAF50" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="مکمل" android:textSize="12sp" />
-            </LinearLayout>
-
-            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1"
-                android:orientation="vertical" android:background="@drawable/bg_rounded_pink_light" android:padding="16dp" android:layout_margin="6dp">
-                <TextView android:id="@+id/tvEarnings" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="20sp" android:textStyle="bold" android:textColor="#8B2942" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="کل کمائی" android:textSize="12sp" />
-            </LinearLayout>
-        </GridLayout>
-
-        <Button android:id="@+id/btnAddProduct"
-            android:layout_width="match_parent" android:layout_height="54dp"
-            android:text="➕ نئی چیز شامل کریں" android:backgroundTint="#FF4081" android:textColor="#FFFFFF"
-            android:layout_margin="16dp" />
+        </ScrollView>
 
     </LinearLayout>
 
-    <include layout="@layout/bottom_nav_bar" android:id="@+id/bottomNav" />
+    <!-- ============================================================ -->
+    <!-- BOTTOM NAVIGATION -->
+    <!-- ============================================================ -->
+    <include
+        layout="@layout/bottom_nav_bar"
+        android:id="@+id/bottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="64dp" />
+
 </LinearLayout>
