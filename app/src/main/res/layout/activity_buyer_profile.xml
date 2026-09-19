@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFF9FB">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="💗 Create Buyer Profile"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="#FF4081"
+            android:gravity="center"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Create your buyer account to switch between Seller and Buyer without logging out."
+            android:textSize="15sp"
+            android:textColor="#666666"
+            android:gravity="center"
+            android:layout_marginBottom="28dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Full Name"
+            android:textStyle="bold"
+            android:textSize="15sp"
+            android:textColor="#333333" />
+
+        <EditText
+            android:id="@+id/etBuyerName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter your name"
+            android:inputType="textPersonName"
+            android:padding="14dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="18dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Email"
+            android:textStyle="bold"
+            android:textSize="15sp"
+            android:textColor="#333333" />
+
+        <EditText
+            android:id="@+id/etBuyerEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter email"
+            android:inputType="textEmailAddress"
+            android:padding="14dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="18dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Phone / WhatsApp"
+            android:textStyle="bold"
+            android:textSize="15sp"
+            android:textColor="#333333" />
+
+        <EditText
+            android:id="@+id/etBuyerPhone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter phone or WhatsApp number"
+            android:inputType="phone"
+            android:padding="14dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="28dp" />
+
+        <Button
+            android:id="@+id/btnCreateBuyerProfile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="CREATE BUYER PROFILE"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#FF4081"
+            android:padding="14dp" />
+
+        <Button
+            android:id="@+id/btnCancelBuyerProfile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="CANCEL"
+            android:layout_marginTop="10dp"
+            android:padding="14dp" />
+
+    </LinearLayout>
+
+</ScrollView>

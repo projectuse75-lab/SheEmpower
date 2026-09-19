@@ -9,6 +9,7 @@ public class SessionManager {
     private static final String KEY_UID   = "uid";
     private static final String KEY_ROLE  = "role";
     private static final String KEY_NAME  = "name";
+    private static final String KEY_EMAIL = "email";  // ✅ ADD
 
     private final SharedPreferences prefs;
 
@@ -24,14 +25,42 @@ public class SessionManager {
                 .apply();
     }
 
-    public String getUid()  { return prefs.getString(KEY_UID, null); }
-    public String getRole() { return prefs.getString(KEY_ROLE, null); }
-    public String getName() { return prefs.getString(KEY_NAME, ""); }
+    public String getUid() {
+        return prefs.getString(KEY_UID, null);
+    }
 
-    public boolean isLoggedIn() { return getUid() != null; }
-    public boolean isSeller()   { return "seller".equals(getRole()); }
-    public boolean isBuyer()    { return "buyer".equals(getRole()); }
-    public boolean isAdmin()    { return "admin".equals(getRole()); }
+    public String getRole() {
+        return prefs.getString(KEY_ROLE, null);
+    }
+
+    public String getName() {
+        return prefs.getString(KEY_NAME, "");
+    }
+
+    // ✅ ADD یہ دونوں methods
+    public String getEmail() {
+        return prefs.getString(KEY_EMAIL, "");
+    }
+
+    public void saveEmail(String email) {
+        prefs.edit().putString(KEY_EMAIL, email).apply();
+    }
+
+    public boolean isLoggedIn() {
+        return getUid() != null;
+    }
+
+    public boolean isSeller() {
+        return "seller".equals(getRole());
+    }
+
+    public boolean isBuyer() {
+        return "buyer".equals(getRole());
+    }
+
+    public boolean isAdmin() {
+        return "admin".equals(getRole());
+    }
 
     public void saveName(String name) {
         prefs.edit().putString(KEY_NAME, name).apply();
@@ -39,6 +68,11 @@ public class SessionManager {
 
     public void saveRole(String role) {
         prefs.edit().putString(KEY_ROLE, role).apply();
+    }
+
+    // Account switch ke liye
+    public void switchRole(String newRole) {
+        prefs.edit().putString(KEY_ROLE, newRole).apply();
     }
 
     public void logout() {

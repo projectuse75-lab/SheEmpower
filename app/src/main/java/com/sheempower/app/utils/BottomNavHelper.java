@@ -1,69 +1,361 @@
 package com.sheempower.app.utils;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import com.sheempower.app.R;
-import com.sheempower.app.activities.*;
+import com.sheempower.app.activities.AdminDashboardActivity;
+import com.sheempower.app.activities.AdminOrdersActivity;
+import com.sheempower.app.activities.MainActivity;
+import com.sheempower.app.activities.MyOrdersActivity;
+import com.sheempower.app.activities.ProfileActivity;
+import com.sheempower.app.activities.SettingsActivity;
+import com.sheempower.app.activities.SellerDashboardActivity;
+import com.sheempower.app.activities.SellerOrdersActivity;
 
 public class BottomNavHelper {
 
-    public static void setupForBuyerOrVisitor(Activity activity, View navBar, int activeIndex) {
-        SessionManager session = new SessionManager(activity);
-        boolean loggedIn = session.isLoggedIn();
+    // ============================================================
+    // BUYER / VISITOR
+    // ============================================================
 
-        setItem(navBar, 1, "🏠", "براؤز", activeIndex == 1, v -> {
-            if (!(activity instanceof MainActivity)) activity.startActivity(new Intent(activity, MainActivity.class));
-        });
-        setItem(navBar, 2, "📦", "آرڈرز", activeIndex == 2, v -> {
-            if (loggedIn) activity.startActivity(new Intent(activity, MyOrdersActivity.class));
-            else { Toast.makeText(activity, "پہلے لاگ ان کریں", Toast.LENGTH_SHORT).show(); activity.startActivity(new Intent(activity, LoginActivity.class)); }
-        });
-        setItem(navBar, 3, "👤", "پروفائل", activeIndex == 3, v -> {
-            if (loggedIn) activity.startActivity(new Intent(activity, ProfileActivity.class));
-            else { Toast.makeText(activity, "پہلے لاگ ان کریں", Toast.LENGTH_SHORT).show(); activity.startActivity(new Intent(activity, LoginActivity.class)); }
-        });
+    public static void setupForBuyerOrVisitor(
+            Context context,
+            View view,
+            int selectedIndex) {
+
+        if (!(view instanceof LinearLayout)) return;
+
+        LinearLayout navBar = (LinearLayout) view;
+
+        setupLabels(navBar, false);
+        setSelectedItem(navBar, selectedIndex);
+
+        setupClickListeners(
+                context,
+                navBar,
+                selectedIndex,
+                false
+        );
     }
 
-    public static void setupForSeller(Activity activity, View navBar, int activeIndex) {
-        setItem(navBar, 1, "📊", "ڈیش بورڈ", activeIndex == 1, v -> {
-            if (!(activity instanceof SellerDashboardActivity)) activity.startActivity(new Intent(activity, SellerDashboardActivity.class));
-        });
-        setItem(navBar, 2, "📋", "آرڈرز", activeIndex == 2, v -> {
-            if (!(activity instanceof SellerOrdersActivity)) activity.startActivity(new Intent(activity, SellerOrdersActivity.class));
-        });
-        setItem(navBar, 3, "👤", "پروفائل", activeIndex == 3, v -> activity.startActivity(new Intent(activity, ProfileActivity.class)));
+
+    // ============================================================
+    // SELLER
+    // ============================================================
+
+    public static void setupForSeller(
+            Context context,
+            View view,
+            int selectedIndex) {
+
+        if (!(view instanceof LinearLayout)) return;
+
+        LinearLayout navBar = (LinearLayout) view;
+
+        setupLabels(navBar, true);
+        setSelectedItem(navBar, selectedIndex);
+
+        setupClickListeners(
+                context,
+                navBar,
+                selectedIndex,
+                true
+        );
     }
 
-    public static void setupForAdmin(Activity activity, View navBar, int activeIndex) {
-        setItem(navBar, 1, "✅", "منظوریاں", activeIndex == 1, v -> {
-            if (!(activity instanceof AdminDashboardActivity)) activity.startActivity(new Intent(activity, AdminDashboardActivity.class));
-        });
-        setItem(navBar, 2, "📦", "آرڈرز", activeIndex == 2, v -> {
-            if (!(activity instanceof AdminOrdersActivity)) activity.startActivity(new Intent(activity, AdminOrdersActivity.class));
-        });
-        setItem(navBar, 3, "🚪", "لاگ آؤٹ", activeIndex == 3, v -> {
-            new SessionManager(activity).logout();
-            activity.startActivity(new Intent(activity, MainActivity.class));
-            activity.finish();
-        });
+
+    // ============================================================
+    // ADMIN
+    // ============================================================
+
+    public static void setupForAdmin(
+            Context context,
+            View view,
+            int selectedIndex) {
+
+        if (!(view instanceof LinearLayout)) return;
+
+        LinearLayout navBar = (LinearLayout) view;
+
+        setupLabels(navBar, false);
+        setSelectedItem(navBar, selectedIndex);
+
+        setupAdminClickListeners(
+                context,
+                navBar,
+                selectedIndex
+        );
     }
 
-    private static void setItem(View navBar, int index, String icon, String label, boolean active, View.OnClickListener listener) {
-        int iconId, labelId, itemId;
-        switch (index) {
-            case 1: iconId = R.id.navIcon1; labelId = R.id.navLabel1; itemId = R.id.navItem1; break;
-            case 2: iconId = R.id.navIcon2; labelId = R.id.navLabel2; itemId = R.id.navItem2; break;
-            default: iconId = R.id.navIcon3; labelId = R.id.navLabel3; itemId = R.id.navItem3; break;
+
+    // ============================================================
+    // LABELS / ICONS
+    // ============================================================
+
+    private static void setupLabels(
+            LinearLayout navBar,
+            boolean sellerMode) {
+
+        TextView icon1 = navBar.findViewById(R.id.navIcon1);
+        TextView label1 = navBar.findViewById(R.id.navLabel1);
+
+        TextView icon2 = navBar.findViewById(R.id.navIcon2);
+        TextView label2 = navBar.findViewById(R.id.navLabel2);
+
+        TextView icon3 = navBar.findViewById(R.id.navIcon3);
+        TextView label3 = navBar.findViewById(R.id.navLabel3);
+
+        TextView icon4 = navBar.findViewById(R.id.navIcon4);
+        TextView label4 = navBar.findViewById(R.id.navLabel4);
+
+
+        // Home / Browse
+        icon1.setText("🏠");
+        label1.setText(sellerMode ? "ہوم" : "براؤز");
+
+
+        // Orders
+        icon2.setText("📦");
+        label2.setText("آرڈرز");
+
+
+        // Profile
+        icon3.setText("👤");
+        label3.setText("پروفائل");
+
+
+        // Settings
+        icon4.setText("⚙️");
+        label4.setText("سیٹنگز");
+    }
+
+
+    // ============================================================
+    // SELECTED ITEM
+    // ============================================================
+
+    private static void setSelectedItem(
+            LinearLayout navBar,
+            int selectedIndex) {
+
+        View item1 = navBar.findViewById(R.id.navItem1);
+        View item2 = navBar.findViewById(R.id.navItem2);
+        View item3 = navBar.findViewById(R.id.navItem3);
+        View item4 = navBar.findViewById(R.id.navItem4);
+
+        // Reset all
+        item1.setAlpha(0.65f);
+        item2.setAlpha(0.65f);
+        item3.setAlpha(0.65f);
+        item4.setAlpha(0.65f);
+
+        // Selected
+        switch (selectedIndex) {
+
+            case 1:
+                item1.setAlpha(1.0f);
+                break;
+
+            case 2:
+                item2.setAlpha(1.0f);
+                break;
+
+            case 3:
+                item3.setAlpha(1.0f);
+                break;
+
+            case 4:
+                item4.setAlpha(1.0f);
+                break;
         }
-        TextView iconView = navBar.findViewById(iconId);
-        TextView labelView = navBar.findViewById(labelId);
-        View item = navBar.findViewById(itemId);
-        iconView.setText(icon);
-        labelView.setText(label);
-        labelView.setTextColor(active ? 0xFFFF4081 : 0xFF888888);
-        item.setOnClickListener(listener);
+    }
+
+
+    // ============================================================
+    // BUYER / SELLER CLICK LISTENERS
+    // ============================================================
+
+    private static void setupClickListeners(
+            Context context,
+            LinearLayout navBar,
+            int selectedIndex,
+            boolean sellerMode) {
+
+        View item1 = navBar.findViewById(R.id.navItem1);
+        View item2 = navBar.findViewById(R.id.navItem2);
+        View item3 = navBar.findViewById(R.id.navItem3);
+        View item4 = navBar.findViewById(R.id.navItem4);
+
+
+        // HOME / BROWSE
+        item1.setOnClickListener(v -> {
+
+            if (selectedIndex == 1) return;
+
+            Intent intent;
+
+            if (sellerMode) {
+                intent = new Intent(
+                        context,
+                        SellerDashboardActivity.class
+                );
+            } else {
+                intent = new Intent(
+                        context,
+                        MainActivity.class
+                );
+            }
+
+            openScreen(context, intent);
+        });
+
+
+        // ORDERS
+        item2.setOnClickListener(v -> {
+
+            if (selectedIndex == 2) return;
+
+            Intent intent;
+
+            if (sellerMode) {
+                intent = new Intent(
+                        context,
+                        SellerOrdersActivity.class
+                );
+            } else {
+                intent = new Intent(
+                        context,
+                        MyOrdersActivity.class
+                );
+            }
+
+            openScreen(context, intent);
+        });
+
+
+        // PROFILE
+        item3.setOnClickListener(v -> {
+
+            if (selectedIndex == 3) return;
+
+            Intent intent = new Intent(
+                    context,
+                    ProfileActivity.class
+            );
+
+            openScreen(context, intent);
+        });
+
+
+        // SETTINGS
+        item4.setOnClickListener(v -> {
+
+            if (selectedIndex == 4) return;
+
+            Intent intent = new Intent(
+                    context,
+                    SettingsActivity.class
+            );
+
+            openScreen(context, intent);
+        });
+    }
+
+
+    // ============================================================
+    // ADMIN CLICK LISTENERS
+    // ============================================================
+
+    private static void setupAdminClickListeners(
+            Context context,
+            LinearLayout navBar,
+            int selectedIndex) {
+
+        View item1 = navBar.findViewById(R.id.navItem1);
+        View item2 = navBar.findViewById(R.id.navItem2);
+        View item3 = navBar.findViewById(R.id.navItem3);
+        View item4 = navBar.findViewById(R.id.navItem4);
+
+
+        // ADMIN HOME
+        item1.setOnClickListener(v -> {
+
+            if (selectedIndex == 1) return;
+
+            openScreen(
+                    context,
+                    new Intent(
+                            context,
+                            AdminDashboardActivity.class
+                    )
+            );
+        });
+
+
+        // ADMIN ORDERS
+        item2.setOnClickListener(v -> {
+
+            if (selectedIndex == 2) return;
+
+            openScreen(
+                    context,
+                    new Intent(
+                            context,
+                            AdminOrdersActivity.class
+                    )
+            );
+        });
+
+
+        // ADMIN PROFILE
+        item3.setOnClickListener(v -> {
+
+            if (selectedIndex == 3) return;
+
+            openScreen(
+                    context,
+                    new Intent(
+                            context,
+                            ProfileActivity.class
+                    )
+            );
+        });
+
+
+        // SETTINGS
+        item4.setOnClickListener(v -> {
+
+            if (selectedIndex == 4) return;
+
+            openScreen(
+                    context,
+                    new Intent(
+                            context,
+                            SettingsActivity.class
+                    )
+            );
+        });
+    }
+
+
+    // ============================================================
+    // OPEN SCREEN
+    // ============================================================
+
+    private static void openScreen(
+            Context context,
+            Intent intent) {
+
+        context.startActivity(intent);
+
+        if (context instanceof Activity) {
+            ((Activity) context)
+                    .overridePendingTransition(0, 0);
+        }
     }
 }

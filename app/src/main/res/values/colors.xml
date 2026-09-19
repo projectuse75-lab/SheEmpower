@@ -12,6 +12,8 @@
     <color name="text_gray">#888888</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
+    <color name="gray">#808080</color>
+    <color name="light_gray">#F5F5F5</color>
     <color name="pink_main">#FF4081</color>
     <!-- Purani/default Android Studio launcher icon isi color ko dhoondhti hai -->
     <color name="ic_launcher_background">#FF4081</color>

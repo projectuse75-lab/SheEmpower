@@ -7,6 +7,7 @@ import java.util.List;
 public class Constants {
     public static final String NODE_USERS    = "users";
     public static final String NODE_SELLERS  = "sellers";
+    public static final String NODE_BUYERS   = "buyers";
     public static final String NODE_ORDERS   = "orders";
     public static final String NODE_PRODUCTS = "products";
     public static final String NODE_META     = "meta";

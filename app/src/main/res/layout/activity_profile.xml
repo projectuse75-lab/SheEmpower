@@ -4,149 +4,576 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#FFFFFF">
+    android:background="#FFF9FB">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="24dp"
-            android:gravity="center_horizontal">
+            android:paddingBottom="20dp">
 
-            <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+            <!-- ================= HEADER ================= -->
 
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/ivProfilePic"
-                    android:layout_width="90dp"
-                    android:layout_height="90dp"
-                    android:src="@drawable/placeholder_avatar" />
-
-                <ImageButton
-                    android:id="@+id/btnChangePic"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_gravity="bottom|end"
-                    android:background="@drawable/bg_rounded_pink"
-                    android:src="@android:drawable/ic_menu_camera"
-                    android:padding="4dp"
-                    android:contentDescription="Change photo" />
-
-            </FrameLayout>
-
-            <TextView
-                android:id="@+id/tvName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:layout_marginTop="10dp" />
-
-            <TextView
-                android:id="@+id/tvEmail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#888888" />
-
-            <TextView
-                android:id="@+id/tvRoleBadge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_rounded_pink"
-                android:padding="8dp"
-                android:layout_marginTop="8dp"
-                android:textColor="#FF4081" />
-
-            <TextView
-                android:id="@+id/tvBusinessName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:layout_marginTop="4dp"
-                android:textColor="#888888" />
-
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="اپنا نام"
-                android:textColor="#AA3366"
-                android:layout_marginTop="24dp" />
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingBottom="22dp"
+                android:background="#FFF0F6">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etFullName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="14dp"
-                android:background="@drawable/bg_rounded_pink"
-                android:layout_marginTop="6dp" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="18dp"
+                    android:background="#FF4081">
+
+                    <TextView
+                        android:id="@+id/tvBusinessHeader"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🎨 Seller Profile"
+                        android:textColor="#FFFFFF"
+                        android:textSize="23sp"
+                        android:textStyle="bold"
+                        android:gravity="center"/>
+
+                    <TextView
+                        android:id="@+id/tvOwnerHeader"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:text="Seller"
+                        android:textColor="#FFFFFF"
+                        android:textSize="16sp"
+                        android:gravity="center"/>
+
+                </LinearLayout>
+
+                <!-- Profile Picture -->
+
+                <FrameLayout
+                    android:layout_width="145dp"
+                    android:layout_height="145dp"
+                    android:layout_marginTop="28dp">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/ivProfilePic"
+                        android:layout_width="135dp"
+                        android:layout_height="135dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_launcher_foreground"
+                        android:background="#FF4081"
+                        android:padding="4dp"/>
+
+                    <ImageButton
+                        android:id="@+id/btnChangePic"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:layout_gravity="bottom|end"
+                        android:background="@android:color/white"
+                        android:src="@android:drawable/ic_menu_camera"
+                        android:contentDescription="Change profile picture"/>
+
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/tvName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Seller Name"
+                    android:textColor="#222222"
+                    android:textSize="26sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/tvEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="email@gmail.com"
+                    android:textColor="#888888"
+                    android:textSize="16sp"/>
+
+                <TextView
+                    android:id="@+id/tvVerificationStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:paddingLeft="14dp"
+                    android:paddingRight="14dp"
+                    android:paddingTop="7dp"
+                    android:paddingBottom="7dp"
+                    android:text="⏳ Verification Pending"
+                    android:textColor="#4CAF50"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:background="#E8F5E9"/>
+
+            </LinearLayout>
+
+            <!-- ================= ROLE SWITCH ================= -->
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="فون / واٹس ایپ"
-                android:textColor="#AA3366"
-                android:layout_marginTop="14dp" />
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etPhone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="14dp"
-                android:background="@drawable/bg_rounded_pink"
-                android:layout_marginTop="6dp" />
-
-            <Button
-                android:id="@+id/btnSave"
-                android:layout_width="match_parent"
-                android:layout_height="54dp"
-                android:text="💾 محفوظ کریں"
-                android:backgroundTint="#FF4081"
-                android:textColor="#FFFFFF"
-                android:layout_marginTop="20dp" />
-
-            <Button
                 android:id="@+id/btnSwitchRole"
                 android:layout_width="match_parent"
-                android:layout_height="54dp"
-                android:text="تبدیل کریں"
-                android:backgroundTint="#FFE4EC"
-                android:textColor="#FF4081"
-                android:layout_marginTop="10dp" />
+                android:layout_height="55dp"
+                android:gravity="center"
+                android:text="👤  SELLER  ▼"
+                android:textColor="#E83E8C"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:background="#FFE0EC"/>
+
+            <!-- ================= VIEW MODE ================= -->
+
+            <LinearLayout
+                android:id="@+id/layoutProfileView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="22dp">
+
+                <!-- Personal Information -->
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="👤  Personal Information"
+                    android:textColor="#E83E8C"
+                    android:textSize="21sp"
+                    android:textStyle="bold"
+                    android:paddingBottom="10dp"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="#FFE0EC"/>
+
+                <TextView
+                    android:id="@+id/tvPersonalName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:padding="16dp"
+                    android:background="#F4F4F4"
+                    android:textColor="#333333"
+                    android:textSize="16sp"
+                    android:text="Full Name"/>
+
+                <TextView
+                    android:id="@+id/tvPersonalEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:padding="16dp"
+                    android:background="#F4F4F4"
+                    android:textColor="#333333"
+                    android:textSize="16sp"
+                    android:text="Email"/>
+
+                <TextView
+                    android:id="@+id/tvWhatsApp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:padding="16dp"
+                    android:background="#F4F4F4"
+                    android:textColor="#333333"
+                    android:textSize="16sp"
+                    android:text="WhatsApp"/>
+
+
+                <!-- Business Information -->
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="25dp"
+                    android:text="🏪  Business Information"
+                    android:textColor="#E83E8C"
+                    android:textSize="21sp"
+                    android:textStyle="bold"
+                    android:paddingBottom="10dp"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="#FFE0EC"/>
+
+                <TextView
+                    android:id="@+id/tvBusinessName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:padding="16dp"
+                    android:background="#F4F4F4"
+                    android:textColor="#333333"
+                    android:textSize="16sp"
+                    android:text="Shop Name"/>
+
+                <TextView
+                    android:id="@+id/tvCategory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:padding="16dp"
+                    android:background="#F4F4F4"
+                    android:textColor="#333333"
+                    android:textSize="16sp"
+                    android:text="Category"/>
+
+                <TextView
+                    android:id="@+id/tvBio"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:padding="16dp"
+                    android:background="#F4F4F4"
+                    android:textColor="#333333"
+                    android:textSize="16sp"
+                    android:text="Bio / Description"/>
+
+
+                <!-- Location & Delivery -->
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="25dp"
+                    android:text="📍  Location &amp; Delivery"
+                    android:textColor="#E83E8C"
+                    android:textSize="21sp"
+                    android:textStyle="bold"
+                    android:paddingBottom="10dp"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="#FFE0EC"/>
+
+                <TextView
+                    android:id="@+id/tvCity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:padding="16dp"
+                    android:background="#F4F4F4"
+                    android:textColor="#333333"
+                    android:textSize="16sp"
+                    android:text="City"/>
+
+                <TextView
+                    android:id="@+id/tvShopAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:padding="16dp"
+                    android:background="#F4F4F4"
+                    android:textColor="#333333"
+                    android:textSize="16sp"
+                    android:text="Shop Address"/>
+
+                <TextView
+                    android:id="@+id/tvDelivery"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:padding="16dp"
+                    android:background="#F4F4F4"
+                    android:textColor="#333333"
+                    android:textSize="16sp"
+                    android:text="Can Deliver"/>
+
+                <TextView
+                    android:id="@+id/tvCapacity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:padding="16dp"
+                    android:background="#F4F4F4"
+                    android:textColor="#333333"
+                    android:textSize="16sp"
+                    android:text="Capacity"/>
+
+
+                <!-- Verification & Rating -->
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="25dp"
+                    android:text="🛡️  Verification &amp; Rating"
+                    android:textColor="#E83E8C"
+                    android:textSize="21sp"
+                    android:textStyle="bold"
+                    android:paddingBottom="10dp"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="#FFE0EC"/>
+
+                <TextView
+                    android:id="@+id/tvCnicStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:padding="16dp"
+                    android:background="#F4F4F4"
+                    android:textColor="#333333"
+                    android:textSize="16sp"
+                    android:text="CNIC Verification"/>
+
+                <TextView
+                    android:id="@+id/tvVoiceStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:padding="16dp"
+                    android:background="#F4F4F4"
+                    android:textColor="#333333"
+                    android:textSize="16sp"
+                    android:text="Voice Verification"/>
+
+                <TextView
+                    android:id="@+id/tvRating"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:padding="16dp"
+                    android:background="#F4F4F4"
+                    android:textColor="#333333"
+                    android:textSize="16sp"
+                    android:text="Rating"/>
+
+                <TextView
+                    android:id="@+id/tvRatingCount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:padding="16dp"
+                    android:background="#F4F4F4"
+                    android:textColor="#333333"
+                    android:textSize="16sp"
+                    android:text="Rating Count"/>
+
+                <TextView
+                    android:id="@+id/tvTopRated"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:padding="16dp"
+                    android:background="#F4F4F4"
+                    android:textColor="#333333"
+                    android:textSize="16sp"
+                    android:text="Top Rated"/>
+
+            </LinearLayout>
+
+
+            <!-- ================= EDIT MODE ================= -->
+
+            <LinearLayout
+                android:id="@+id/layoutEditProfile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="22dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="✏️  Edit Profile"
+                    android:textColor="#E83E8C"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:paddingBottom="18dp"/>
+
+                <EditText
+                    android:id="@+id/etFullName"
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:hint="Full Name"
+                    android:padding="14dp"
+                    android:background="#F4F4F4"
+                    android:textSize="16sp"/>
+
+                <EditText
+                    android:id="@+id/etPhone"
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:layout_marginTop="12dp"
+                    android:hint="WhatsApp / Phone"
+                    android:inputType="phone"
+                    android:padding="14dp"
+                    android:background="#F4F4F4"
+                    android:textSize="16sp"/>
+
+
+                <!-- Seller Fields -->
+
+                <LinearLayout
+                    android:id="@+id/layoutSellerEditFields"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/etBusinessName"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        android:layout_marginTop="12dp"
+                        android:hint="Business / Shop Name"
+                        android:padding="14dp"
+                        android:background="#F4F4F4"
+                        android:textSize="16sp"/>
+
+                    <EditText
+                        android:id="@+id/etBio"
+                        android:layout_width="match_parent"
+                        android:layout_height="110dp"
+                        android:layout_marginTop="12dp"
+                        android:hint="Bio / Description"
+                        android:gravity="top"
+                        android:padding="14dp"
+                        android:background="#F4F4F4"
+                        android:textSize="16sp"/>
+
+                    <EditText
+                        android:id="@+id/etCity"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        android:layout_marginTop="12dp"
+                        android:hint="City"
+                        android:padding="14dp"
+                        android:background="#F4F4F4"
+                        android:textSize="16sp"/>
+
+                    <Spinner
+                        android:id="@+id/spinnerCategoryProfile"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        android:layout_marginTop="12dp"/>
+
+                    <EditText
+                        android:id="@+id/etWhatsApp"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        android:layout_marginTop="12dp"
+                        android:hint="WhatsApp Number"
+                        android:inputType="phone"
+                        android:padding="14dp"
+                        android:background="#F4F4F4"
+                        android:textSize="16sp"/>
+
+                    <EditText
+                        android:id="@+id/etCapacity"
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp"
+                        android:layout_marginTop="12dp"
+                        android:hint="Capacity / Daily Work"
+                        android:gravity="top"
+                        android:padding="14dp"
+                        android:background="#F4F4F4"
+                        android:textSize="16sp"/>
+
+                    <EditText
+                        android:id="@+id/etShopAddress"
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp"
+                        android:layout_marginTop="12dp"
+                        android:hint="Shop Address"
+                        android:gravity="top"
+                        android:padding="14dp"
+                        android:background="#F4F4F4"
+                        android:textSize="16sp"/>
+
+                    <Spinner
+                        android:id="@+id/spinnerCanDeliverProfile"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        android:layout_marginTop="12dp"/>
+
+                </LinearLayout>
+
+
+                <!-- Save -->
+
+                <Button
+                    android:id="@+id/btnSave"
+                    android:layout_width="match_parent"
+                    android:layout_height="58dp"
+                    android:layout_marginTop="25dp"
+                    android:text="💾  SAVE CHANGES"
+                    android:textColor="#FFFFFF"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    android:backgroundTint="#FF4081"/>
+
+                <Button
+                    android:id="@+id/btnCancelEdit"
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:layout_marginTop="10dp"
+                    android:text="CANCEL"
+                    android:textSize="16sp"/>
+
+            </LinearLayout>
+
+
+            <!-- ================= MAIN BUTTONS ================= -->
+
+            <Button
+                android:id="@+id/btnEditProfile"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginLeft="22dp"
+                android:layout_marginRight="22dp"
+                android:layout_marginTop="10dp"
+                android:text="✏️  EDIT PROFILE"
+                android:textColor="#FFFFFF"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:backgroundTint="#FF4081"/>
 
             <Button
                 android:id="@+id/btnMyOrders"
                 android:layout_width="match_parent"
-                android:layout_height="54dp"
-                android:text="📦 میرے آرڈرز"
-                android:backgroundTint="#FFE4EC"
-                android:textColor="#FF4081"
-                android:layout_marginTop="10dp" />
+                android:layout_height="55dp"
+                android:layout_marginLeft="22dp"
+                android:layout_marginRight="22dp"
+                android:layout_marginTop="10dp"
+                android:text="📦  MY ORDERS"/>
 
             <Button
                 android:id="@+id/btnLogout"
                 android:layout_width="match_parent"
-                android:layout_height="54dp"
-                android:text="🚪 لاگ آؤٹ"
-                android:backgroundTint="#F44336"
-                android:textColor="#FFFFFF"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="20dp" />
+                android:layout_height="55dp"
+                android:layout_marginLeft="22dp"
+                android:layout_marginRight="22dp"
+                android:layout_marginTop="5dp"
+                android:text="🚪  LOGOUT"/>
 
         </LinearLayout>
 
     </ScrollView>
 
-    <!-- Bottom Navigation ab ScrollView ke BAHAR hai -->
+
+    <!-- ================= BOTTOM NAV ================= -->
+
     <include
         android:id="@+id/bottomNav"
-        layout="@layout/bottom_nav_bar"
-        android:layout_width="match_parent"
-        android:layout_height="64dp" />
+        layout="@layout/bottom_nav_bar"/>
 
 </LinearLayout>

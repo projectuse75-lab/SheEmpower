@@ -4,10 +4,13 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DialogSelection />
-      </SelectionState>
-      <SelectionState runConfigName="SellerListActivityTest">
-        <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2026-09-19T10:56:30.098912400Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=aea6tc89pnmncivg" />
+            </handle>
+          </Target>
+        </DropdownSelection>
         <DialogSelection />
       </SelectionState>
       <SelectionState runConfigName="Tests in 'com.sheempower.app'">
@@ -23,6 +26,10 @@
         <DialogSelection />
       </SelectionState>
       <SelectionState runConfigName="SplashActivityTest">
+        <option name="selectionMode" value="DROPDOWN" />
+        <DialogSelection />
+      </SelectionState>
+      <SelectionState runConfigName="BuyerProfileActivity">
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />
       </SelectionState>
