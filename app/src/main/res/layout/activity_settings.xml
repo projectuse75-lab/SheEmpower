@@ -1,67 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/white">
+    android:background="@color/settings_background">
+
+    <!-- HEADER -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="22dp"
+        android:paddingBottom="18dp"
+        android:background="@color/primary_pink">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⚙️"
+            android:textSize="34sp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Settings"
+            android:textColor="@android:color/white"
+            android:textSize="26sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="سیٹنگز"
+            android:textColor="@android:color/white"
+            android:textSize="15sp"
+            android:layout_marginTop="2dp"/>
+
+    </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="18dp">
 
-            <!-- User Email Section -->
+            <!-- USER CARD -->
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="12dp"
-                android:background="@drawable/bg_rounded_pink"
-                android:layout_marginBottom="16dp">
+                android:padding="18dp"
+                android:background="@drawable/settings_user_card">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Logged in as:"
-                    android:textSize="12sp"
-                    android:textColor="@color/gray" />
+                    android:text="Logged in as"
+                    android:textColor="@color/text_gray"
+                    android:textSize="13sp"/>
+
+                <TextView
+                    android:id="@+id/tvUserName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="User"
+                    android:textColor="@color/text_dark"
+                    android:textSize="21sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="4dp"/>
 
                 <TextView
                     android:id="@+id/tvUserEmail"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="user@email.com"
+                    android:text="Email"
+                    android:textColor="@color/text_gray"
                     android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/black"
-                    android:layout_marginTop="4dp" />
+                    android:layout_marginTop="3dp"/>
+
+                <TextView
+                    android:id="@+id/tvUserContact"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Contact"
+                    android:textColor="@color/text_gray"
+                    android:textSize="14sp"
+                    android:layout_marginTop="2dp"/>
 
             </LinearLayout>
 
-            <!-- Settings Header -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="App Settings"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@color/black"
-                android:layout_marginBottom="12dp" />
+            <!-- ACCOUNT -->
 
-            <!-- Notifications Setting -->
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="12dp"
-                android:background="@drawable/bg_rounded_light_gray"
-                android:layout_marginBottom="8dp">
+                android:text="👤  Account"
+                android:textColor="@color/primary_pink"
+                android:textSize="23sp"
+                android:textStyle="bold"
+                android:layout_marginTop="22dp"
+                android:layout_marginBottom="10dp"/>
+
+            <!-- CHANGE NAME -->
+
+            <LinearLayout
+                android:id="@+id/llChangeName"
+                style="@style/SettingsCardStyle"
+                android:background="@drawable/settings_item_background"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    style="@style/SettingsIconStyle"
+                    android:text="✏️"/>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -70,20 +134,126 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="🔔 Notifications"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/black" />
+                        style="@style/SettingsTitleStyle"
+                        android:text="Change Name"/>
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Enable/Disable notifications"
-                        android:textSize="12sp"
-                        android:textColor="@color/gray"
-                        android:layout_marginTop="2dp" />
+                        style="@style/SettingsSubtitleStyle"
+                        android:text="اپنا نام تبدیل کریں"/>
+
+                </LinearLayout>
+
+                <TextView
+                    style="@style/SettingsArrowStyle"
+                    android:text="›"/>
+
+            </LinearLayout>
+
+            <!-- CHANGE CONTACT -->
+
+            <LinearLayout
+                android:id="@+id/llChangeContact"
+                style="@style/SettingsCardStyle"
+                android:background="@drawable/settings_item_background"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    style="@style/SettingsIconStyle"
+                    android:text="📱"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/SettingsTitleStyle"
+                        android:text="Change Contact"/>
+
+                    <TextView
+                        style="@style/SettingsSubtitleStyle"
+                        android:text="WhatsApp / contact number"/>
+
+                </LinearLayout>
+
+                <TextView
+                    style="@style/SettingsArrowStyle"
+                    android:text="›"/>
+
+            </LinearLayout>
+
+            <!-- CHANGE PASSWORD -->
+
+            <LinearLayout
+                android:id="@+id/llChangePassword"
+                style="@style/SettingsCardStyle"
+                android:background="@drawable/settings_item_background"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    style="@style/SettingsIconStyle"
+                    android:text="🔐"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/SettingsTitleStyle"
+                        android:text="Change Password"/>
+
+                    <TextView
+                        style="@style/SettingsSubtitleStyle"
+                        android:text="اپنا password محفوظ رکھیں"/>
+
+                </LinearLayout>
+
+                <TextView
+                    style="@style/SettingsArrowStyle"
+                    android:text="›"/>
+
+            </LinearLayout>
+
+            <!-- APP SETTINGS -->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⚙️  App Settings"
+                android:textColor="@color/primary_pink"
+                android:textSize="23sp"
+                android:textStyle="bold"
+                android:layout_marginTop="22dp"
+                android:layout_marginBottom="10dp"/>
+
+            <!-- NOTIFICATIONS -->
+
+            <LinearLayout
+                style="@style/SettingsCardStyle"
+                android:background="@drawable/settings_item_background">
+
+                <TextView
+                    style="@style/SettingsIconStyle"
+                    android:text="🔔"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/SettingsTitleStyle"
+                        android:text="Notifications"/>
+
+                    <TextView
+                        style="@style/SettingsSubtitleStyle"
+                        android:text="Enable / Disable notifications"/>
 
                 </LinearLayout>
 
@@ -91,18 +261,19 @@
                     android:id="@+id/switchNotifications"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical" />
+                    android:buttonTint="@color/primary_pink"/>
 
             </LinearLayout>
 
-            <!-- Dark Theme Setting -->
+            <!-- DARK THEME -->
+
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="12dp"
-                android:background="@drawable/bg_rounded_light_gray"
-                android:layout_marginBottom="16dp">
+                style="@style/SettingsCardStyle"
+                android:background="@drawable/settings_item_background">
+
+                <TextView
+                    style="@style/SettingsIconStyle"
+                    android:text="🌙"/>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -111,20 +282,12 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="🌙 Dark Theme"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/black" />
+                        style="@style/SettingsTitleStyle"
+                        android:text="Dark Theme"/>
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Enable/Disable dark mode"
-                        android:textSize="12sp"
-                        android:textColor="@color/gray"
-                        android:layout_marginTop="2dp" />
+                        style="@style/SettingsSubtitleStyle"
+                        android:text="Enable / Disable dark mode"/>
 
                 </LinearLayout>
 
@@ -132,29 +295,34 @@
                     android:id="@+id/switchDarkTheme"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical" />
+                    android:buttonTint="@color/primary_pink"/>
 
             </LinearLayout>
 
-            <!-- Info Settings Header -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="More Information"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@color/black"
-                android:layout_marginBottom="12dp" />
+            <!-- INFORMATION -->
 
-            <!-- Privacy Policy -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ℹ️  More Information"
+                android:textColor="@color/primary_pink"
+                android:textSize="23sp"
+                android:textStyle="bold"
+                android:layout_marginTop="22dp"
+                android:layout_marginBottom="10dp"/>
+
+            <!-- PRIVACY -->
+
             <LinearLayout
                 android:id="@+id/llPrivacyPolicy"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="12dp"
-                android:background="@drawable/bg_rounded_light_gray"
-                android:layout_marginBottom="8dp">
+                style="@style/SettingsCardStyle"
+                android:background="@drawable/settings_item_background"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    style="@style/SettingsIconStyle"
+                    android:text="🔒"/>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -163,42 +331,68 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="📋 Privacy &amp; Policy"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/black" />
+                        style="@style/SettingsTitleStyle"
+                        android:text="Privacy Policy"/>
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Read our privacy policy"
-                        android:textSize="12sp"
-                        android:textColor="@color/gray"
-                        android:layout_marginTop="2dp" />
+                        style="@style/SettingsSubtitleStyle"
+                        android:text="رازداری کی پالیسی"/>
 
                 </LinearLayout>
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="›"
-                    android:textSize="24sp"
-                    android:textColor="@color/gray"
-                    android:layout_gravity="center_vertical" />
+                    style="@style/SettingsArrowStyle"
+                    android:text="›"/>
 
             </LinearLayout>
 
-            <!-- About App -->
+            <!-- TERMS -->
+
+            <LinearLayout
+                android:id="@+id/llTermsConditions"
+                style="@style/SettingsCardStyle"
+                android:background="@drawable/settings_item_background"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    style="@style/SettingsIconStyle"
+                    android:text="📜"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/SettingsTitleStyle"
+                        android:text="Terms &amp; Conditions"/>
+
+                    <TextView
+                        style="@style/SettingsSubtitleStyle"
+                        android:text="شرائط و ضوابط"/>
+
+                </LinearLayout>
+
+                <TextView
+                    style="@style/SettingsArrowStyle"
+                    android:text="›"/>
+
+            </LinearLayout>
+
+            <!-- ABOUT -->
+
             <LinearLayout
                 android:id="@+id/llAboutApp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="12dp"
-                android:background="@drawable/bg_rounded_light_gray"
-                android:layout_marginBottom="24dp">
+                style="@style/SettingsCardStyle"
+                android:background="@drawable/settings_item_background"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    style="@style/SettingsIconStyle"
+                    android:text="💗"/>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -207,64 +401,50 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="ℹ️ About App"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/black" />
+                        style="@style/SettingsTitleStyle"
+                        android:text="About She Empower"/>
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Version 1.0"
-                        android:textSize="12sp"
-                        android:textColor="@color/gray"
-                        android:layout_marginTop="2dp" />
+                        style="@style/SettingsSubtitleStyle"
+                        android:text="Version 1.0"/>
 
                 </LinearLayout>
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="›"
-                    android:textSize="24sp"
-                    android:textColor="@color/gray"
-                    android:layout_gravity="center_vertical" />
+                    style="@style/SettingsArrowStyle"
+                    android:text="›"/>
 
             </LinearLayout>
+
+            <!-- LOGOUT -->
+
+            <Button
+                android:id="@+id/btnLogout"
+                android:layout_width="match_parent"
+                android:layout_height="58dp"
+                android:text="LOGOUT"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:backgroundTint="@color/primary_pink"
+                android:layout_marginTop="28dp"/>
+
+            <!-- DELETE -->
+
+            <Button
+                android:id="@+id/btnDeleteAccount"
+                android:layout_width="match_parent"
+                android:layout_height="58dp"
+                android:text="DELETE ACCOUNT"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:backgroundTint="@color/error_red"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="20dp"/>
 
         </LinearLayout>
 
     </ScrollView>
-
-    <!-- Logout & Delete Account Buttons -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:background="@color/white">
-
-        <Button
-            android:id="@+id/btnLogout"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="Logout"
-            android:textColor="@color/white"
-            android:background="@drawable/bg_button_pink"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
-
-        <Button
-            android:id="@+id/btnDeleteAccount"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="Delete Account"
-            android:textColor="@color/white"
-            android:background="@drawable/bg_button_red"
-            android:textStyle="bold" />
-
-    </LinearLayout>
 
 </LinearLayout>
