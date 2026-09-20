@@ -15,6 +15,7 @@ import com.sheempower.app.models.Order;
 import com.sheempower.app.utils.BottomNavHelper;
 import com.sheempower.app.utils.Constants;
 import com.sheempower.app.utils.SessionManager;
+import com.sheempower.app.utils.PreferencesManager;
 import com.sheempower.app.utils.VoiceGuide;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,7 @@ public class MyOrdersActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        applyTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_orders);
 
@@ -75,5 +77,15 @@ public class MyOrdersActivity extends AppCompatActivity {
                         tvEmpty.setText("خرابی: " + error.getMessage());
                     }
                 });
+    }
+
+    // ✅ DARK THEME - ADD AT END OF CLASS
+    private void applyTheme() {
+        PreferencesManager prefs = new PreferencesManager(this);
+        if (prefs.isDarkThemeEnabled()) {
+            setTheme(R.style.Theme_SheEmpower_Dark);
+        } else {
+            setTheme(R.style.Theme_SheEmpower);
+        }
     }
 }

@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:background="#FFFFFF">
+    android:background="?android:attr/windowBackground">
 
     <!-- Logo -->
     <ImageView

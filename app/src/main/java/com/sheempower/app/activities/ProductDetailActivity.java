@@ -10,6 +10,7 @@ import com.sheempower.app.R;
 import com.sheempower.app.models.Product;
 import com.sheempower.app.models.Seller;
 import com.sheempower.app.utils.*;
+import com.sheempower.app.utils.PreferencesManager;
 
 public class ProductDetailActivity extends AppCompatActivity {
 
@@ -25,6 +26,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        applyTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_detail);
 
@@ -109,11 +111,14 @@ public class ProductDetailActivity extends AppCompatActivity {
         tvDescription.setText(currentProduct.getDescription());
         if (currentProduct.getImageUrl() != null && !currentProduct.getImageUrl().isEmpty())
             Glide.with(ProductDetailActivity.this).load(currentProduct.getImageUrl()).into(ivProduct);
-        loadSeller(currentProduct.getSellerId());
+        if (currentProduct.getSellerId() != null && !currentProduct.getSellerId().trim().isEmpty()) {
+            loadSeller(currentProduct.getSellerId().trim());
+        }
     }
 
     private void loadSeller(String sellerId) {
-        FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS).child(sellerId)
+        if (sellerId == null || sellerId.trim().isEmpty()) return;
+        FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS).child(sellerId.trim())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override public void onDataChange(DataSnapshot snapshot) {
                         currentSeller = snapshot.getValue(Seller.class);
@@ -127,6 +132,10 @@ public class ProductDetailActivity extends AppCompatActivity {
                         tvSellerMeta.setText(Constants.getUrduLabel(currentSeller.getCategory()) + " · " + currentSeller.getCity());
                         tvSellerRating.setText("⭐ " + currentSeller.getRating() + (currentSeller.isTopRated() ? "  🏅 بہترین" : ""));
                         btnViewSeller.setOnClickListener(v -> {
+                            if (sellerId.isEmpty()) {
+                                Toast.makeText(ProductDetailActivity.this, "بیچنے والی کی معلومات نہیں ملی", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
                             Intent i = new Intent(ProductDetailActivity.this, SellerProfileActivity.class);
                             i.putExtra(SellerProfileActivity.EXTRA_SELLER_ID, sellerId);
                             startActivity(i);
@@ -139,5 +148,15 @@ public class ProductDetailActivity extends AppCompatActivity {
     private void requireBuyerLogin(Runnable action) {
         if (session.isLoggedIn()) action.run();
         else { Toast.makeText(this, "پہلے لاگ ان کریں", Toast.LENGTH_SHORT).show(); startActivity(new Intent(this, LoginActivity.class)); }
+    }
+
+    // ✅ DARK THEME - ADD AT END OF CLASS
+    private void applyTheme() {
+        PreferencesManager prefs = new PreferencesManager(this);
+        if (prefs.isDarkThemeEnabled()) {
+            setTheme(R.style.Theme_SheEmpower_Dark);
+        } else {
+            setTheme(R.style.Theme_SheEmpower);
+        }
     }
 }

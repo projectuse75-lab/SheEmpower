@@ -16,6 +16,7 @@ import com.sheempower.app.R;
 import com.sheempower.app.models.User;
 import com.sheempower.app.utils.Constants;
 import com.sheempower.app.utils.SessionManager;
+import com.sheempower.app.utils.PreferencesManager;
 import com.sheempower.app.utils.VoiceGuide;
 
 public class LoginActivity extends AppCompatActivity {
@@ -33,6 +34,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        applyTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
@@ -296,5 +298,15 @@ public class LoginActivity extends AppCompatActivity {
     private void speakText() {
         String textToSpeak = "لاگ ان کریں، اپنا ای میل اور مضبوط پاس ورڈ درج کریں";
         VoiceGuide.explain(this, textToSpeak);
+    }
+
+    // ✅ DARK THEME - ADD AT END OF CLASS
+    private void applyTheme() {
+        PreferencesManager prefs = new PreferencesManager(this);
+        if (prefs.isDarkThemeEnabled()) {
+            setTheme(R.style.Theme_SheEmpower_Dark);
+        } else {
+            setTheme(R.style.Theme_SheEmpower);
+        }
     }
 }

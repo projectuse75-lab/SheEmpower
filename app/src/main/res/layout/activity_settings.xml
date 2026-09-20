@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/settings_background">
+    android:background="?android:attr/windowBackground">
 
     <!-- HEADER -->
 
@@ -58,6 +58,8 @@
 
             <!-- USER CARD -->
 
+            <!-- USER CARD -->
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -69,7 +71,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Logged in as"
-                    android:textColor="@color/text_gray"
+                    android:textColor="@color/settings_card_text"
                     android:textSize="13sp"/>
 
                 <TextView
@@ -77,7 +79,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="User"
-                    android:textColor="@color/text_dark"
+                    android:textColor="@color/settings_card_text"
                     android:textSize="21sp"
                     android:textStyle="bold"
                     android:layout_marginTop="4dp"/>
@@ -87,7 +89,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Email"
-                    android:textColor="@color/text_gray"
+                    android:textColor="@color/settings_card_text"
                     android:textSize="14sp"
                     android:layout_marginTop="3dp"/>
 
@@ -96,7 +98,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Contact"
-                    android:textColor="@color/text_gray"
+                    android:textColor="@color/settings_card_text"
                     android:textSize="14sp"
                     android:layout_marginTop="2dp"/>
 
@@ -446,5 +448,9 @@
         </LinearLayout>
 
     </ScrollView>
+    <include
+        layout="@layout/bottom_nav_bar"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"/>
 
 </LinearLayout>

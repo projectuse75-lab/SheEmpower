@@ -19,6 +19,7 @@ import com.sheempower.app.adapters.SellerAdapter;
 import com.sheempower.app.models.Product;
 import com.sheempower.app.models.Seller;
 import com.sheempower.app.utils.*;
+import com.sheempower.app.utils.PreferencesManager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -46,6 +47,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // ✅ Apply theme سب سے پہلے
+        applyTheme();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -73,6 +77,8 @@ public class MainActivity extends AppCompatActivity {
         loadSellersThenProducts();
         BottomNavHelper.setupForBuyerOrVisitor(this, findViewById(R.id.bottomNav), 1);
     }
+
+
 
     @Override
     protected void onResume() {
@@ -220,8 +226,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openSellerProfile(Seller seller) {
+        if (seller == null || seller.getUid() == null || seller.getUid().trim().isEmpty()) {
+            Toast.makeText(this, "بیچنے والی کی معلومات نہیں ملی", Toast.LENGTH_SHORT).show();
+            return;
+        }
         Intent i = new Intent(this, SellerProfileActivity.class);
-        i.putExtra(SellerProfileActivity.EXTRA_SELLER_ID, seller.getUid());
+        i.putExtra(SellerProfileActivity.EXTRA_SELLER_ID, seller.getUid().trim());
         startActivity(i);
     }
 
@@ -254,5 +264,14 @@ public class MainActivity extends AppCompatActivity {
     private void requireBuyerLogin(Runnable action) {
         if (session.isLoggedIn()) action.run();
         else { Toast.makeText(this, "پہلے لاگ ان کریں", Toast.LENGTH_SHORT).show(); startActivity(new Intent(this, LoginActivity.class)); }
+    }
+    // ✅ Apply Dark Theme
+    private void applyTheme() {
+        PreferencesManager prefs = new PreferencesManager(this);
+        if (prefs.isDarkThemeEnabled()) {
+            setTheme(R.style.Theme_SheEmpower_Dark);
+        } else {
+            setTheme(R.style.Theme_SheEmpower);
+        }
     }
 }

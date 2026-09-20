@@ -1,36 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <resources>
 
-    <style name="Theme.SheEmpower"
-        parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <!-- ============================================ -->
+<!-- LIGHT THEME (Default) -->
+<!-- ============================================ -->
+<style name="Theme.SheEmpower" parent="Theme.AppCompat.Light">
+    <!-- Primary Colors -->
+    <item name="colorPrimary">#FF4081</item>
+    <item name="colorPrimaryDark">#C2185B</item>
+    <item name="colorAccent">#FF4081</item>
+    <item name="android:windowBackground">@color/bg_light</item>
+    <item name="android:textColorPrimary">@color/text_light</item>
 
-        <item name="colorPrimary">@color/primary_pink</item>
-        <item name="colorPrimaryVariant">@color/primary_pink</item>
-        <item name="colorOnPrimary">@android:color/white</item>
+    <!-- Background -->
+    <item name="android:windowBackground">@color/white</item>
+    <item name="android:colorBackground">@color/white</item>
 
-        <item name="android:statusBarColor">@color/primary_pink</item>
-        <item name="android:windowBackground">@android:color/white</item>
+    <!-- Text Colors -->
+    <item name="android:textColorPrimary">@color/text_dark</item>
+    <item name="android:textColorSecondary">@color/text_gray</item>
 
-        <item name="android:navigationBarColor">@android:color/white</item>
+    <!-- Action Bar -->
+    <item name="android:actionBarStyle">@style/ActionBar.Styled</item>
+</style>
 
-    </style>
+    <!-- Action Bar for Light Theme -->
+<style name="ActionBar.Styled" parent="Widget.AppCompat.ActionBar">
+<item name="android:background">@color/white</item>
+<item name="android:textColorPrimary">@color/text_dark</item>
+</style>
 
-    <style name="Theme.SheEmpower.Starting"
-        parent="Theme.SplashScreen">
-
-        <item name="windowSplashScreenBackground">
-            @android:color/white
-        </item>
-
-        <item name="windowSplashScreenAnimatedIcon">
-            @drawable/logo_512
-        </item>
-
-        <item name="postSplashScreenTheme">
-            @style/Theme.SheEmpower
-        </item>
-
+    <!-- Splash Screen Theme -->
+    <style name="Theme.SheEmpower.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/white</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/Theme.SheEmpower</item>
     </style>
 
 </resources>

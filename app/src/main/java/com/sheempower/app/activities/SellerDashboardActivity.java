@@ -9,6 +9,7 @@ import com.sheempower.app.R;
 import com.sheempower.app.models.Order;
 import com.sheempower.app.models.Seller;
 import com.sheempower.app.utils.*;
+import com.sheempower.app.utils.PreferencesManager;
 
 public class SellerDashboardActivity extends AppCompatActivity {
 
@@ -18,6 +19,8 @@ public class SellerDashboardActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        applyTheme();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_seller_dashboard);
 
@@ -45,6 +48,7 @@ public class SellerDashboardActivity extends AppCompatActivity {
 
         BottomNavHelper.setupForSeller(this, findViewById(R.id.bottomNav), 1);
     }
+
 
     @Override
     protected void onResume() {
@@ -170,4 +174,15 @@ public class SellerDashboardActivity extends AppCompatActivity {
                     public void onCancelled(DatabaseError error) {}
                 });
     }
+    // ✅ Apply Dark Theme
+    private void applyTheme() {
+        PreferencesManager prefs = new PreferencesManager(this);
+        if (prefs.isDarkThemeEnabled()) {
+            setTheme(R.style.Theme_SheEmpower_Dark);
+        } else {
+            setTheme(R.style.Theme_SheEmpower);
+        }
+    }
+
+
 }

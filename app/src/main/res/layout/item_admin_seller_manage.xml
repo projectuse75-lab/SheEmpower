@@ -4,7 +4,7 @@
     android:layout_width="match_parent" android:layout_height="wrap_content"
     android:layout_marginBottom="8dp" app:cardCornerRadius="12dp" app:cardElevation="1dp">
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:orientation="horizontal" android:padding="12dp" android:gravity="center_vertical">
+        android:orientation="horizontal" android:background="?android:attr/windowBackground" android:padding="12dp" android:gravity="center_vertical">
         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
             <TextView android:id="@+id/tvAdminSellerName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textStyle="bold" android:textSize="13sp" />
             <TextView android:id="@+id/tvAdminSellerStatus" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="11sp" />

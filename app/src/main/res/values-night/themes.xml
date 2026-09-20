@@ -1,13 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="settings_background">#121212</color>
-    <color name="settings_card">#1E1E1E</color>
 
-    <color name="text_dark">#FFFFFF</color>
-    <color name="text_gray">#BDBDBD</color>
 
-    <color name="white">#FFFFFF</color>
-    <color name="black">#000000</color>
+    <!-- ============================================ -->
+    <!-- DARK THEME -->
+    <!-- ============================================ -->
+    <style name="Theme.SheEmpower_Dark" parent="Theme.AppCompat">
+        <!-- Primary Colors -->
+        <item name="colorPrimary">#FF4081</item>
+        <item name="colorPrimaryDark">#1a1a1a</item>
+        <item name="colorAccent">#FF4081</item>
+
+        <!-- Background -->
+        <item name="android:windowBackground">#1a1a1a</item>
+        <item name="android:colorBackground">#1a1a1a</item>
+        <item name="android:windowBackground">@color/bg_dark</item>
+        <item name="android:textColorPrimary">@color/text_dark</item>
+
+        <!-- Text Colors -->
+        <item name="android:textColorPrimary">#FFFFFF</item>
+        <item name="android:textColorSecondary">#B0BEC5</item>
+
+        <!-- Action Bar -->
+        <item name="android:actionBarStyle">@style/ActionBar.Dark.Styled</item>
+    </style>
+
+    <!-- Action Bar for Dark Theme -->
+    <style name="ActionBar.Dark.Styled" parent="Widget.AppCompat.ActionBar">
+        <item name="android:background">#263238</item>
+        <item name="android:textColorPrimary">#FFFFFF</item>
+    </style>
+
+    <!-- Splash Screen Theme -->
+    <style name="Theme.SheEmpower.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#1a1a1a</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/Theme.SheEmpower_Dark</item>
+    </style>
 
 </resources>

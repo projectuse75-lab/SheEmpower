@@ -27,6 +27,7 @@ import com.sheempower.app.R;
 import com.sheempower.app.models.Seller;
 import com.sheempower.app.models.User;
 import com.sheempower.app.utils.*;
+import com.sheempower.app.utils.PreferencesManager;
 import java.io.File;
 
 public class SellerRegistrationActivity extends AppCompatActivity {
@@ -74,6 +75,7 @@ public class SellerRegistrationActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        applyTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_seller_registration);
 
@@ -453,5 +455,16 @@ public class SellerRegistrationActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
     }
+
+    // ✅ DARK THEME - ADD AT END OF CLASS
+    private void applyTheme() {
+        PreferencesManager prefs = new PreferencesManager(this);
+        if (prefs.isDarkThemeEnabled()) {
+            setTheme(R.style.Theme_SheEmpower_Dark);
+        } else {
+            setTheme(R.style.Theme_SheEmpower);
+        }
+    }
+
 }
 

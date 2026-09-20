@@ -13,8 +13,11 @@ import com.sheempower.app.models.Seller;
 import com.sheempower.app.utils.BottomNavHelper;
 import com.sheempower.app.utils.Constants;
 import com.sheempower.app.utils.VoiceGuide;
+import com.sheempower.app.utils.PreferencesManager;
 import java.util.ArrayList;
 import java.util.List;
+
+
 
 public class AdminDashboardActivity extends AppCompatActivity {
 
@@ -67,6 +70,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
     }
 
     @Override protected void onResume() {
+        applyTheme();
         super.onResume();
         loadStats();
         loadPendingSellers();
@@ -74,8 +78,12 @@ public class AdminDashboardActivity extends AppCompatActivity {
     }
 
     private void openSellerProfile(Seller seller) {
+        if (seller == null || seller.getUid() == null || seller.getUid().trim().isEmpty()) {
+            Toast.makeText(this, "بیچنے والی کی معلومات نہیں ملی", Toast.LENGTH_SHORT).show();
+            return;
+        }
         Intent i = new Intent(this, SellerProfileActivity.class);
-        i.putExtra(SellerProfileActivity.EXTRA_SELLER_ID, seller.getUid());
+        i.putExtra(SellerProfileActivity.EXTRA_SELLER_ID, seller.getUid().trim());
         startActivity(i);
     }
 
@@ -195,6 +203,16 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 tvStatus  = itemView.findViewById(R.id.tvAdminSellerStatus);
                 btnToggle = itemView.findViewById(R.id.btnAdminToggle);
             }
+        }
+    }
+
+    // ✅ DARK THEME - ADD AT END OF CLASS
+    private void applyTheme() {
+        PreferencesManager prefs = new PreferencesManager(this);
+        if (prefs.isDarkThemeEnabled()) {
+            setTheme(R.style.Theme_SheEmpower_Dark);
+        } else {
+            setTheme(R.style.Theme_SheEmpower);
         }
     }
 }

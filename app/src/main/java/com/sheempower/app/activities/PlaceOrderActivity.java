@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.textfield.TextInputEditText;
@@ -13,6 +14,7 @@ import com.sheempower.app.models.Order;
 import com.sheempower.app.models.OrderField;
 import com.sheempower.app.models.Product;
 import com.sheempower.app.models.Seller;
+import com.sheempower.app.utils.PreferencesManager;
 import com.sheempower.app.utils.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,16 +53,21 @@ public class PlaceOrderActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        applyTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_place_order);
 
         session = new SessionManager(this);
 
-        sellerId     = getIntent().getStringExtra(EXTRA_SELLER_ID);
-        productId    = getIntent().getStringExtra(EXTRA_PRODUCT_ID);
-        productName  = getIntent().getStringExtra(EXTRA_PRODUCT_NAME);
-        productPrice = getIntent().getDoubleExtra(EXTRA_PRODUCT_PRICE, 0);
-        singleProductMode = (productId != null);
+        if (getIntent() != null) {
+            sellerId     = getIntent().getStringExtra(EXTRA_SELLER_ID);
+            if (sellerId != null) sellerId = sellerId.trim();
+            productId    = getIntent().getStringExtra(EXTRA_PRODUCT_ID);
+            if (productId != null) productId = productId.trim();
+            productName  = getIntent().getStringExtra(EXTRA_PRODUCT_NAME);
+            productPrice = getIntent().getDoubleExtra(EXTRA_PRODUCT_PRICE, 0);
+        }
+        singleProductMode = (productId != null && !productId.isEmpty());
 
         tvSellerName        = findViewById(R.id.tvSellerName);
         tvSellerMeta        = findViewById(R.id.tvSellerMeta);
@@ -90,7 +97,7 @@ public class PlaceOrderActivity extends AppCompatActivity {
         // ہمیشہ قیمت کا خانہ بند رکھتے ہیں — خریدار کبھی خود قیمت تبدیل نہیں کر سکے گا
         etAmount.setEnabled(false);
         etAmount.setFocusable(false);
-        tvAmountLockedNote.setVisibility(android.view.View.VISIBLE);
+        tvAmountLockedNote.setVisibility(View.VISIBLE);
 
         if (singleProductMode) {
             VoiceGuide.announceScreen(this,
@@ -98,14 +105,14 @@ public class PlaceOrderActivity extends AppCompatActivity {
             tvSelectedItem.setText("منتخب کردہ چیز:\n" + productName);
             etAmount.setText(String.valueOf((long) productPrice));
             tvAmountLockedNote.setText("🔒 یہ قیمت بیچنے والی نے مقرر کی ہے");
-            tvSelectedItem.setVisibility(android.view.View.VISIBLE);
-            layoutProductChecklist.setVisibility(android.view.View.GONE);
-            tvChecklistHeader.setVisibility(android.view.View.GONE);
+            tvSelectedItem.setVisibility(View.VISIBLE);
+            layoutProductChecklist.setVisibility(View.GONE);
+            tvChecklistHeader.setVisibility(View.GONE);
         } else {
             VoiceGuide.announceScreen(this,
                     "یہ آرڈر کی سکرین ہے۔ نیچے دی گئی فہرست میں سے وہ چیزیں منتخب کریں جو آپ منگوانا چاہتی ہیں، ہر چیز کے آگے اس کی قیمت لکھی ہے۔ منتخب کردہ چیزوں کی کل قیمت خود بخود جمع ہو جائے گی۔");
-            tvSelectedItem.setVisibility(android.view.View.GONE);
-            tvChecklistHeader.setVisibility(android.view.View.VISIBLE);
+            tvSelectedItem.setVisibility(View.GONE);
+            tvChecklistHeader.setVisibility(View.VISIBLE);
             etAmount.setText("0");
             tvAmountLockedNote.setText("🔒 یہ رقم آپ کی منتخب کردہ چیزوں کے مطابق خود بخود بنتی ہے");
         }
@@ -115,6 +122,11 @@ public class PlaceOrderActivity extends AppCompatActivity {
     }
 
     private void loadSellerAndBuildForm() {
+        if (sellerId == null || sellerId.isEmpty()) {
+            Toast.makeText(this, "بیچنے والی نہیں ملی", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
         FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS).child(sellerId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override public void onDataChange(DataSnapshot snapshot) {
@@ -273,7 +285,7 @@ public class PlaceOrderActivity extends AppCompatActivity {
     private void submitOrder() {
         String amountStr = etAmount.getText().toString().trim();
         String notes = etNotes.getText().toString().trim();
-        boolean needsBuyerAddress = layoutBuyerAddress.getVisibility() == android.view.View.VISIBLE;
+        boolean needsBuyerAddress = layoutBuyerAddress.getVisibility() == View.VISIBLE;
         String address = needsBuyerAddress ? etAddress.getText().toString().trim()
                 : (currentSeller.getShopAddress() != null ? currentSeller.getShopAddress() : currentSeller.getCity());
 
@@ -325,7 +337,14 @@ public class PlaceOrderActivity extends AppCompatActivity {
 
         btnSubmitOrder.setEnabled(false);
 
-        FirebaseDatabase.getInstance().getReference().child(Constants.NODE_USERS).child(session.getUid())
+        String uid = session.getUid();
+        if (uid == null || uid.trim().isEmpty()) {
+            Toast.makeText(this, "پہلے لاگ ان کریں", Toast.LENGTH_SHORT).show();
+            btnSubmitOrder.setEnabled(true);
+            return;
+        }
+
+        FirebaseDatabase.getInstance().getReference().child(Constants.NODE_USERS).child(uid.trim())
                 .get().addOnSuccessListener(userSnap -> {
                     String buyerName = userSnap.child("name").getValue(String.class);
                     saveOrder(finalAmount, finalAddress, finalDeliveryMethod, details, notes, buyerName, finalProductNameCopy);
@@ -368,5 +387,15 @@ public class PlaceOrderActivity extends AppCompatActivity {
                     btnSubmitOrder.setEnabled(true);
                     Toast.makeText(this, "خرابی: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
+    }
+
+    // ✅ DARK THEME - ADD AT END OF CLASS
+    private void applyTheme() {
+        PreferencesManager prefs = new PreferencesManager(this);
+        if (prefs.isDarkThemeEnabled()) {
+            setTheme(R.style.Theme_SheEmpower_Dark);
+        } else {
+            setTheme(R.style.Theme_SheEmpower);
+        }
     }
 }

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Main App Colors -->
+    <color name="primary_pink">#FF4081</color>
+    <color name="light_pink">#3A1F2A</color>
+    <color name="lighter_pink">#2A171F</color>
+    <color name="text_gray">#CCCCCC</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="gray">#AAAAAA</color>
+    <color name="light_gray">#2A2A2A</color>
+    <color name="settings_card_background">#000000</color>
+    <color name="settings_card_text">#FFFFFF</color>
+    <color name="screen_background">#101010</color>
+    <color name="screen_surface">#1C1C1C</color>
+    <color name="screen_text">#FFFFFF</color>
+    <color name="screen_secondary_text">#CCCCCC</color>
+    <color name="settings_background">#101010</color>
+    <color name="settings_card">#1C1C1C</color>
+    <color name="bg_dark">#1a1a1a</color>
+    <color name="text_dark">#FFFFFF</color>
+
+</resources>

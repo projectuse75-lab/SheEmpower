@@ -2,54 +2,57 @@ package com.sheempower.app.utils;
 
 import android.content.Context;
 import android.speech.tts.TextToSpeech;
+import android.util.Log;
 
 import java.util.Locale;
 
 public class TTSHelper {
 
+    private static final String TAG = "TTSHelper";
     private static TTSHelper instance;
 
     private TextToSpeech tts;
     private boolean ready = false;
 
     private TTSHelper(Context ctx) {
+        try {
+            Context appContext = ctx.getApplicationContext();
 
-        Context appContext = ctx.getApplicationContext();
+            tts = new TextToSpeech(appContext, status -> {
+                try {
+                    if (status != TextToSpeech.SUCCESS || tts == null) {
+                        ready = false;
+                        return;
+                    }
 
-        tts = new TextToSpeech(appContext, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
+                    int langResult = tts.setLanguage(new Locale("ur", "PK"));
 
-                if (status != TextToSpeech.SUCCESS) {
+                    if (langResult == TextToSpeech.LANG_MISSING_DATA ||
+                            langResult == TextToSpeech.LANG_NOT_SUPPORTED) {
+
+                        langResult = tts.setLanguage(new Locale("hi", "IN"));
+                    }
+
+                    if (langResult == TextToSpeech.LANG_MISSING_DATA ||
+                            langResult == TextToSpeech.LANG_NOT_SUPPORTED) {
+
+                        tts.setLanguage(Locale.US);
+                    }
+
+                    if (tts != null) {
+                        tts.setSpeechRate(0.9f);
+                        ready = true;
+                    }
+                } catch (Throwable t) {
+                    Log.w(TAG, "Error configuring TextToSpeech engine: " + t.getMessage());
                     ready = false;
-                    return;
                 }
-
-                if (tts == null) {
-                    ready = false;
-                    return;
-                }
-
-                int result = tts.setLanguage(new Locale("ur", "PK"));
-
-                if (result == TextToSpeech.LANG_MISSING_DATA ||
-                        result == TextToSpeech.LANG_NOT_SUPPORTED) {
-
-                    result = tts.setLanguage(new Locale("hi", "IN"));
-                }
-
-                if (result == TextToSpeech.LANG_MISSING_DATA ||
-                        result == TextToSpeech.LANG_NOT_SUPPORTED) {
-
-                    result = tts.setLanguage(Locale.US);
-                }
-
-                if (tts != null) {
-                    tts.setSpeechRate(0.9f);
-                    ready = true;
-                }
-            }
-        });
+            });
+        } catch (Throwable t) {
+            Log.w(TAG, "Failed to initialize TextToSpeech engine: " + t.getMessage());
+            ready = false;
+            tts = null;
+        }
     }
 
     public static synchronized TTSHelper getInstance(Context ctx) {
@@ -64,12 +67,16 @@ public class TTSHelper {
     public void speak(String text) {
 
         if (ready && tts != null && text != null && !text.isEmpty()) {
-            tts.speak(
-                    text,
-                    TextToSpeech.QUEUE_FLUSH,
-                    null,
-                    "she_empower_tts"
-            );
+            try {
+                tts.speak(
+                        text,
+                        TextToSpeech.QUEUE_FLUSH,
+                        null,
+                        "she_empower_tts"
+                );
+            } catch (Throwable t) {
+                Log.w(TAG, "Failed to speak TTS text: " + t.getMessage());
+            }
         }
     }
 
@@ -81,7 +88,7 @@ public class TTSHelper {
             try {
                 tts.stop();
                 tts.shutdown();
-            } catch (Exception ignored) {
+            } catch (Throwable ignored) {
             }
 
             tts = null;

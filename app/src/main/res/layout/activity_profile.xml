@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#FFF9FB">
+    android:background="?android:attr/windowBackground">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -28,35 +29,53 @@
                 android:paddingBottom="22dp"
                 android:background="#FFF0F6">
 
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center"
                     android:padding="18dp"
                     android:background="#FF4081">
 
-                    <TextView
-                        android:id="@+id/tvBusinessHeader"
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="🎨 Seller Profile"
-                        android:textColor="#FFFFFF"
-                        android:textSize="23sp"
-                        android:textStyle="bold"
-                        android:gravity="center"/>
+                        android:layout_centerInParent="true"
+                        android:orientation="vertical"
+                        android:gravity="center">
 
-                    <TextView
-                        android:id="@+id/tvOwnerHeader"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:text="Seller"
-                        android:textColor="#FFFFFF"
-                        android:textSize="16sp"
-                        android:gravity="center"/>
+                        <TextView
+                            android:id="@+id/tvBusinessHeader"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🎨 Seller Profile"
+                            android:textColor="#FFFFFF"
+                            android:textSize="23sp"
+                            android:textStyle="bold"
+                            android:gravity="center"/>
 
-                </LinearLayout>
+                        <TextView
+                            android:id="@+id/tvOwnerHeader"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="Seller"
+                            android:textColor="#FFFFFF"
+                            android:textSize="16sp"
+                            android:gravity="center"/>
+
+                    </LinearLayout>
+
+                    <ImageButton
+                        android:id="@+id/btnSpeaker"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Voice Guide"
+                        android:src="@android:drawable/ic_lock_silent_mode_off"
+                        app:tint="#FFFFFF" />
+
+                </RelativeLayout>
 
                 <!-- Profile Picture -->
 

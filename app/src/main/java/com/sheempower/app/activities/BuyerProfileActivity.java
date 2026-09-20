@@ -17,6 +17,7 @@ import com.sheempower.app.R;
 import com.sheempower.app.models.Buyer;
 import com.sheempower.app.utils.Constants;
 import com.sheempower.app.utils.SessionManager;
+import com.sheempower.app.utils.PreferencesManager;
 
 public class BuyerProfileActivity extends AppCompatActivity {
 
@@ -33,6 +34,7 @@ public class BuyerProfileActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        applyTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_buyer_profile);
 
@@ -183,5 +185,15 @@ public class BuyerProfileActivity extends AppCompatActivity {
                             Toast.LENGTH_LONG
                     ).show();
                 });
+    }
+
+    // ✅ DARK THEME - ADD AT END OF CLASS
+    private void applyTheme() {
+        PreferencesManager prefs = new PreferencesManager(this);
+        if (prefs.isDarkThemeEnabled()) {
+            setTheme(R.style.Theme_SheEmpower_Dark);
+        } else {
+            setTheme(R.style.Theme_SheEmpower);
+        }
     }
 }

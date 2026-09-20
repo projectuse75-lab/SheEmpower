@@ -1,26 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="64dp"
-    android:orientation="horizontal" android:background="#FFFFFF" android:elevation="12dp">
 
-    <LinearLayout android:id="@+id/navItem1" android:layout_width="0dp" android:layout_height="match_parent"
-        android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:clickable="true" android:focusable="true">
-        <TextView android:id="@+id/navIcon1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="20sp" />
-        <TextView android:id="@+id/navLabel1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="10sp" />
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bottomNav"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:orientation="horizontal"
+    android:background="?android:attr/windowBackground"
+    android:elevation="12dp">
+
+    <!-- HOME / BROWSE -->
+
+    <LinearLayout
+        android:id="@+id/navItem1"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:clickable="true"
+        android:focusable="true">
+
+        <TextView
+            android:id="@+id/navIcon1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"/>
+
+        <TextView
+            android:id="@+id/navLabel1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"
+            android:textColor="@color/screen_text"/>
+
     </LinearLayout>
 
-    <LinearLayout android:id="@+id/navItem2" android:layout_width="0dp" android:layout_height="match_parent"
-        android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:clickable="true" android:focusable="true">
-        <TextView android:id="@+id/navIcon2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="20sp" />
-        <TextView android:id="@+id/navLabel2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="10sp" />
+
+    <!-- ORDERS -->
+
+    <LinearLayout
+        android:id="@+id/navItem2"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:clickable="true"
+        android:focusable="true">
+
+        <TextView
+            android:id="@+id/navIcon2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"/>
+
+        <TextView
+            android:id="@+id/navLabel2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"
+            android:textColor="@color/screen_text"/>
+
     </LinearLayout>
 
-    <LinearLayout android:id="@+id/navItem3" android:layout_width="0dp" android:layout_height="match_parent"
-        android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:clickable="true" android:focusable="true">
-        <TextView android:id="@+id/navIcon3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="20sp" />
-        <TextView android:id="@+id/navLabel3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="10sp" />
+
+    <!-- PROFILE -->
+
+    <LinearLayout
+        android:id="@+id/navItem3"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:clickable="true"
+        android:focusable="true">
+
+        <TextView
+            android:id="@+id/navIcon3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"/>
+
+        <TextView
+            android:id="@+id/navLabel3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"
+            android:textColor="@color/screen_text"/>
+
     </LinearLayout>
-    <!-- navIcon4, navLabel4, navItem4 کے ساتھ ایک اور item -->
+
+
+    <!-- SETTINGS -->
+
     <LinearLayout
         android:id="@+id/navItem4"
         android:layout_width="0dp"
@@ -36,7 +110,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="⚙️"
-            android:textSize="24sp" />
+            android:textSize="24sp"/>
 
         <TextView
             android:id="@+id/navLabel4"
@@ -44,7 +118,7 @@
             android:layout_height="wrap_content"
             android:text="سیٹنگز"
             android:textSize="10sp"
-            android:textColor="@color/gray" />
+            android:textColor="@color/screen_text"/>
 
     </LinearLayout>
 

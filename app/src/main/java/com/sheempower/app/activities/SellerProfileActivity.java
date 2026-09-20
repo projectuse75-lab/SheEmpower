@@ -13,6 +13,7 @@ import com.sheempower.app.adapters.ProductAdapter;
 import com.sheempower.app.models.Product;
 import com.sheempower.app.models.Seller;
 import com.sheempower.app.utils.*;
+import com.sheempower.app.utils.PreferencesManager;
 import de.hdodenhof.circleimageview.CircleImageView;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,11 +35,15 @@ public class SellerProfileActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        applyTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_seller_profile);
 
         session  = new SessionManager(this);
-        sellerId = getIntent().getStringExtra(EXTRA_SELLER_ID);
+        if (getIntent() != null && getIntent().hasExtra(EXTRA_SELLER_ID)) {
+            sellerId = getIntent().getStringExtra(EXTRA_SELLER_ID);
+            if (sellerId != null) sellerId = sellerId.trim();
+        }
 
         if (sellerId == null || sellerId.isEmpty()) {
             Toast.makeText(this, "بیچنے والی کی شناخت نہیں ملی", Toast.LENGTH_LONG).show();
@@ -90,6 +95,11 @@ public class SellerProfileActivity extends AppCompatActivity {
     }
 
     private void loadSellerData() {
+        if (sellerId == null || sellerId.isEmpty()) {
+            Toast.makeText(this, "بیچنے والی کی شناخت نہیں ملی", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
         FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS).child(sellerId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override public void onDataChange(DataSnapshot snapshot) {
@@ -140,6 +150,7 @@ public class SellerProfileActivity extends AppCompatActivity {
     }
 
     private void loadSellerProducts() {
+        if (sellerId == null || sellerId.isEmpty()) return;
         FirebaseDatabase.getInstance().getReference().child(Constants.NODE_PRODUCTS)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override public void onDataChange(DataSnapshot snapshot) {
@@ -176,5 +187,15 @@ public class SellerProfileActivity extends AppCompatActivity {
     private void requireBuyerLogin(Runnable action) {
         if (session.isLoggedIn()) action.run();
         else { Toast.makeText(this, "پہلے لاگ ان کریں", Toast.LENGTH_SHORT).show(); startActivity(new Intent(this, LoginActivity.class)); }
+    }
+
+    // ✅ DARK THEME - ADD AT END OF CLASS
+    private void applyTheme() {
+        PreferencesManager prefs = new PreferencesManager(this);
+        if (prefs.isDarkThemeEnabled()) {
+            setTheme(R.style.Theme_SheEmpower_Dark);
+        } else {
+            setTheme(R.style.Theme_SheEmpower);
+        }
     }
 }

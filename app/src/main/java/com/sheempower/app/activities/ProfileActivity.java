@@ -32,8 +32,9 @@ import com.sheempower.app.utils.BottomNavHelper;
 import com.sheempower.app.utils.CloudinaryHelper;
 import com.sheempower.app.utils.Constants;
 import com.sheempower.app.utils.SessionManager;
+import com.sheempower.app.utils.VoiceGuide;
 import com.sheempower.app.models.Buyer;
-
+import com.sheempower.app.utils.PreferencesManager;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -42,6 +43,7 @@ public class ProfileActivity extends AppCompatActivity {
     // Header
     private CircleImageView ivProfilePic;
     private ImageButton btnChangePic;
+    private ImageButton btnSpeaker;
 
     private TextView tvBusinessHeader;
     private TextView tvOwnerHeader;
@@ -113,10 +115,14 @@ public class ProfileActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        applyTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
         session = new SessionManager(this);
+
+        VoiceGuide.announceScreen(this,
+                "یہ آپ کی پروفائل کی سکرین ہے۔ یہاں آپ اپنی معلومات دیکھ اور تبدیل کر سکتی ہیں۔");
 
         initializeViews();
         setupCategorySpinner();
@@ -125,21 +131,13 @@ public class ProfileActivity extends AppCompatActivity {
 
         loadUser();
 
-        if (session.isSeller()) {
-
-            BottomNavHelper.setupForSeller(
-                    this,
-                    findViewById(R.id.bottomNav),
-                    3
-            );
-
-        } else {
-
-            BottomNavHelper.setupForBuyerOrVisitor(
-                    this,
-                    findViewById(R.id.bottomNav),
-                    3
-            );
+        View bottomNav = findViewById(R.id.bottomNav);
+        if (bottomNav != null) {
+            if (session.isSeller()) {
+                BottomNavHelper.setupForSeller(this, bottomNav, 3);
+            } else {
+                BottomNavHelper.setupForBuyerOrVisitor(this, bottomNav, 3);
+            }
         }
     }
 
@@ -148,6 +146,7 @@ public class ProfileActivity extends AppCompatActivity {
         // Header
         ivProfilePic = findViewById(R.id.ivProfilePic);
         btnChangePic = findViewById(R.id.btnChangePic);
+        btnSpeaker   = findViewById(R.id.btnSpeaker);
 
         tvBusinessHeader = findViewById(R.id.tvBusinessHeader);
         tvOwnerHeader = findViewById(R.id.tvOwnerHeader);
@@ -242,7 +241,9 @@ public class ProfileActivity extends AppCompatActivity {
                 android.R.layout.simple_spinner_dropdown_item
         );
 
-        spinnerCategoryProfile.setAdapter(adapter);
+        if (spinnerCategoryProfile != null) {
+            spinnerCategoryProfile.setAdapter(adapter);
+        }
     }
 
     private void setupDeliverySpinner() {
@@ -263,65 +264,90 @@ public class ProfileActivity extends AppCompatActivity {
                 android.R.layout.simple_spinner_dropdown_item
         );
 
-        spinnerCanDeliverProfile.setAdapter(adapter);
+        if (spinnerCanDeliverProfile != null) {
+            spinnerCanDeliverProfile.setAdapter(adapter);
+        }
     }
 
     private void setupButtons() {
 
+        if (btnSpeaker != null) {
+            btnSpeaker.setOnClickListener(v -> speakText());
+        }
+
         // Change profile picture
-        btnChangePic.setOnClickListener(v ->
-                imagePicker.launch("image/*")
-        );
+        if (btnChangePic != null) {
+            btnChangePic.setOnClickListener(v ->
+                    imagePicker.launch("image/*")
+            );
+        }
 
         // Open Edit Profile
-        btnEditProfile.setOnClickListener(v ->
-                openEditMode()
-        );
+        if (btnEditProfile != null) {
+            btnEditProfile.setOnClickListener(v ->
+                    openEditMode()
+            );
+        }
 
         // Save changes
-        btnSave.setOnClickListener(v ->
-                saveChanges()
-        );
+        if (btnSave != null) {
+            btnSave.setOnClickListener(v ->
+                    saveChanges()
+            );
+        }
 
         // Cancel edit
-        btnCancelEdit.setOnClickListener(v ->
-                closeEditMode()
-        );
+        if (btnCancelEdit != null) {
+            btnCancelEdit.setOnClickListener(v ->
+                    closeEditMode()
+            );
+        }
 
         // My Orders
-        btnMyOrders.setOnClickListener(v ->
-                startActivity(
-                        new Intent(
-                                ProfileActivity.this,
-                                MyOrdersActivity.class
-                        )
-                )
-        );
+        if (btnMyOrders != null) {
+            btnMyOrders.setOnClickListener(v ->
+                    startActivity(
+                            new Intent(
+                                    ProfileActivity.this,
+                                    MyOrdersActivity.class
+                            )
+                    )
+            );
+        }
 
         // Logout
-        btnLogout.setOnClickListener(v -> {
+        if (btnLogout != null) {
+            btnLogout.setOnClickListener(v -> {
 
-            session.logout();
+                session.logout();
 
-            Intent intent =
-                    new Intent(
-                            ProfileActivity.this,
-                            MainActivity.class
-                    );
+                Intent intent =
+                        new Intent(
+                                ProfileActivity.this,
+                                MainActivity.class
+                        );
 
-            intent.addFlags(
-                    Intent.FLAG_ACTIVITY_CLEAR_TOP |
-                            Intent.FLAG_ACTIVITY_NEW_TASK
-            );
+                intent.addFlags(
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                                Intent.FLAG_ACTIVITY_NEW_TASK
+                );
 
-            startActivity(intent);
-            finish();
-        });
+                startActivity(intent);
+                finish();
+            });
+        }
 
         // Role switch
-        btnSwitchRole.setOnClickListener(v ->
-                showRoleSwitchDialog()
-        );
+        if (btnSwitchRole != null) {
+            btnSwitchRole.setOnClickListener(v ->
+                    showRoleSwitchDialog()
+            );
+        }
+    }
+
+    private void speakText() {
+        VoiceGuide.announceScreen(this,
+                "یہ آپ کی پروفائل کی سکرین ہے۔ یہاں آپ اپنی معلومات دیکھ اور تبدیل کر سکتی ہیں۔");
     }
 
     private void loadUser() {
@@ -384,29 +410,33 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void showUserInformation(User user) {
 
+        if (user == null) {
+            return;
+        }
+
         String name = safe(user.getName());
         String email = safe(user.getEmail());
         String phone = safe(user.getPhone());
 
-        tvName.setText(name);
-        tvEmail.setText(email);
+        if (tvName != null) tvName.setText(name);
+        if (tvEmail != null) tvEmail.setText(email);
 
-        tvPersonalName.setText(
-                "Full Name\n" + name
-        );
+        if (tvPersonalName != null) {
+            tvPersonalName.setText("Full Name\n" + name);
+        }
 
-        tvPersonalEmail.setText(
-                "Email\n" + email
-        );
+        if (tvPersonalEmail != null) {
+            tvPersonalEmail.setText("Email\n" + email);
+        }
 
-        tvWhatsApp.setText(
-                "WhatsApp / Phone\n" + phone
-        );
+        if (tvWhatsApp != null) {
+            tvWhatsApp.setText("WhatsApp / Phone\n" + phone);
+        }
 
-        etFullName.setText(name);
-        etPhone.setText(phone);
+        if (etFullName != null) etFullName.setText(name);
+        if (etPhone != null) etPhone.setText(phone);
 
-        if (!safe(user.getImageUrl()).isEmpty()) {
+        if (ivProfilePic != null && !safe(user.getImageUrl()).isEmpty()) {
 
             Glide.with(this)
                     .load(user.getImageUrl())
@@ -499,143 +529,113 @@ public class ProfileActivity extends AppCompatActivity {
                 safe(seller.getCapacityDescription());
 
         // Header
-        tvBusinessHeader.setText(
-                "🎨 " + business + " Profile"
-        );
+        if (tvBusinessHeader != null) {
+            tvBusinessHeader.setText("🎨 " + business + " Profile");
+        }
 
-        tvOwnerHeader.setText(owner);
-        tvName.setText(owner);
-        tvEmail.setText(email);
+        if (tvOwnerHeader != null) tvOwnerHeader.setText(owner);
+        if (tvName != null) tvName.setText(owner);
+        if (tvEmail != null) tvEmail.setText(email);
 
         // Personal
-        tvPersonalName.setText(
-                "Full Name\n" + owner
-        );
+        if (tvPersonalName != null) {
+            tvPersonalName.setText("Full Name\n" + owner);
+        }
 
-        tvPersonalEmail.setText(
-                "Email\n" + email
-        );
+        if (tvPersonalEmail != null) {
+            tvPersonalEmail.setText("Email\n" + email);
+        }
 
-        tvWhatsApp.setText(
-                "WhatsApp\n" + whatsapp
-        );
+        if (tvWhatsApp != null) {
+            tvWhatsApp.setText("WhatsApp\n" + whatsapp);
+        }
 
         // Business
-        tvBusinessName.setText(
-                "Business / Shop Name\n" + business
-        );
+        if (tvBusinessName != null) {
+            tvBusinessName.setText("Business / Shop Name\n" + business);
+        }
 
-        tvCategory.setText(
-                "Category\n" + category
-        );
+        if (tvCategory != null) {
+            tvCategory.setText("Category\n" + category);
+        }
 
-        tvBio.setText(
-                "Bio / Description\n" + bio
-        );
+        if (tvBio != null) {
+            tvBio.setText("Bio / Description\n" + bio);
+        }
 
         // Location
-        tvCity.setText(
-                "City\n" + city
-        );
+        if (tvCity != null) {
+            tvCity.setText("City\n" + city);
+        }
 
-        tvShopAddress.setText(
-                "Shop Address\n" + address
-        );
+        if (tvShopAddress != null) {
+            tvShopAddress.setText("Shop Address\n" + address);
+        }
 
-        tvDelivery.setText(
-                "Can Deliver\n" +
-                        (seller.isCanDeliver()
-                                ? "Yes"
-                                : "No")
-        );
+        if (tvDelivery != null) {
+            tvDelivery.setText("Can Deliver\n" + (seller.isCanDeliver() ? "Yes" : "No"));
+        }
 
-        tvCapacity.setText(
-                "Capacity / Daily Work\n" +
-                        capacity
-        );
+        if (tvCapacity != null) {
+            tvCapacity.setText("Capacity / Daily Work\n" + capacity);
+        }
 
         // Verification
-        String verification =
-                safe(seller.getVerificationStatus());
+        String verification = safe(seller.getVerificationStatus());
 
-        tvVerificationStatus.setText(
-                "⏳ Verification: " +
-                        verification
-        );
-
-        if (!safe(seller.getCnicUrl()).isEmpty()) {
-
-            tvCnicStatus.setText(
-                    "CNIC Verification\n" +
-                            "Document submitted"
-            );
-
-        } else {
-
-            tvCnicStatus.setText(
-                    "CNIC Verification\n" +
-                            "Not submitted"
-            );
+        if (tvVerificationStatus != null) {
+            tvVerificationStatus.setText("⏳ Verification: " + verification);
         }
 
-        if (!safe(seller.getVoiceUrl()).isEmpty()) {
-
-            tvVoiceStatus.setText(
-                    "Voice Verification\n" +
-                            "Submitted"
-            );
-
-        } else {
-
-            tvVoiceStatus.setText(
-                    "Voice Verification\n" +
-                            "Not submitted"
-            );
+        if (tvCnicStatus != null) {
+            if (!safe(seller.getCnicUrl()).isEmpty()) {
+                tvCnicStatus.setText("CNIC Verification\nDocument submitted");
+            } else {
+                tvCnicStatus.setText("CNIC Verification\nNot submitted");
+            }
         }
 
-        tvRating.setText(
-                "Rating\n" +
-                        seller.getRating()
-        );
+        if (tvVoiceStatus != null) {
+            if (!safe(seller.getVoiceUrl()).isEmpty()) {
+                tvVoiceStatus.setText("Voice Verification\nSubmitted");
+            } else {
+                tvVoiceStatus.setText("Voice Verification\nNot submitted");
+            }
+        }
 
-        tvRatingCount.setText(
-                "Rating Count\n" +
-                        seller.getRatingCount()
-        );
+        if (tvRating != null) {
+            tvRating.setText("Rating\n" + seller.getRating());
+        }
 
-        tvTopRated.setText(
-                "Top Rated\n" +
-                        (seller.isTopRated()
-                                ? "Yes"
-                                : "No")
-        );
+        if (tvRatingCount != null) {
+            tvRatingCount.setText("Rating Count\n" + seller.getRatingCount());
+        }
+
+        if (tvTopRated != null) {
+            tvTopRated.setText("Top Rated\n" + (seller.isTopRated() ? "Yes" : "No"));
+        }
 
         // Fill Edit fields
-        etFullName.setText(owner);
-        etPhone.setText(phone);
+        if (etFullName != null) etFullName.setText(owner);
+        if (etPhone != null) etPhone.setText(phone);
 
-        etBusinessName.setText(business);
-        etBio.setText(bio);
-        etCity.setText(city);
-        etWhatsApp.setText(whatsapp);
-        etCapacity.setText(capacity);
-        etShopAddress.setText(address);
+        if (etBusinessName != null) etBusinessName.setText(business);
+        if (etBio != null) etBio.setText(bio);
+        if (etCity != null) etCity.setText(city);
+        if (etWhatsApp != null) etWhatsApp.setText(whatsapp);
+        if (etCapacity != null) etCapacity.setText(capacity);
+        if (etShopAddress != null) etShopAddress.setText(address);
 
-        setSpinnerValue(
-                spinnerCategoryProfile,
-                category
-        );
+        if (spinnerCategoryProfile != null) {
+            setSpinnerValue(spinnerCategoryProfile, category);
+        }
 
-        setSpinnerValue(
-                spinnerCanDeliverProfile,
-                seller.isCanDeliver()
-                        ? "Yes"
-                        : "No"
-        );
+        if (spinnerCanDeliverProfile != null) {
+            setSpinnerValue(spinnerCanDeliverProfile, seller.isCanDeliver() ? "Yes" : "No");
+        }
 
         // Seller image
-        if (!safe(seller.getImageUrl()).isEmpty()) {
-
+        if (ivProfilePic != null && !safe(seller.getImageUrl()).isEmpty()) {
             Glide.with(this)
                     .load(seller.getImageUrl())
                     .into(ivProfilePic);
@@ -644,92 +644,61 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void showBuyerProfile() {
 
-        tvBusinessHeader.setText(
-                "💗 Buyer Profile"
-        );
+        if (tvBusinessHeader != null) {
+            tvBusinessHeader.setText("💗 Buyer Profile");
+        }
 
-        tvOwnerHeader.setText(
-                safe(currentUser.getName())
-        );
+        String userName = currentUser != null ? safe(currentUser.getName()) : "";
+        String userEmail = currentUser != null ? safe(currentUser.getEmail()) : "";
 
-        tvName.setText(
-                safe(currentUser.getName())
-        );
+        if (tvOwnerHeader != null) tvOwnerHeader.setText(userName);
+        if (tvName != null) tvName.setText(userName);
+        if (tvEmail != null) tvEmail.setText(userEmail);
 
-        tvEmail.setText(
-                safe(currentUser.getEmail())
-        );
-
-        tvVerificationStatus.setVisibility(
-                View.GONE
-        );
-
-        layoutSellerEditFields.setVisibility(
-                View.GONE
-        );
+        if (tvVerificationStatus != null) tvVerificationStatus.setVisibility(View.GONE);
+        if (layoutSellerEditFields != null) layoutSellerEditFields.setVisibility(View.GONE);
 
         // Hide seller information
-        tvBusinessName.setVisibility(View.GONE);
-        tvCategory.setVisibility(View.GONE);
-        tvBio.setVisibility(View.GONE);
+        if (tvBusinessName != null) tvBusinessName.setVisibility(View.GONE);
+        if (tvCategory != null) tvCategory.setVisibility(View.GONE);
+        if (tvBio != null) tvBio.setVisibility(View.GONE);
 
-        tvCity.setVisibility(View.GONE);
-        tvShopAddress.setVisibility(View.GONE);
-        tvDelivery.setVisibility(View.GONE);
-        tvCapacity.setVisibility(View.GONE);
+        if (tvCity != null) tvCity.setVisibility(View.GONE);
+        if (tvShopAddress != null) tvShopAddress.setVisibility(View.GONE);
+        if (tvDelivery != null) tvDelivery.setVisibility(View.GONE);
+        if (tvCapacity != null) tvCapacity.setVisibility(View.GONE);
 
-        tvCnicStatus.setVisibility(View.GONE);
-        tvVoiceStatus.setVisibility(View.GONE);
-        tvRating.setVisibility(View.GONE);
-        tvRatingCount.setVisibility(View.GONE);
-        tvTopRated.setVisibility(View.GONE);
+        if (tvCnicStatus != null) tvCnicStatus.setVisibility(View.GONE);
+        if (tvVoiceStatus != null) tvVoiceStatus.setVisibility(View.GONE);
+        if (tvRating != null) tvRating.setVisibility(View.GONE);
+        if (tvRatingCount != null) tvRatingCount.setVisibility(View.GONE);
+        if (tvTopRated != null) tvTopRated.setVisibility(View.GONE);
 
-        btnSwitchRole.setText(
-                "👤  BUYER  ▼"
-        );
+        if (btnSwitchRole != null) {
+            btnSwitchRole.setText("👤  BUYER  ▼");
+        }
     }
 
     private void openEditMode() {
 
-        layoutProfileView.setVisibility(
-                View.GONE
-        );
+        if (layoutProfileView != null) layoutProfileView.setVisibility(View.GONE);
+        if (layoutEditProfile != null) layoutEditProfile.setVisibility(View.VISIBLE);
+        if (btnEditProfile != null) btnEditProfile.setVisibility(View.GONE);
 
-        layoutEditProfile.setVisibility(
-                View.VISIBLE
-        );
-
-        btnEditProfile.setVisibility(
-                View.GONE
-        );
-
-        if (session.isSeller()) {
-
-            layoutSellerEditFields.setVisibility(
-                    View.VISIBLE
-            );
-
-        } else {
-
-            layoutSellerEditFields.setVisibility(
-                    View.GONE
-            );
+        if (layoutSellerEditFields != null) {
+            if (session.isSeller()) {
+                layoutSellerEditFields.setVisibility(View.VISIBLE);
+            } else {
+                layoutSellerEditFields.setVisibility(View.GONE);
+            }
         }
     }
 
     private void closeEditMode() {
 
-        layoutEditProfile.setVisibility(
-                View.GONE
-        );
-
-        layoutProfileView.setVisibility(
-                View.VISIBLE
-        );
-
-        btnEditProfile.setVisibility(
-                View.VISIBLE
-        );
+        if (layoutEditProfile != null) layoutEditProfile.setVisibility(View.GONE);
+        if (layoutProfileView != null) layoutProfileView.setVisibility(View.VISIBLE);
+        if (btnEditProfile != null) btnEditProfile.setVisibility(View.VISIBLE);
 
         loadUser();
     }
@@ -1019,7 +988,7 @@ public class ProfileActivity extends AppCompatActivity {
                             if (snapshot.exists()) {
 
                                 // Buyer profile already exists
-                                new androidx.appcompat.app.AlertDialog.Builder(
+                                new AlertDialog.Builder(
                                         ProfileActivity.this
                                 )
                                         .setTitle("Switch Account")
@@ -1040,7 +1009,7 @@ public class ProfileActivity extends AppCompatActivity {
                             } else {
 
                                 // Buyer profile does not exist
-                                new androidx.appcompat.app.AlertDialog.Builder(
+                                new AlertDialog.Builder(
                                         ProfileActivity.this
                                 )
                                         .setTitle("Switch Account")
@@ -1082,7 +1051,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         } else if ("buyer".equalsIgnoreCase(currentRole)) {
 
-            new androidx.appcompat.app.AlertDialog.Builder(this)
+            new AlertDialog.Builder(this)
                     .setTitle("Switch Account")
                     .setMessage("Switch to your Seller account?")
                     .setPositiveButton(
@@ -1239,5 +1208,15 @@ public class ProfileActivity extends AppCompatActivity {
         return value == null
                 ? ""
                 : value;
+    }
+
+    // ✅ DARK THEME - ADD AT END OF CLASS
+    private void applyTheme() {
+        PreferencesManager prefs = new PreferencesManager(this);
+        if (prefs.isDarkThemeEnabled()) {
+            setTheme(R.style.Theme_SheEmpower_Dark);
+        } else {
+            setTheme(R.style.Theme_SheEmpower);
+        }
     }
 }

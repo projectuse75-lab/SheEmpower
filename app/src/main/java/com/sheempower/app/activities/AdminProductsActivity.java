@@ -13,6 +13,7 @@ import com.sheempower.app.adapters.ProductAdapter;
 import com.sheempower.app.models.Product;
 import com.sheempower.app.utils.Constants;
 import com.sheempower.app.utils.VoiceGuide;
+import com.sheempower.app.utils.PreferencesManager;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class AdminProductsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        applyTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_products);
 
@@ -62,5 +64,15 @@ public class AdminProductsActivity extends AppCompatActivity {
                     }
                     @Override public void onCancelled(DatabaseError error) {}
                 });
+    }
+
+    // ✅ DARK THEME - ADD AT END OF CLASS
+    private void applyTheme() {
+        PreferencesManager prefs = new PreferencesManager(this);
+        if (prefs.isDarkThemeEnabled()) {
+            setTheme(R.style.Theme_SheEmpower_Dark);
+        } else {
+            setTheme(R.style.Theme_SheEmpower);
+        }
     }
 }

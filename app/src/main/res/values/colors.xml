@@ -13,10 +13,23 @@
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="gray">#808080</color>
-    <color name="settings_background">#FFF9FB</color>
-    <color name="settings_card">#FFFFFF</color>
     <color name="light_gray">#F5F5F5</color>
     <color name="pink_main">#FF4081</color>
-    <!-- Purani/default Android Studio launcher icon isi color ko dhoondhti hai -->
+    <!-- Normal / Light Theme -->
+    <color name="screen_background">#FFFFFF</color>
+    <color name="screen_surface">#FFFFFF</color>
+    <color name="screen_text">#333333</color>
+    <color name="screen_secondary_text">#777777</color>
+    <color name="bg_light">#FFFFFF</color>
+    <color name="text_light">#333333</color>
+
+    <!-- Settings -->
+    <color name="settings_background">#FFF8FA</color>
+    <color name="settings_card">#FFFFFF</color>
+    <color name="settings_card_background">#FFFFFF</color>
+    <color name="settings_card_text">#222222</color>
+
+    <!-- Launcher -->
     <color name="ic_launcher_background">#FF4081</color>
+
 </resources>

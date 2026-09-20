@@ -3,9 +3,12 @@ package com.sheempower.app.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.core.content.ContextCompat;
 
 import com.sheempower.app.R;
 import com.sheempower.app.activities.AdminDashboardActivity;
@@ -18,10 +21,6 @@ import com.sheempower.app.activities.SellerDashboardActivity;
 import com.sheempower.app.activities.SellerOrdersActivity;
 
 public class BottomNavHelper {
-
-    // ============================================================
-    // BUYER / VISITOR
-    // ============================================================
 
     public static void setupForBuyerOrVisitor(
             Context context,
@@ -44,10 +43,6 @@ public class BottomNavHelper {
     }
 
 
-    // ============================================================
-    // SELLER
-    // ============================================================
-
     public static void setupForSeller(
             Context context,
             View view,
@@ -69,10 +64,6 @@ public class BottomNavHelper {
     }
 
 
-    // ============================================================
-    // ADMIN
-    // ============================================================
-
     public static void setupForAdmin(
             Context context,
             View view,
@@ -93,10 +84,6 @@ public class BottomNavHelper {
     }
 
 
-    // ============================================================
-    // LABELS / ICONS
-    // ============================================================
-
     private static void setupLabels(
             LinearLayout navBar,
             boolean sellerMode) {
@@ -113,31 +100,30 @@ public class BottomNavHelper {
         TextView icon4 = navBar.findViewById(R.id.navIcon4);
         TextView label4 = navBar.findViewById(R.id.navLabel4);
 
-
-        // Home / Browse
         icon1.setText("🏠");
         label1.setText(sellerMode ? "ہوم" : "براؤز");
 
-
-        // Orders
         icon2.setText("📦");
         label2.setText("آرڈرز");
 
-
-        // Profile
         icon3.setText("👤");
         label3.setText("پروفائل");
 
-
-        // Settings
         icon4.setText("⚙️");
         label4.setText("سیٹنگز");
+
+        int normalColor =
+                ContextCompat.getColor(
+                        navBar.getContext(),
+                        R.color.screen_text
+                );
+
+        label1.setTextColor(normalColor);
+        label2.setTextColor(normalColor);
+        label3.setTextColor(normalColor);
+        label4.setTextColor(normalColor);
     }
 
-
-    // ============================================================
-    // SELECTED ITEM
-    // ============================================================
 
     private static void setSelectedItem(
             LinearLayout navBar,
@@ -148,37 +134,57 @@ public class BottomNavHelper {
         View item3 = navBar.findViewById(R.id.navItem3);
         View item4 = navBar.findViewById(R.id.navItem4);
 
-        // Reset all
         item1.setAlpha(0.65f);
         item2.setAlpha(0.65f);
         item3.setAlpha(0.65f);
         item4.setAlpha(0.65f);
 
-        // Selected
+        TextView label1 = navBar.findViewById(R.id.navLabel1);
+        TextView label2 = navBar.findViewById(R.id.navLabel2);
+        TextView label3 = navBar.findViewById(R.id.navLabel3);
+        TextView label4 = navBar.findViewById(R.id.navLabel4);
+
+        int normalColor =
+                ContextCompat.getColor(
+                        navBar.getContext(),
+                        R.color.screen_text
+                );
+
+        int selectedColor =
+                ContextCompat.getColor(
+                        navBar.getContext(),
+                        R.color.primary_pink
+                );
+
+        label1.setTextColor(normalColor);
+        label2.setTextColor(normalColor);
+        label3.setTextColor(normalColor);
+        label4.setTextColor(normalColor);
+
         switch (selectedIndex) {
 
             case 1:
                 item1.setAlpha(1.0f);
+                label1.setTextColor(selectedColor);
                 break;
 
             case 2:
                 item2.setAlpha(1.0f);
+                label2.setTextColor(selectedColor);
                 break;
 
             case 3:
                 item3.setAlpha(1.0f);
+                label3.setTextColor(selectedColor);
                 break;
 
             case 4:
                 item4.setAlpha(1.0f);
+                label4.setTextColor(selectedColor);
                 break;
         }
     }
 
-
-    // ============================================================
-    // BUYER / SELLER CLICK LISTENERS
-    // ============================================================
 
     private static void setupClickListeners(
             Context context,
@@ -267,10 +273,6 @@ public class BottomNavHelper {
     }
 
 
-    // ============================================================
-    // ADMIN CLICK LISTENERS
-    // ============================================================
-
     private static void setupAdminClickListeners(
             Context context,
             LinearLayout navBar,
@@ -282,7 +284,6 @@ public class BottomNavHelper {
         View item4 = navBar.findViewById(R.id.navItem4);
 
 
-        // ADMIN HOME
         item1.setOnClickListener(v -> {
 
             if (selectedIndex == 1) return;
@@ -297,7 +298,6 @@ public class BottomNavHelper {
         });
 
 
-        // ADMIN ORDERS
         item2.setOnClickListener(v -> {
 
             if (selectedIndex == 2) return;
@@ -312,7 +312,6 @@ public class BottomNavHelper {
         });
 
 
-        // ADMIN PROFILE
         item3.setOnClickListener(v -> {
 
             if (selectedIndex == 3) return;
@@ -327,7 +326,6 @@ public class BottomNavHelper {
         });
 
 
-        // SETTINGS
         item4.setOnClickListener(v -> {
 
             if (selectedIndex == 4) return;
@@ -342,10 +340,6 @@ public class BottomNavHelper {
         });
     }
 
-
-    // ============================================================
-    // OPEN SCREEN
-    // ============================================================
 
     private static void openScreen(
             Context context,

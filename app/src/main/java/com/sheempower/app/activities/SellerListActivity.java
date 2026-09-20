@@ -17,6 +17,7 @@ import com.sheempower.app.utils.Constants;
 import com.sheempower.app.utils.SessionManager;
 import com.sheempower.app.utils.VoiceGuide;
 import com.sheempower.app.utils.WhatsAppHelper;
+import com.sheempower.app.utils.PreferencesManager;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +37,7 @@ public class SellerListActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        applyTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_seller_list);
 
@@ -54,8 +56,12 @@ public class SellerListActivity extends AppCompatActivity {
 
         rvSellers.setLayoutManager(new GridLayoutManager(this, 2));
         sellerAdapter = new SellerAdapter(sellerList, seller -> {
+            if (seller == null || seller.getUid() == null || seller.getUid().trim().isEmpty()) {
+                Toast.makeText(this, "بیچنے والی کی معلومات نہیں ملی", Toast.LENGTH_SHORT).show();
+                return;
+            }
             Intent i = new Intent(this, SellerProfileActivity.class);
-            i.putExtra(SellerProfileActivity.EXTRA_SELLER_ID, seller.getUid());
+            i.putExtra(SellerProfileActivity.EXTRA_SELLER_ID, seller.getUid().trim());
             startActivity(i);
         });
         rvSellers.setAdapter(sellerAdapter);
@@ -131,7 +137,8 @@ public class SellerListActivity extends AppCompatActivity {
     }
 
     private void chatWithSellerOfProduct(String sellerId) {
-        FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS).child(sellerId)
+        if (sellerId == null || sellerId.trim().isEmpty()) return;
+        FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS).child(sellerId.trim())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override public void onDataChange(DataSnapshot snapshot) {
                         Seller s = snapshot.getValue(Seller.class);
@@ -144,5 +151,15 @@ public class SellerListActivity extends AppCompatActivity {
     private void requireBuyerLogin(Runnable action) {
         if (session.isLoggedIn()) action.run();
         else { Toast.makeText(this, "پہلے لاگ ان کریں", Toast.LENGTH_SHORT).show(); startActivity(new Intent(this, LoginActivity.class)); }
+    }
+
+    // ✅ DARK THEME - ADD AT END OF CLASS
+    private void applyTheme() {
+        PreferencesManager prefs = new PreferencesManager(this);
+        if (prefs.isDarkThemeEnabled()) {
+            setTheme(R.style.Theme_SheEmpower_Dark);
+        } else {
+            setTheme(R.style.Theme_SheEmpower);
+        }
     }
 }
