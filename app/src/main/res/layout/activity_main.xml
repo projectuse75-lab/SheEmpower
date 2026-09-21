@@ -1,15 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:background="?android:attr/windowBackground"
-    android:orientation="vertical" >
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/screen_background"
+    android:orientation="vertical">
 
-    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Header -->
             <LinearLayout
-                android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:background="#FF4081" android:orientation="vertical" android:padding="16dp">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FF4081"
+                android:orientation="vertical"
+                android:padding="16dp">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -20,9 +33,9 @@
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
                         android:text="💗 شی ایمپاور"
+                        android:textColor="#FFFFFF"
                         android:textSize="24sp"
-                        android:textStyle="bold"
-                        android:textColor="#FFFFFF" />
+                        android:textStyle="bold" />
 
                     <ImageButton
                         android:id="@+id/btnSpeaker"
@@ -31,53 +44,229 @@
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:src="@drawable/ic_speaker"
-                        android:contentDescription="Speaker" />
+                        android:contentDescription="Speaker"
+                        android:src="@drawable/ic_speaker" />
+
                 </RelativeLayout>
 
-                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:text="SHE EMPOWER" android:textSize="11sp" android:gravity="center"
-                    android:textColor="#FFE0EC" android:layout_marginTop="2dp" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:gravity="center"
+                    android:text="SHE EMPOWER"
+                    android:textColor="#FFE0EC"
+                    android:textSize="11sp" />
 
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:orientation="horizontal" android:layout_marginTop="12dp">
-                    <Button android:id="@+id/btnLogin" android:layout_width="0dp" android:layout_height="48dp" android:layout_weight="1"
-                        android:text="🔑 لاگ ان" android:textSize="13sp" android:backgroundTint="#FFFFFF" android:textColor="#FF4081" android:layout_marginEnd="8dp" />
-                    <Button android:id="@+id/btnJoin" android:layout_width="0dp" android:layout_height="48dp" android:layout_weight="1"
-                        android:text="📝 رجسٹر" android:textSize="13sp" android:backgroundTint="#FFE4EC" android:textColor="#FF4081" />
+                <!-- Login / Profile -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btnLogin"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="#FFFFFF"
+                        android:text="🔑 لاگ ان"
+                        android:textColor="#FF4081"
+                        android:textSize="13sp" />
+
+                    <Button
+                        android:id="@+id/btnJoin"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="#FFE4EC"
+                        android:text="📝 رجسٹر"
+                        android:textColor="#FF4081"
+                        android:textSize="13sp" />
+
                 </LinearLayout>
+
             </LinearLayout>
 
-            <EditText android:id="@+id/etSearch"
-                android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_margin="16dp"
-                android:hint="🔍 تلاش کریں..." android:textSize="14sp" android:padding="14dp" android:background="@drawable/bg_rounded_pink" />
+            <!-- Search + Search Button -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="12dp"
+                android:orientation="horizontal">
 
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:layout_marginStart="16dp" android:text="🛍️ زمرہ جات" android:textStyle="bold" android:textColor="#FF4081" android:textSize="16sp" />
+                <EditText
+                    android:id="@+id/etSearch"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_rounded_pink"
+                    android:hint="🔍 تلاش کریں..."
+                    android:imeOptions="actionSearch"
+                    android:inputType="text"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:textColor="@color/screen_text"
+                    android:textColorHint="@color/screen_secondary_text"
+                    android:textSize="14sp" />
 
-            <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="12dp">
-                <LinearLayout android:id="@+id/layoutCategories" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" />
+                <Button
+                    android:id="@+id/btnSearch"
+                    android:layout_width="105dp"
+                    android:layout_height="52dp"
+                    android:layout_marginStart="8dp"
+                    android:backgroundTint="#FF4081"
+                    android:text="🔍 Search"
+                    android:textColor="#FFFFFF"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <!-- Filters -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp">
+
+                    <Button
+                        android:id="@+id/btnCategoryFilter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="42dp"
+                        android:layout_marginEnd="6dp"
+                        android:backgroundTint="#FFE4EC"
+                        android:text="Category ▾"
+                        android:textColor="#FF4081"
+                        android:textSize="12sp" />
+
+                    <Button
+                        android:id="@+id/btnPriceFilter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="42dp"
+                        android:layout_marginEnd="6dp"
+                        android:backgroundTint="#FFE4EC"
+                        android:text="Price ▾"
+                        android:textColor="#FF4081"
+                        android:textSize="12sp" />
+
+                    <Button
+                        android:id="@+id/btnRatingFilter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="42dp"
+                        android:layout_marginEnd="6dp"
+                        android:backgroundTint="#FFE4EC"
+                        android:text="Rating ▾"
+                        android:textColor="#FF4081"
+                        android:textSize="12sp" />
+
+                    <Button
+                        android:id="@+id/btnClearFilters"
+                        android:layout_width="wrap_content"
+                        android:layout_height="42dp"
+                        android:backgroundTint="#EEEEEE"
+                        android:text="Clear"
+                        android:textColor="#555555"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+
             </HorizontalScrollView>
 
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:layout_marginStart="16dp" android:text="⭐ بہترین بیچنے والیاں" android:textStyle="bold" android:textColor="#FF4081" android:textSize="16sp" />
+            <!-- Categories -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="🛍️ زمرہ جات"
+                android:textColor="#FF4081"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
-            <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvTopSellers"
-                android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="12dp" />
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="12dp">
 
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_margin="16dp">
-                <TextView android:id="@+id/tvProductsTab" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
-                    android:text="🛍️ اشیاء" android:gravity="center" android:padding="12dp" android:textStyle="bold" android:background="@drawable/bg_rounded_pink" />
-                <TextView android:id="@+id/tvSellersTab" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
-                    android:text="🏪 بیچنے والیاں" android:gravity="center" android:padding="12dp" android:textStyle="bold" android:background="@drawable/bg_rounded_pink_light" />
+                <LinearLayout
+                    android:id="@+id/layoutCategories"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" />
+
+            </HorizontalScrollView>
+
+            <!-- Top Sellers -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="⭐ بہترین بیچنے والیاں"
+                android:textColor="#FF4081"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvTopSellers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="12dp" />
+
+            <!-- Tabs -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvProductsTab"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_rounded_pink"
+                    android:gravity="center"
+                    android:padding="12dp"
+                    android:text="🛍️ اشیاء"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvSellersTab"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_rounded_pink_light"
+                    android:gravity="center"
+                    android:padding="12dp"
+                    android:text="🏪 بیچنے والیاں"
+                    android:textStyle="bold" />
+
             </LinearLayout>
 
-            <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvLatestProducts"
-                android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="8dp" android:nestedScrollingEnabled="false" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvLatestProducts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:padding="8dp" />
 
         </LinearLayout>
+
     </ScrollView>
 
-    <include layout="@layout/bottom_nav_bar" android:id="@+id/bottomNav" />
+    <include
+        android:id="@+id/bottomNav"
+        layout="@layout/bottom_nav_bar" />
 
 </LinearLayout>

@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat;
 import com.sheempower.app.R;
 import com.sheempower.app.activities.AdminDashboardActivity;
 import com.sheempower.app.activities.AdminOrdersActivity;
+import com.sheempower.app.activities.LoginActivity;
 import com.sheempower.app.activities.MainActivity;
 import com.sheempower.app.activities.MyOrdersActivity;
 import com.sheempower.app.activities.ProfileActivity;
@@ -21,6 +22,12 @@ import com.sheempower.app.activities.SellerDashboardActivity;
 import com.sheempower.app.activities.SellerOrdersActivity;
 
 public class BottomNavHelper {
+
+    // This is used when user is logged out and taps Profile.
+    public static final String EXTRA_LOGIN_DESTINATION = "login_destination";
+    public static final String DESTINATION_PROFILE = "profile";
+    public static final String DESTINATION_ORDERS = "orders";
+
 
     public static void setupForBuyerOrVisitor(
             Context context,
@@ -112,11 +119,10 @@ public class BottomNavHelper {
         icon4.setText("⚙️");
         label4.setText("سیٹنگز");
 
-        int normalColor =
-                ContextCompat.getColor(
-                        navBar.getContext(),
-                        R.color.screen_text
-                );
+        int normalColor = ContextCompat.getColor(
+                navBar.getContext(),
+                R.color.screen_text
+        );
 
         label1.setTextColor(normalColor);
         label2.setTextColor(normalColor);
@@ -144,17 +150,15 @@ public class BottomNavHelper {
         TextView label3 = navBar.findViewById(R.id.navLabel3);
         TextView label4 = navBar.findViewById(R.id.navLabel4);
 
-        int normalColor =
-                ContextCompat.getColor(
-                        navBar.getContext(),
-                        R.color.screen_text
-                );
+        int normalColor = ContextCompat.getColor(
+                navBar.getContext(),
+                R.color.screen_text
+        );
 
-        int selectedColor =
-                ContextCompat.getColor(
-                        navBar.getContext(),
-                        R.color.primary_pink
-                );
+        int selectedColor = ContextCompat.getColor(
+                navBar.getContext(),
+                R.color.primary_pink
+        );
 
         label1.setTextColor(normalColor);
         label2.setTextColor(normalColor);
@@ -198,7 +202,10 @@ public class BottomNavHelper {
         View item4 = navBar.findViewById(R.id.navItem4);
 
 
+        // =========================================================
         // HOME / BROWSE
+        // =========================================================
+
         item1.setOnClickListener(v -> {
 
             if (selectedIndex == 1) return;
@@ -221,7 +228,10 @@ public class BottomNavHelper {
         });
 
 
+        // =========================================================
         // ORDERS
+        // =========================================================
+
         item2.setOnClickListener(v -> {
 
             if (selectedIndex == 2) return;
@@ -244,21 +254,50 @@ public class BottomNavHelper {
         });
 
 
+        // =========================================================
         // PROFILE
+        // =========================================================
+
         item3.setOnClickListener(v -> {
 
             if (selectedIndex == 3) return;
 
-            Intent intent = new Intent(
-                    context,
-                    ProfileActivity.class
-            );
+            SessionManager sessionManager =
+                    new SessionManager(context);
 
-            openScreen(context, intent);
+            // USER LOGGED IN
+            if (sessionManager.isLoggedIn()) {
+
+                Intent intent = new Intent(
+                        context,
+                        ProfileActivity.class
+                );
+
+                openScreen(context, intent);
+
+            } else {
+
+                // USER NOT LOGGED IN
+                // Open Login/Register screen instead of Profile.
+                Intent intent = new Intent(
+                        context,
+                        LoginActivity.class
+                );
+
+                intent.putExtra(
+                        EXTRA_LOGIN_DESTINATION,
+                        DESTINATION_PROFILE
+                );
+
+                openScreen(context, intent);
+            }
         });
 
 
+        // =========================================================
         // SETTINGS
+        // =========================================================
+
         item4.setOnClickListener(v -> {
 
             if (selectedIndex == 4) return;

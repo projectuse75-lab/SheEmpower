@@ -138,9 +138,20 @@
         <!-- 🛍️ CATEGORY FIELD -->
         <!-- ============================================================ -->
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🛍️ زمرہ / Category" android:textColor="#AA3366" android:layout_marginTop="14dp" />
-        <Spinner android:id="@+id/spinnerCategory"
-            android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp" />
-
+        <TextView
+            android:id="@+id/spinnerCategory"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/bg_rounded_pink"
+            android:gravity="center_vertical"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:text="زمرہ منتخب کریں / Select Categories"
+            android:textColor="#333333"
+            android:textSize="15sp"
+            android:clickable="true"
+            android:focusable="true" />
         <!-- ============================================================ -->
         <!-- 🙋‍♀️ CAPACITY FIELD -->
         <!-- ============================================================ -->

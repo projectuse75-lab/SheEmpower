@@ -18,6 +18,7 @@ import com.sheempower.app.utils.Constants;
 import com.sheempower.app.utils.SessionManager;
 import com.sheempower.app.utils.PreferencesManager;
 import com.sheempower.app.utils.VoiceGuide;
+import com.sheempower.app.utils.BottomNavHelper;
 
 public class BuyerRegisterActivity extends AppCompatActivity {
 
@@ -256,7 +257,25 @@ public class BuyerRegisterActivity extends AppCompatActivity {
                             .addOnSuccessListener(v -> {
                                 session.saveUser(uid, Constants.ROLE_BUYER, name);
                                 VoiceGuide.explain(this, "خوش آمدید " + name + "، آپ کا اکاؤنٹ بن گیا ہے");
-                                startActivity(new Intent(this, MainActivity.class));
+                                String destination = getIntent().getStringExtra(
+                                        BottomNavHelper.EXTRA_LOGIN_DESTINATION
+                                );
+
+                                if (BottomNavHelper.DESTINATION_PROFILE.equals(destination)) {
+
+                                    startActivity(new Intent(
+                                            this,
+                                            ProfileActivity.class
+                                    ));
+
+                                } else {
+
+                                    startActivity(new Intent(
+                                            this,
+                                            MainActivity.class
+                                    ));
+                                }
+
                                 finish();
                             })
                             .addOnFailureListener(e -> {

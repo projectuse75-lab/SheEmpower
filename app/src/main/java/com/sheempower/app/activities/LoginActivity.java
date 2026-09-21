@@ -8,6 +8,11 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Patterns;
 import android.widget.*;
+import android.graphics.Color;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
@@ -18,7 +23,7 @@ import com.sheempower.app.utils.Constants;
 import com.sheempower.app.utils.SessionManager;
 import com.sheempower.app.utils.PreferencesManager;
 import com.sheempower.app.utils.VoiceGuide;
-
+import com.sheempower.app.utils.BottomNavHelper;
 public class LoginActivity extends AppCompatActivity {
 
     private TextInputEditText etEmail, etPassword;
@@ -37,6 +42,7 @@ public class LoginActivity extends AppCompatActivity {
         applyTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        setupLoginBottomNavigation();
 
         mAuth   = FirebaseAuth.getInstance();
         session = new SessionManager(this);
@@ -55,8 +61,48 @@ public class LoginActivity extends AppCompatActivity {
 
         // ============ Setup Button Listeners ============
         btnLogin.setOnClickListener(v -> attemptLogin());
-        tvGoBuyerRegister.setOnClickListener(v -> startActivity(new Intent(this, BuyerRegisterActivity.class)));
-        tvGoSellerRegister.setOnClickListener(v -> startActivity(new Intent(this, SellerRegistrationActivity.class)));
+        tvGoBuyerRegister.setOnClickListener(v -> {
+
+            Intent intent = new Intent(
+                    this,
+                    BuyerRegisterActivity.class
+            );
+
+            String destination = getIntent().getStringExtra(
+                    BottomNavHelper.EXTRA_LOGIN_DESTINATION
+            );
+
+            if (destination != null) {
+                intent.putExtra(
+                        BottomNavHelper.EXTRA_LOGIN_DESTINATION,
+                        destination
+                );
+            }
+
+            startActivity(intent);
+        });
+
+        tvGoSellerRegister.setOnClickListener(v -> {
+
+            Intent intent = new Intent(
+                    this,
+                    SellerRegistrationActivity.class
+            );
+
+            String destination = getIntent().getStringExtra(
+                    BottomNavHelper.EXTRA_LOGIN_DESTINATION
+            );
+
+            if (destination != null) {
+                intent.putExtra(
+                        BottomNavHelper.EXTRA_LOGIN_DESTINATION,
+                        destination
+                );
+            }
+
+            startActivity(intent);
+        });
+
         btnSpeaker.setOnClickListener(v -> speakText());
     }
 
@@ -251,9 +297,38 @@ public class LoginActivity extends AppCompatActivity {
                                     session.saveUser(uid, user.getRole(), user.getName());
                                     session.saveEmail(user.getEmail());
                                     VoiceGuide.explain(LoginActivity.this, "خوش آمدید " + user.getName());
-                                    Intent intent = Constants.ROLE_SELLER.equals(user.getRole())
-                                            ? new Intent(LoginActivity.this, SellerDashboardActivity.class)
-                                            : new Intent(LoginActivity.this, MainActivity.class);
+                                    String loginDestination = getIntent().getStringExtra(
+                                            BottomNavHelper.EXTRA_LOGIN_DESTINATION
+                                    );
+
+                                    Intent intent;
+
+                                    if (BottomNavHelper.DESTINATION_PROFILE.equals(loginDestination)) {
+
+                                        // Profile button se login hua tha
+                                        // Login ke baad apni role-based ProfileActivity open hogi.
+                                        intent = new Intent(
+                                                LoginActivity.this,
+                                                ProfileActivity.class
+                                        );
+
+                                    } else if (Constants.ROLE_SELLER.equals(user.getRole())) {
+
+                                        // Normal seller login
+                                        intent = new Intent(
+                                                LoginActivity.this,
+                                                SellerDashboardActivity.class
+                                        );
+
+                                    } else {
+
+                                        // Normal buyer login
+                                        intent = new Intent(
+                                                LoginActivity.this,
+                                                MainActivity.class
+                                        );
+                                    }
+
                                     startActivity(intent);
                                     finish();
                                 }
@@ -298,6 +373,49 @@ public class LoginActivity extends AppCompatActivity {
     private void speakText() {
         String textToSpeak = "لاگ ان کریں، اپنا ای میل اور مضبوط پاس ورڈ درج کریں";
         VoiceGuide.explain(this, textToSpeak);
+    }
+    private void setupLoginBottomNavigation() {
+
+        FrameLayout root = findViewById(android.R.id.content);
+
+        if (root == null) return;
+
+        View bottomNav = LayoutInflater.from(this)
+                .inflate(R.layout.bottom_nav_bar, root, false);
+
+        FrameLayout.LayoutParams params =
+                new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        (int) (64 * getResources().getDisplayMetrics().density)
+                );
+
+        params.gravity = android.view.Gravity.BOTTOM;
+
+        root.addView(bottomNav, params);
+
+        BottomNavHelper.setupForBuyerOrVisitor(
+                this,
+                bottomNav,
+                3
+        );
+
+        // Content ko bottom navigation ke peeche jane se bachane ke liye
+        View content = root.getChildAt(0);
+
+        if (content != null && content != bottomNav) {
+
+            int currentBottomPadding = content.getPaddingBottom();
+
+            int extraPadding =
+                    (int) (64 * getResources().getDisplayMetrics().density);
+
+            content.setPadding(
+                    content.getPaddingLeft(),
+                    content.getPaddingTop(),
+                    content.getPaddingRight(),
+                    currentBottomPadding + extraPadding
+            );
+        }
     }
 
     // ✅ DARK THEME - ADD AT END OF CLASS

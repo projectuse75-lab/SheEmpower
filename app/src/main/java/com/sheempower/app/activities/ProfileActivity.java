@@ -1142,11 +1142,13 @@ public class ProfileActivity extends AppCompatActivity {
         String uid = session.getUid();
 
         if (uid == null) {
+
             Toast.makeText(
                     this,
                     "Session expired. Please login again.",
                     Toast.LENGTH_LONG
             ).show();
+
             return;
         }
 
@@ -1160,41 +1162,69 @@ public class ProfileActivity extends AppCompatActivity {
                 new ValueEventListener() {
 
                     @Override
-                    public void onDataChange(DataSnapshot snapshot) {
+                    public void onDataChange(
+                            DataSnapshot snapshot
+                    ) {
 
-                        if (!snapshot.exists()) {
+                        // =================================================
+                        // SELLER PROFILE ALREADY EXISTS
+                        // =================================================
 
-                            Toast.makeText(
-                                    ProfileActivity.this,
-                                    "Seller profile not found.",
-                                    Toast.LENGTH_LONG
-                            ).show();
+                        if (snapshot.exists()) {
+
+                            session.switchRole(
+                                    Constants.ROLE_SELLER
+                            );
+
+                            Intent intent =
+                                    new Intent(
+                                            ProfileActivity.this,
+                                            SellerDashboardActivity.class
+                                    );
+
+                            intent.addFlags(
+                                    Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                                            Intent.FLAG_ACTIVITY_NEW_TASK
+                            );
+
+                            startActivity(intent);
+
+                            finish();
 
                             return;
                         }
 
-                        session.switchRole(Constants.ROLE_SELLER);
+                        // =================================================
+                        // SELLER PROFILE DOES NOT EXIST
+                        // =================================================
 
-                        Intent intent = new Intent(
-                                ProfileActivity.this,
-                                SellerDashboardActivity.class
-                        );
+                        Intent intent =
+                                new Intent(
+                                        ProfileActivity.this,
+                                        SellerRegistrationActivity.class
+                                );
 
-                        intent.addFlags(
-                                Intent.FLAG_ACTIVITY_CLEAR_TOP |
-                                        Intent.FLAG_ACTIVITY_NEW_TASK
+                        // IMPORTANT:
+                        // Is flag se SellerRegistrationActivity samjhegi
+                        // ke Firebase account already logged in hai.
+                        intent.putExtra(
+                                SellerRegistrationActivity
+                                        .EXTRA_CREATE_SELLER_PROFILE,
+                                true
                         );
 
                         startActivity(intent);
-                        finish();
                     }
 
                     @Override
-                    public void onCancelled(DatabaseError error) {
+                    public void onCancelled(
+                            DatabaseError error
+                    ) {
 
                         Toast.makeText(
                                 ProfileActivity.this,
-                                "Seller profile check failed.",
+                                "Seller profile check failed: "
+                                        + error.getMessage(),
                                 Toast.LENGTH_LONG
                         ).show();
                     }
