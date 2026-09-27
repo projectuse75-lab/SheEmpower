@@ -1,42 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-
-
     <!-- ============================================ -->
-    <!-- DARK THEME -->
+    <!-- DARK THEME — System Dark mode ke liye -->
+    <!-- NAAM SAME hai — sirf parent alag -->
     <!-- ============================================ -->
-    <style name="Theme.SheEmpower_Dark" parent="Theme.AppCompat">
-        <!-- Primary Colors -->
+    <style name="Theme.SheEmpower" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">#FF4081</item>
-        <item name="colorPrimaryDark">#1a1a1a</item>
+        <item name="colorPrimaryDark">#C2185B</item>
         <item name="colorAccent">#FF4081</item>
-
-        <!-- Background -->
-        <item name="android:windowBackground">#1a1a1a</item>
-        <item name="android:colorBackground">#1a1a1a</item>
-        <item name="android:windowBackground">@color/bg_dark</item>
-        <item name="android:textColorPrimary">@color/text_dark</item>
-
-        <!-- Text Colors -->
-        <item name="android:textColorPrimary">#FFFFFF</item>
-        <item name="android:textColorSecondary">#B0BEC5</item>
-
-        <!-- Action Bar -->
-        <item name="android:actionBarStyle">@style/ActionBar.Dark.Styled</item>
+        <item name="android:windowBackground">@color/dark_background</item>
+        <item name="android:colorBackground">@color/dark_background</item>
+        <item name="android:textColorPrimary">@color/dark_text</item>
+        <item name="android:textColorSecondary">@color/dark_text_secondary</item>
     </style>
 
-    <!-- Action Bar for Dark Theme -->
-    <style name="ActionBar.Dark.Styled" parent="Widget.AppCompat.ActionBar">
-        <item name="android:background">#263238</item>
-        <item name="android:textColorPrimary">#FFFFFF</item>
-    </style>
-
-    <!-- Splash Screen Theme -->
-    <style name="Theme.SheEmpower.Starting" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">#1a1a1a</item>
-        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
-        <item name="postSplashScreenTheme">@style/Theme.SheEmpower_Dark</item>
+    <style name="Theme.SheEmpower.Dark" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">#FF4081</item>
+        <item name="colorPrimaryDark">#C2185B</item>
+        <item name="colorAccent">#FF4081</item>
+        <item name="android:windowBackground">@color/dark_background</item>
+        <item name="android:colorBackground">@color/dark_background</item>
+        <item name="android:textColorPrimary">@color/dark_text</item>
+        <item name="android:textColorSecondary">@color/dark_text_secondary</item>
     </style>
 
 </resources>

@@ -40,7 +40,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    // Header
     private CircleImageView ivProfilePic;
     private ImageButton btnChangePic;
     private ImageButton btnSpeaker;
@@ -51,10 +50,8 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView tvEmail;
     private TextView tvVerificationStatus;
 
-    // Role switch
     private TextView btnSwitchRole;
 
-    // View mode
     private View layoutProfileView;
 
     private TextView tvPersonalName;
@@ -76,7 +73,6 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView tvRatingCount;
     private TextView tvTopRated;
 
-    // Edit mode
     private View layoutEditProfile;
     private View layoutSellerEditFields;
 
@@ -143,7 +139,6 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void initializeViews() {
 
-        // Header
         ivProfilePic = findViewById(R.id.ivProfilePic);
         btnChangePic = findViewById(R.id.btnChangePic);
         btnSpeaker   = findViewById(R.id.btnSpeaker);
@@ -154,10 +149,8 @@ public class ProfileActivity extends AppCompatActivity {
         tvEmail = findViewById(R.id.tvEmail);
         tvVerificationStatus = findViewById(R.id.tvVerificationStatus);
 
-        // Role
         btnSwitchRole = findViewById(R.id.btnSwitchRole);
 
-        // View mode
         layoutProfileView = findViewById(R.id.layoutProfileView);
 
         tvPersonalName = findViewById(R.id.tvPersonalName);
@@ -179,7 +172,6 @@ public class ProfileActivity extends AppCompatActivity {
         tvRatingCount = findViewById(R.id.tvRatingCount);
         tvTopRated = findViewById(R.id.tvTopRated);
 
-        // Edit mode
         layoutEditProfile = findViewById(R.id.layoutEditProfile);
         layoutSellerEditFields = findViewById(R.id.layoutSellerEditFields);
 
@@ -275,35 +267,30 @@ public class ProfileActivity extends AppCompatActivity {
             btnSpeaker.setOnClickListener(v -> speakText());
         }
 
-        // Change profile picture
         if (btnChangePic != null) {
             btnChangePic.setOnClickListener(v ->
                     imagePicker.launch("image/*")
             );
         }
 
-        // Open Edit Profile
         if (btnEditProfile != null) {
             btnEditProfile.setOnClickListener(v ->
                     openEditMode()
             );
         }
 
-        // Save changes
         if (btnSave != null) {
             btnSave.setOnClickListener(v ->
                     saveChanges()
             );
         }
 
-        // Cancel edit
         if (btnCancelEdit != null) {
             btnCancelEdit.setOnClickListener(v ->
                     closeEditMode()
             );
         }
 
-        // My Orders
         if (btnMyOrders != null) {
             btnMyOrders.setOnClickListener(v ->
                     startActivity(
@@ -315,7 +302,6 @@ public class ProfileActivity extends AppCompatActivity {
             );
         }
 
-        // Logout
         if (btnLogout != null) {
             btnLogout.setOnClickListener(v -> {
 
@@ -337,7 +323,6 @@ public class ProfileActivity extends AppCompatActivity {
             });
         }
 
-        // Role switch
         if (btnSwitchRole != null) {
             btnSwitchRole.setOnClickListener(v ->
                     showRoleSwitchDialog()
@@ -528,7 +513,6 @@ public class ProfileActivity extends AppCompatActivity {
         String capacity =
                 safe(seller.getCapacityDescription());
 
-        // Header
         if (tvBusinessHeader != null) {
             tvBusinessHeader.setText("🎨 " + business + " Profile");
         }
@@ -537,7 +521,6 @@ public class ProfileActivity extends AppCompatActivity {
         if (tvName != null) tvName.setText(owner);
         if (tvEmail != null) tvEmail.setText(email);
 
-        // Personal
         if (tvPersonalName != null) {
             tvPersonalName.setText("Full Name\n" + owner);
         }
@@ -550,7 +533,6 @@ public class ProfileActivity extends AppCompatActivity {
             tvWhatsApp.setText("WhatsApp\n" + whatsapp);
         }
 
-        // Business
         if (tvBusinessName != null) {
             tvBusinessName.setText("Business / Shop Name\n" + business);
         }
@@ -563,7 +545,6 @@ public class ProfileActivity extends AppCompatActivity {
             tvBio.setText("Bio / Description\n" + bio);
         }
 
-        // Location
         if (tvCity != null) {
             tvCity.setText("City\n" + city);
         }
@@ -580,7 +561,6 @@ public class ProfileActivity extends AppCompatActivity {
             tvCapacity.setText("Capacity / Daily Work\n" + capacity);
         }
 
-        // Verification
         String verification = safe(seller.getVerificationStatus());
 
         if (tvVerificationStatus != null) {
@@ -615,7 +595,6 @@ public class ProfileActivity extends AppCompatActivity {
             tvTopRated.setText("Top Rated\n" + (seller.isTopRated() ? "Yes" : "No"));
         }
 
-        // Fill Edit fields
         if (etFullName != null) etFullName.setText(owner);
         if (etPhone != null) etPhone.setText(phone);
 
@@ -634,7 +613,6 @@ public class ProfileActivity extends AppCompatActivity {
             setSpinnerValue(spinnerCanDeliverProfile, seller.isCanDeliver() ? "Yes" : "No");
         }
 
-        // Seller image
         if (ivProfilePic != null && !safe(seller.getImageUrl()).isEmpty()) {
             Glide.with(this)
                     .load(seller.getImageUrl())
@@ -658,7 +636,6 @@ public class ProfileActivity extends AppCompatActivity {
         if (tvVerificationStatus != null) tvVerificationStatus.setVisibility(View.GONE);
         if (layoutSellerEditFields != null) layoutSellerEditFields.setVisibility(View.GONE);
 
-        // Hide seller information
         if (tvBusinessName != null) tvBusinessName.setVisibility(View.GONE);
         if (tvCategory != null) tvCategory.setVisibility(View.GONE);
         if (tvBio != null) tvBio.setVisibility(View.GONE);
@@ -972,7 +949,6 @@ public class ProfileActivity extends AppCompatActivity {
                 return;
             }
 
-            // Check whether Buyer profile already exists
             DatabaseReference buyerRef =
                     FirebaseDatabase.getInstance()
                             .getReference()
@@ -987,7 +963,6 @@ public class ProfileActivity extends AppCompatActivity {
 
                             if (snapshot.exists()) {
 
-                                // Buyer profile already exists
                                 new AlertDialog.Builder(
                                         ProfileActivity.this
                                 )
@@ -1008,7 +983,6 @@ public class ProfileActivity extends AppCompatActivity {
 
                             } else {
 
-                                // Buyer profile does not exist
                                 new AlertDialog.Builder(
                                         ProfileActivity.this
                                 )
@@ -1106,8 +1080,6 @@ public class ProfileActivity extends AppCompatActivity {
                             session.saveName(buyer.getName());
                         }
 
-                        // Only switch current mode.
-                        // Logout nahi hoga.
                         session.switchRole(Constants.ROLE_BUYER);
 
                         Intent intent = new Intent(
@@ -1210,7 +1182,6 @@ public class ProfileActivity extends AppCompatActivity {
                 : value;
     }
 
-    // ✅ DARK THEME - ADD AT END OF CLASS
     private void applyTheme() {
         PreferencesManager prefs = new PreferencesManager(this);
         if (prefs.isDarkThemeEnabled()) {

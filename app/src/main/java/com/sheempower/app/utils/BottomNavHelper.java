@@ -198,7 +198,6 @@ public class BottomNavHelper {
         View item4 = navBar.findViewById(R.id.navItem4);
 
 
-        // HOME / BROWSE
         item1.setOnClickListener(v -> {
 
             if (selectedIndex == 1) return;
@@ -221,7 +220,6 @@ public class BottomNavHelper {
         });
 
 
-        // ORDERS
         item2.setOnClickListener(v -> {
 
             if (selectedIndex == 2) return;
@@ -244,7 +242,6 @@ public class BottomNavHelper {
         });
 
 
-        // PROFILE
         item3.setOnClickListener(v -> {
 
             if (selectedIndex == 3) return;
@@ -258,7 +255,6 @@ public class BottomNavHelper {
         });
 
 
-        // SETTINGS
         item4.setOnClickListener(v -> {
 
             if (selectedIndex == 4) return;

@@ -12,7 +12,6 @@ public class Constants {
     public static final String NODE_PRODUCTS = "products";
     public static final String NODE_META     = "meta";
 
-    // ⚠️ Cloudinary Dashboard → Settings → Upload → apna Cloud Name aur Unsigned Preset yahan dalein
     public static final String CLOUDINARY_CLOUD_NAME    = "lstovyxq";
     public static final String CLOUDINARY_UPLOAD_PRESET = "sheempower_preset";
     public static final String CLOUDINARY_URL =
@@ -43,10 +42,6 @@ public class Constants {
         }
     }
 
-    /**
-     * ✅ ROBUST CHECK: Manual JSON import ke liye asani.
-     * Agar status "verified", "approved" ya KHALI (null) hai toh approved tasawwur hoga.
-     */
     public static boolean isApproved(String verificationStatus) {
         if (verificationStatus == null || verificationStatus.isEmpty()) return true;
         return "verified".equalsIgnoreCase(verificationStatus) ||
@@ -65,7 +60,6 @@ public class Constants {
             "https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=300&q=60"
     };
 
-    // ✅ NAYA ARRAY — Local drawable images ke liye
     public static final int[] CATEGORY_IMAGE_RES = {
             R.drawable.cat_cooking,
             R.drawable.cat_stitching,

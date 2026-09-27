@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:background="?android:attr/windowBackground"
-     android:orientation="vertical">
+    android:orientation="vertical">
 
     <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
@@ -13,7 +13,6 @@
                     android:text="🛡️ ایڈمن ڈیش بورڈ" android:textColor="#FFFFFF" android:textSize="18sp" android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- Stats -->
             <GridLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:columnCount="3" android:padding="12dp">
                 <LinearLayout android:layout_width="0dp" android:layout_columnWeight="1" android:layout_height="wrap_content"
                     android:orientation="vertical" android:background="@drawable/bg_rounded_pink_light" android:padding="12dp" android:layout_margin="4dp" android:gravity="center">
@@ -21,7 +20,6 @@
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="بیچنے والیاں" android:textSize="11sp" />
                 </LinearLayout>
 
-                <!-- ✅ Products stat card — clickable banaya -->
                 <LinearLayout android:id="@+id/layoutProductsStat" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_height="wrap_content"
                     android:orientation="vertical" android:background="@drawable/bg_rounded_pink_light" android:padding="12dp" android:layout_margin="4dp" android:gravity="center"
                     android:clickable="true" android:focusable="true">

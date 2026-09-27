@@ -2,35 +2,30 @@
 <resources>
 
     <!-- ============================================ -->
-<!-- LIGHT THEME (Default) -->
-<!-- ============================================ -->
-<style name="Theme.SheEmpower" parent="Theme.AppCompat.Light">
-    <!-- Primary Colors -->
-    <item name="colorPrimary">#FF4081</item>
-    <item name="colorPrimaryDark">#C2185B</item>
-    <item name="colorAccent">#FF4081</item>
-    <item name="android:windowBackground">@color/bg_light</item>
-    <item name="android:textColorPrimary">@color/text_light</item>
+    <!-- LIGHT THEME — System Light mode ke liye -->
+    <!-- ============================================ -->
+    <style name="Theme.SheEmpower" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#FF4081</item>
+        <item name="colorPrimaryDark">#C2185B</item>
+        <item name="colorAccent">#FF4081</item>
+        <item name="android:windowBackground">@color/bg_light</item>
+        <item name="android:colorBackground">@color/white</item>
+        <item name="android:textColorPrimary">@color/text_light</item>
+        <item name="android:textColorSecondary">@color/text_gray</item>
+    </style>
 
-    <!-- Background -->
-    <item name="android:windowBackground">@color/white</item>
-    <item name="android:colorBackground">@color/white</item>
+    <!-- Dark Theme -->
+    <style name="Theme.SheEmpower.Dark" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">#FF4081</item>
+        <item name="colorPrimaryDark">#C2185B</item>
+        <item name="colorAccent">#FF4081</item>
+        <item name="android:windowBackground">@color/dark_background</item>
+        <item name="android:colorBackground">@color/dark_background</item>
+        <item name="android:textColorPrimary">@color/dark_text</item>
+        <item name="android:textColorSecondary">@color/dark_text_secondary</item>
+    </style>
 
-    <!-- Text Colors -->
-    <item name="android:textColorPrimary">@color/text_dark</item>
-    <item name="android:textColorSecondary">@color/text_gray</item>
-
-    <!-- Action Bar -->
-    <item name="android:actionBarStyle">@style/ActionBar.Styled</item>
-</style>
-
-    <!-- Action Bar for Light Theme -->
-<style name="ActionBar.Styled" parent="Widget.AppCompat.ActionBar">
-<item name="android:background">@color/white</item>
-<item name="android:textColorPrimary">@color/text_dark</item>
-</style>
-
-    <!-- Splash Screen Theme -->
+    <!-- Splash Screen -->
     <style name="Theme.SheEmpower.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/white</item>
         <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>

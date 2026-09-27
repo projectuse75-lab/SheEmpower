@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -20,13 +19,12 @@
             android:paddingBottom="20dp">
 
             <!-- ================= HEADER ================= -->
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:paddingBottom="22dp"
+                android:paddingBottom="24dp"
                 android:background="#FFF0F6">
 
                 <RelativeLayout
@@ -48,7 +46,8 @@
                             android:layout_height="wrap_content"
                             android:text="🎨 Seller Profile"
                             android:textColor="#FFFFFF"
-                            android:textSize="23sp"
+                            android:textSize="21sp"
+                            android:letterSpacing="0.02"
                             android:textStyle="bold"
                             android:gravity="center"/>
 
@@ -56,10 +55,10 @@
                             android:id="@+id/tvOwnerHeader"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
+                            android:layout_marginTop="4dp"
                             android:text="Seller"
-                            android:textColor="#FFFFFF"
-                            android:textSize="16sp"
+                            android:textColor="#FFE0EC"
+                            android:textSize="14sp"
                             android:gravity="center"/>
 
                     </LinearLayout>
@@ -72,34 +71,38 @@
                         android:layout_centerVertical="true"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:contentDescription="Voice Guide"
-                        android:src="@android:drawable/ic_lock_silent_mode_off"
+                        android:src="@drawable/ic_speaker"
                         app:tint="#FFFFFF" />
 
                 </RelativeLayout>
 
-                <!-- Profile Picture -->
-
+                <!-- Profile Picture — ab CircleImageView ki apni border feature use kar rahe, ajeeb square patch nahi -->
                 <FrameLayout
-                    android:layout_width="145dp"
-                    android:layout_height="145dp"
-                    android:layout_marginTop="28dp">
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
+                    android:layout_marginTop="-38dp">
 
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/ivProfilePic"
-                        android:layout_width="135dp"
-                        android:layout_height="135dp"
+                        android:layout_width="132dp"
+                        android:layout_height="132dp"
                         android:layout_gravity="center"
-                        android:src="@drawable/ic_launcher_foreground"
-                        android:background="#FF4081"
-                        android:padding="4dp"/>
+                        android:src="@drawable/placeholder_avatar"
+                        app:civ_border_width="4dp"
+                        app:civ_border_color="#FFFFFF"/>
 
                     <ImageButton
                         android:id="@+id/btnChangePic"
-                        android:layout_width="42dp"
-                        android:layout_height="42dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         android:layout_gravity="bottom|end"
-                        android:background="@android:color/white"
+                        android:layout_marginEnd="4dp"
+                        android:layout_marginBottom="4dp"
+                        android:background="@drawable/bg_circle_white"
                         android:src="@android:drawable/ic_menu_camera"
+                        android:scaleType="centerInside"
+                        android:padding="8dp"
+                        app:tint="#FF4081"
                         android:contentDescription="Change profile picture"/>
 
                 </FrameLayout>
@@ -108,306 +111,290 @@
                     android:id="@+id/tvName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="14dp"
                     android:text="Seller Name"
                     android:textColor="#222222"
-                    android:textSize="26sp"
+                    android:textSize="22sp"
                     android:textStyle="bold"/>
 
                 <TextView
                     android:id="@+id/tvEmail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="2dp"
                     android:text="email@gmail.com"
                     android:textColor="#888888"
-                    android:textSize="16sp"/>
+                    android:textSize="14sp"/>
 
                 <TextView
                     android:id="@+id/tvVerificationStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:paddingLeft="14dp"
-                    android:paddingRight="14dp"
-                    android:paddingTop="7dp"
-                    android:paddingBottom="7dp"
+                    android:paddingLeft="18dp"
+                    android:paddingRight="18dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
                     android:text="⏳ Verification Pending"
-                    android:textColor="#4CAF50"
-                    android:textSize="16sp"
+                    android:textColor="#2E7D32"
+                    android:textSize="13sp"
                     android:textStyle="bold"
-                    android:background="#E8F5E9"/>
+                    android:background="@drawable/bg_status_pill_green"/>
 
             </LinearLayout>
 
             <!-- ================= ROLE SWITCH ================= -->
-
             <TextView
                 android:id="@+id/btnSwitchRole"
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
+                android:layout_height="52dp"
                 android:gravity="center"
                 android:text="👤  SELLER  ▼"
                 android:textColor="#E83E8C"
-                android:textSize="17sp"
+                android:textSize="15sp"
                 android:textStyle="bold"
                 android:background="#FFE0EC"/>
 
             <!-- ================= VIEW MODE ================= -->
-
             <LinearLayout
                 android:id="@+id/layoutProfileView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="22dp">
+                android:padding="18dp">
 
                 <!-- Personal Information -->
-
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="👤  Personal Information"
                     android:textColor="#E83E8C"
-                    android:textSize="21sp"
+                    android:textSize="16sp"
                     android:textStyle="bold"
                     android:paddingBottom="10dp"/>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:background="#FFE0EC"/>
 
                 <TextView
                     android:id="@+id/tvPersonalName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:padding="16dp"
-                    android:background="#F4F4F4"
+                    android:layout_marginBottom="10dp"
+                    android:padding="14dp"
+                    android:background="@drawable/bg_profile_field"
                     android:textColor="#333333"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
+                    android:lineSpacingExtra="2dp"
                     android:text="Full Name"/>
 
                 <TextView
                     android:id="@+id/tvPersonalEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:padding="16dp"
-                    android:background="#F4F4F4"
+                    android:layout_marginBottom="10dp"
+                    android:padding="14dp"
+                    android:background="@drawable/bg_profile_field"
                     android:textColor="#333333"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
+                    android:lineSpacingExtra="2dp"
                     android:text="Email"/>
 
                 <TextView
                     android:id="@+id/tvWhatsApp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:padding="16dp"
-                    android:background="#F4F4F4"
+                    android:layout_marginBottom="10dp"
+                    android:padding="14dp"
+                    android:background="@drawable/bg_profile_field"
                     android:textColor="#333333"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
+                    android:lineSpacingExtra="2dp"
                     android:text="WhatsApp"/>
 
-
                 <!-- Business Information -->
-
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="25dp"
+                    android:layout_marginTop="16dp"
                     android:text="🏪  Business Information"
                     android:textColor="#E83E8C"
-                    android:textSize="21sp"
+                    android:textSize="16sp"
                     android:textStyle="bold"
                     android:paddingBottom="10dp"/>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:background="#FFE0EC"/>
 
                 <TextView
                     android:id="@+id/tvBusinessName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:padding="16dp"
-                    android:background="#F4F4F4"
+                    android:layout_marginBottom="10dp"
+                    android:padding="14dp"
+                    android:background="@drawable/bg_profile_field"
                     android:textColor="#333333"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
+                    android:lineSpacingExtra="2dp"
                     android:text="Shop Name"/>
 
                 <TextView
                     android:id="@+id/tvCategory"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:padding="16dp"
-                    android:background="#F4F4F4"
+                    android:layout_marginBottom="10dp"
+                    android:padding="14dp"
+                    android:background="@drawable/bg_profile_field"
                     android:textColor="#333333"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
+                    android:lineSpacingExtra="2dp"
                     android:text="Category"/>
 
                 <TextView
                     android:id="@+id/tvBio"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:padding="16dp"
-                    android:background="#F4F4F4"
+                    android:layout_marginBottom="10dp"
+                    android:padding="14dp"
+                    android:background="@drawable/bg_profile_field"
                     android:textColor="#333333"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
+                    android:lineSpacingExtra="2dp"
                     android:text="Bio / Description"/>
 
-
                 <!-- Location & Delivery -->
-
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="25dp"
+                    android:layout_marginTop="16dp"
                     android:text="📍  Location &amp; Delivery"
                     android:textColor="#E83E8C"
-                    android:textSize="21sp"
+                    android:textSize="16sp"
                     android:textStyle="bold"
                     android:paddingBottom="10dp"/>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:background="#FFE0EC"/>
 
                 <TextView
                     android:id="@+id/tvCity"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:padding="16dp"
-                    android:background="#F4F4F4"
+                    android:layout_marginBottom="10dp"
+                    android:padding="14dp"
+                    android:background="@drawable/bg_profile_field"
                     android:textColor="#333333"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
+                    android:lineSpacingExtra="2dp"
                     android:text="City"/>
 
                 <TextView
                     android:id="@+id/tvShopAddress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:padding="16dp"
-                    android:background="#F4F4F4"
+                    android:layout_marginBottom="10dp"
+                    android:padding="14dp"
+                    android:background="@drawable/bg_profile_field"
                     android:textColor="#333333"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
+                    android:lineSpacingExtra="2dp"
                     android:text="Shop Address"/>
 
                 <TextView
                     android:id="@+id/tvDelivery"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:padding="16dp"
-                    android:background="#F4F4F4"
+                    android:layout_marginBottom="10dp"
+                    android:padding="14dp"
+                    android:background="@drawable/bg_profile_field"
                     android:textColor="#333333"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
+                    android:lineSpacingExtra="2dp"
                     android:text="Can Deliver"/>
 
                 <TextView
                     android:id="@+id/tvCapacity"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:padding="16dp"
-                    android:background="#F4F4F4"
+                    android:layout_marginBottom="10dp"
+                    android:padding="14dp"
+                    android:background="@drawable/bg_profile_field"
                     android:textColor="#333333"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
+                    android:lineSpacingExtra="2dp"
                     android:text="Capacity"/>
 
-
                 <!-- Verification & Rating -->
-
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="25dp"
+                    android:layout_marginTop="16dp"
                     android:text="🛡️  Verification &amp; Rating"
                     android:textColor="#E83E8C"
-                    android:textSize="21sp"
+                    android:textSize="16sp"
                     android:textStyle="bold"
                     android:paddingBottom="10dp"/>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:background="#FFE0EC"/>
 
                 <TextView
                     android:id="@+id/tvCnicStatus"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:padding="16dp"
-                    android:background="#F4F4F4"
+                    android:layout_marginBottom="10dp"
+                    android:padding="14dp"
+                    android:background="@drawable/bg_profile_field"
                     android:textColor="#333333"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
+                    android:lineSpacingExtra="2dp"
                     android:text="CNIC Verification"/>
 
                 <TextView
                     android:id="@+id/tvVoiceStatus"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:padding="16dp"
-                    android:background="#F4F4F4"
+                    android:layout_marginBottom="10dp"
+                    android:padding="14dp"
+                    android:background="@drawable/bg_profile_field"
                     android:textColor="#333333"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
+                    android:lineSpacingExtra="2dp"
                     android:text="Voice Verification"/>
 
                 <TextView
                     android:id="@+id/tvRating"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:padding="16dp"
-                    android:background="#F4F4F4"
+                    android:layout_marginBottom="10dp"
+                    android:padding="14dp"
+                    android:background="@drawable/bg_profile_field"
                     android:textColor="#333333"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
+                    android:lineSpacingExtra="2dp"
                     android:text="Rating"/>
 
                 <TextView
                     android:id="@+id/tvRatingCount"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:padding="16dp"
-                    android:background="#F4F4F4"
+                    android:layout_marginBottom="10dp"
+                    android:padding="14dp"
+                    android:background="@drawable/bg_profile_field"
                     android:textColor="#333333"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
+                    android:lineSpacingExtra="2dp"
                     android:text="Rating Count"/>
 
                 <TextView
                     android:id="@+id/tvTopRated"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:padding="16dp"
-                    android:background="#F4F4F4"
+                    android:layout_marginBottom="10dp"
+                    android:padding="14dp"
+                    android:background="@drawable/bg_profile_field"
                     android:textColor="#333333"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
+                    android:lineSpacingExtra="2dp"
                     android:text="Top Rated"/>
 
             </LinearLayout>
 
-
             <!-- ================= EDIT MODE ================= -->
-
             <LinearLayout
                 android:id="@+id/layoutEditProfile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="22dp"
+                android:padding="18dp"
                 android:visibility="gone">
 
                 <TextView
@@ -415,33 +402,31 @@
                     android:layout_height="wrap_content"
                     android:text="✏️  Edit Profile"
                     android:textColor="#E83E8C"
-                    android:textSize="24sp"
+                    android:textSize="20sp"
                     android:textStyle="bold"
-                    android:paddingBottom="18dp"/>
+                    android:paddingBottom="16dp"/>
 
                 <EditText
                     android:id="@+id/etFullName"
                     android:layout_width="match_parent"
-                    android:layout_height="55dp"
+                    android:layout_height="52dp"
                     android:hint="Full Name"
                     android:padding="14dp"
-                    android:background="#F4F4F4"
-                    android:textSize="16sp"/>
+                    android:background="@drawable/bg_rounded_pink"
+                    android:textSize="14sp"/>
 
                 <EditText
                     android:id="@+id/etPhone"
                     android:layout_width="match_parent"
-                    android:layout_height="55dp"
+                    android:layout_height="52dp"
                     android:layout_marginTop="12dp"
                     android:hint="WhatsApp / Phone"
                     android:inputType="phone"
                     android:padding="14dp"
-                    android:background="#F4F4F4"
-                    android:textSize="16sp"/>
-
+                    android:background="@drawable/bg_rounded_pink"
+                    android:textSize="14sp"/>
 
                 <!-- Seller Fields -->
-
                 <LinearLayout
                     android:id="@+id/layoutSellerEditFields"
                     android:layout_width="match_parent"
@@ -451,145 +436,137 @@
                     <EditText
                         android:id="@+id/etBusinessName"
                         android:layout_width="match_parent"
-                        android:layout_height="55dp"
+                        android:layout_height="52dp"
                         android:layout_marginTop="12dp"
                         android:hint="Business / Shop Name"
                         android:padding="14dp"
-                        android:background="#F4F4F4"
-                        android:textSize="16sp"/>
+                        android:background="@drawable/bg_rounded_pink"
+                        android:textSize="14sp"/>
 
                     <EditText
                         android:id="@+id/etBio"
                         android:layout_width="match_parent"
-                        android:layout_height="110dp"
+                        android:layout_height="100dp"
                         android:layout_marginTop="12dp"
                         android:hint="Bio / Description"
                         android:gravity="top"
                         android:padding="14dp"
-                        android:background="#F4F4F4"
-                        android:textSize="16sp"/>
+                        android:background="@drawable/bg_rounded_pink"
+                        android:textSize="14sp"/>
 
                     <EditText
                         android:id="@+id/etCity"
                         android:layout_width="match_parent"
-                        android:layout_height="55dp"
+                        android:layout_height="52dp"
                         android:layout_marginTop="12dp"
                         android:hint="City"
                         android:padding="14dp"
-                        android:background="#F4F4F4"
-                        android:textSize="16sp"/>
+                        android:background="@drawable/bg_rounded_pink"
+                        android:textSize="14sp"/>
 
                     <Spinner
                         android:id="@+id/spinnerCategoryProfile"
                         android:layout_width="match_parent"
-                        android:layout_height="55dp"
+                        android:layout_height="52dp"
                         android:layout_marginTop="12dp"/>
 
                     <EditText
                         android:id="@+id/etWhatsApp"
                         android:layout_width="match_parent"
-                        android:layout_height="55dp"
+                        android:layout_height="52dp"
                         android:layout_marginTop="12dp"
                         android:hint="WhatsApp Number"
                         android:inputType="phone"
                         android:padding="14dp"
-                        android:background="#F4F4F4"
-                        android:textSize="16sp"/>
+                        android:background="@drawable/bg_rounded_pink"
+                        android:textSize="14sp"/>
 
                     <EditText
                         android:id="@+id/etCapacity"
                         android:layout_width="match_parent"
-                        android:layout_height="80dp"
+                        android:layout_height="76dp"
                         android:layout_marginTop="12dp"
                         android:hint="Capacity / Daily Work"
                         android:gravity="top"
                         android:padding="14dp"
-                        android:background="#F4F4F4"
-                        android:textSize="16sp"/>
+                        android:background="@drawable/bg_rounded_pink"
+                        android:textSize="14sp"/>
 
                     <EditText
                         android:id="@+id/etShopAddress"
                         android:layout_width="match_parent"
-                        android:layout_height="80dp"
+                        android:layout_height="76dp"
                         android:layout_marginTop="12dp"
                         android:hint="Shop Address"
                         android:gravity="top"
                         android:padding="14dp"
-                        android:background="#F4F4F4"
-                        android:textSize="16sp"/>
+                        android:background="@drawable/bg_rounded_pink"
+                        android:textSize="14sp"/>
 
                     <Spinner
                         android:id="@+id/spinnerCanDeliverProfile"
                         android:layout_width="match_parent"
-                        android:layout_height="55dp"
+                        android:layout_height="52dp"
                         android:layout_marginTop="12dp"/>
 
                 </LinearLayout>
 
-
-                <!-- Save -->
-
                 <Button
                     android:id="@+id/btnSave"
                     android:layout_width="match_parent"
-                    android:layout_height="58dp"
-                    android:layout_marginTop="25dp"
+                    android:layout_height="54dp"
+                    android:layout_marginTop="22dp"
                     android:text="💾  SAVE CHANGES"
                     android:textColor="#FFFFFF"
-                    android:textSize="17sp"
+                    android:textSize="15sp"
                     android:textStyle="bold"
                     android:backgroundTint="#FF4081"/>
 
                 <Button
                     android:id="@+id/btnCancelEdit"
                     android:layout_width="match_parent"
-                    android:layout_height="55dp"
+                    android:layout_height="52dp"
                     android:layout_marginTop="10dp"
                     android:text="CANCEL"
-                    android:textSize="16sp"/>
+                    android:textSize="14sp"/>
 
             </LinearLayout>
 
-
             <!-- ================= MAIN BUTTONS ================= -->
-
             <Button
                 android:id="@+id/btnEditProfile"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginLeft="22dp"
-                android:layout_marginRight="22dp"
-                android:layout_marginTop="10dp"
+                android:layout_height="56dp"
+                android:layout_marginLeft="18dp"
+                android:layout_marginRight="18dp"
+                android:layout_marginTop="8dp"
                 android:text="✏️  EDIT PROFILE"
                 android:textColor="#FFFFFF"
-                android:textSize="17sp"
+                android:textSize="15sp"
                 android:textStyle="bold"
                 android:backgroundTint="#FF4081"/>
 
             <Button
                 android:id="@+id/btnMyOrders"
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
-                android:layout_marginLeft="22dp"
-                android:layout_marginRight="22dp"
+                android:layout_height="52dp"
+                android:layout_marginLeft="18dp"
+                android:layout_marginRight="18dp"
                 android:layout_marginTop="10dp"
                 android:text="📦  MY ORDERS"/>
 
             <Button
                 android:id="@+id/btnLogout"
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
-                android:layout_marginLeft="22dp"
-                android:layout_marginRight="22dp"
-                android:layout_marginTop="5dp"
+                android:layout_height="52dp"
+                android:layout_marginLeft="18dp"
+                android:layout_marginRight="18dp"
+                android:layout_marginTop="6dp"
                 android:text="🚪  LOGOUT"/>
 
         </LinearLayout>
 
     </ScrollView>
-
-
-    <!-- ================= BOTTOM NAV ================= -->
 
     <include
         android:id="@+id/bottomNav"

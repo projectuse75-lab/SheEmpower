@@ -33,11 +33,12 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        applyTheme(); // ✅ FIX: pehle yahan (onResume se pehle nahi) — warna dark theme is screen par nazar nahi aati thi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_dashboard);
 
         VoiceGuide.announceScreen(this,
-                "یہ ایڈمن ڈیش بورڈ ہے۔ اوپر آپ کو اعداد و شمار نظر آئیں گے۔ منظوری کے منتظر بیچنے والیوں کو منظور یا مسترد کریں۔ نیچے تمام بیچنے والیوں کی فہرست میں کسی کو بند یا فعال بھی کر سکتی ہیں۔ کسی بھی نام پر کلک کر کے پوری پروفائل دیکھیں۔");
+                "یہ ایڈمن ڈیش بورڈ ہے۔ اوپر آپ کو اعداد و شمار نظر آئیں گے۔ منظوری کے منتظر بیچنے والیوں کو منظور یا مسترد کریں۔ نیچے تمام بیچنے والیوں کی فہرست میں کسی کو بند یا فعال بھی کر سکتی ہیں۔ کسی بھی نام پر کلک کر کے پوری پروفائل دیکھیں، جہاں اس کی تمام اشیاء بھی نظر آئیں گی۔");
 
         tvTotalSellers  = findViewById(R.id.tvTotalSellers);
         tvTotalProducts = findViewById(R.id.tvTotalProducts);
@@ -70,7 +71,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
     }
 
     @Override protected void onResume() {
-        applyTheme();
         super.onResume();
         loadStats();
         loadPendingSellers();
@@ -113,7 +113,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
                         for (DataSnapshot child : snapshot.getChildren()) {
                             Seller s = child.getValue(Seller.class);
                             if (s != null) {
-                                // ✅ FIX: UID fallback
                                 if (s.getUid() == null || s.getUid().isEmpty()) s.setUid(child.getKey());
                                 pendingList.add(s);
                             }
@@ -137,7 +136,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
                         for (DataSnapshot child : snapshot.getChildren()) {
                             Seller s = child.getValue(Seller.class);
                             if (s != null) {
-                                // ✅ FIX: UID fallback
                                 if (s.getUid() == null || s.getUid().isEmpty()) s.setUid(child.getKey());
                                 allSellerList.add(s);
                             }
@@ -206,7 +204,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
         }
     }
 
-    // ✅ DARK THEME - ADD AT END OF CLASS
     private void applyTheme() {
         PreferencesManager prefs = new PreferencesManager(this);
         if (prefs.isDarkThemeEnabled()) {

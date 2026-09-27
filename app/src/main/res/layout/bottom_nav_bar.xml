@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/bottomNav"
@@ -10,7 +9,6 @@
     android:elevation="12dp">
 
     <!-- HOME / BROWSE -->
-
     <LinearLayout
         android:id="@+id/navItem1"
         android:layout_width="0dp"
@@ -36,9 +34,7 @@
 
     </LinearLayout>
 
-
     <!-- ORDERS -->
-
     <LinearLayout
         android:id="@+id/navItem2"
         android:layout_width="0dp"
@@ -64,9 +60,7 @@
 
     </LinearLayout>
 
-
     <!-- PROFILE -->
-
     <LinearLayout
         android:id="@+id/navItem3"
         android:layout_width="0dp"
@@ -92,9 +86,7 @@
 
     </LinearLayout>
 
-
     <!-- SETTINGS -->
-
     <LinearLayout
         android:id="@+id/navItem4"
         android:layout_width="0dp"
