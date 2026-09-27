@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,6 +44,7 @@ public class ProfileActivity extends AppCompatActivity {
     private CircleImageView ivProfilePic;
     private ImageButton btnChangePic;
     private ImageButton btnSpeaker;
+    private ImageView ivVerifiedBadge; // ✅ NAYA
 
     private TextView tvBusinessHeader;
     private TextView tvOwnerHeader;
@@ -53,6 +55,7 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView btnSwitchRole;
 
     private View layoutProfileView;
+    private View layoutGuestState; // ✅ NAYA
 
     private TextView tvPersonalName;
     private TextView tvPersonalEmail;
@@ -93,6 +96,8 @@ public class ProfileActivity extends AppCompatActivity {
     private Button btnCancelEdit;
     private Button btnMyOrders;
     private Button btnLogout;
+    private Button btnGuestLogin;   // ✅ NAYA
+    private Button btnGuestRegister; // ✅ NAYA
 
     private SessionManager session;
 
@@ -117,10 +122,19 @@ public class ProfileActivity extends AppCompatActivity {
 
         session = new SessionManager(this);
 
+        initializeViews();
+
+        // ✅ ASAL FIX — agar koi login nahi hai, seller/buyer wala template kabhi mat dikhao
+        if (!session.isLoggedIn()) {
+            showGuestState();
+            View bottomNav = findViewById(R.id.bottomNav);
+            if (bottomNav != null) BottomNavHelper.setupForBuyerOrVisitor(this, bottomNav, 3);
+            return;
+        }
+
         VoiceGuide.announceScreen(this,
                 "یہ آپ کی پروفائل کی سکرین ہے۔ یہاں آپ اپنی معلومات دیکھ اور تبدیل کر سکتی ہیں۔");
 
-        initializeViews();
         setupCategorySpinner();
         setupDeliverySpinner();
         setupButtons();
@@ -137,11 +151,33 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
+    /** ✅ NAYA — visitor ko sirf login/register offer karo, koi fake seller info nahi */
+    private void showGuestState() {
+        layoutGuestState.setVisibility(View.VISIBLE);
+        layoutProfileView.setVisibility(View.GONE);
+        layoutEditProfile.setVisibility(View.GONE);
+        btnSwitchRole.setVisibility(View.GONE);
+        btnEditProfile.setVisibility(View.GONE);
+        btnMyOrders.setVisibility(View.GONE);
+        btnLogout.setVisibility(View.GONE);
+        ivVerifiedBadge.setVisibility(View.GONE);
+
+        tvBusinessHeader.setText("👋 خوش آمدید / Welcome");
+        tvOwnerHeader.setText("Visitor");
+        tvName.setText("مہمان / Guest");
+        tvEmail.setVisibility(View.GONE);
+        tvVerificationStatus.setVisibility(View.GONE);
+
+        btnGuestLogin.setOnClickListener(v -> startActivity(new Intent(this, LoginActivity.class)));
+        btnGuestRegister.setOnClickListener(v -> startActivity(new Intent(this, SellerRegistrationActivity.class)));
+    }
+
     private void initializeViews() {
 
         ivProfilePic = findViewById(R.id.ivProfilePic);
         btnChangePic = findViewById(R.id.btnChangePic);
         btnSpeaker   = findViewById(R.id.btnSpeaker);
+        ivVerifiedBadge = findViewById(R.id.ivVerifiedBadge);
 
         tvBusinessHeader = findViewById(R.id.tvBusinessHeader);
         tvOwnerHeader = findViewById(R.id.tvOwnerHeader);
@@ -152,6 +188,7 @@ public class ProfileActivity extends AppCompatActivity {
         btnSwitchRole = findViewById(R.id.btnSwitchRole);
 
         layoutProfileView = findViewById(R.id.layoutProfileView);
+        layoutGuestState = findViewById(R.id.layoutGuestState);
 
         tvPersonalName = findViewById(R.id.tvPersonalName);
         tvPersonalEmail = findViewById(R.id.tvPersonalEmail);
@@ -182,15 +219,13 @@ public class ProfileActivity extends AppCompatActivity {
         etBio = findViewById(R.id.etBio);
         etCity = findViewById(R.id.etCity);
 
-        spinnerCategoryProfile =
-                findViewById(R.id.spinnerCategoryProfile);
+        spinnerCategoryProfile = findViewById(R.id.spinnerCategoryProfile);
 
         etWhatsApp = findViewById(R.id.etWhatsApp);
         etCapacity = findViewById(R.id.etCapacity);
         etShopAddress = findViewById(R.id.etShopAddress);
 
-        spinnerCanDeliverProfile =
-                findViewById(R.id.spinnerCanDeliverProfile);
+        spinnerCanDeliverProfile = findViewById(R.id.spinnerCanDeliverProfile);
 
         btnEditProfile = findViewById(R.id.btnEditProfile);
         btnSave = findViewById(R.id.btnSave);
@@ -198,406 +233,176 @@ public class ProfileActivity extends AppCompatActivity {
 
         btnMyOrders = findViewById(R.id.btnMyOrders);
         btnLogout = findViewById(R.id.btnLogout);
+
+        btnGuestLogin = findViewById(R.id.btnGuestLogin);
+        btnGuestRegister = findViewById(R.id.btnGuestRegister);
     }
 
     private void setupCategorySpinner() {
-
         String[] categories;
-
-        if (Constants.CATEGORIES != null &&
-                Constants.CATEGORIES.length > 0) {
-
+        if (Constants.CATEGORIES != null && Constants.CATEGORIES.length > 0) {
             categories = Constants.CATEGORIES;
-
         } else {
-
-            categories = new String[]{
-                    "Select Category",
-                    "Beauty",
-                    "Clothing",
-                    "Food",
-                    "Handmade",
-                    "Education",
-                    "Other"
-            };
+            categories = new String[]{"Select Category","Beauty","Clothing","Food","Handmade","Education","Other"};
         }
-
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(
-                        this,
-                        android.R.layout.simple_spinner_item,
-                        categories
-                );
-
-        adapter.setDropDownViewResource(
-                android.R.layout.simple_spinner_dropdown_item
-        );
-
-        if (spinnerCategoryProfile != null) {
-            spinnerCategoryProfile.setAdapter(adapter);
-        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        if (spinnerCategoryProfile != null) spinnerCategoryProfile.setAdapter(adapter);
     }
 
     private void setupDeliverySpinner() {
-
-        String[] deliveryOptions = {
-                "Yes",
-                "No"
-        };
-
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(
-                        this,
-                        android.R.layout.simple_spinner_item,
-                        deliveryOptions
-                );
-
-        adapter.setDropDownViewResource(
-                android.R.layout.simple_spinner_dropdown_item
-        );
-
-        if (spinnerCanDeliverProfile != null) {
-            spinnerCanDeliverProfile.setAdapter(adapter);
-        }
+        String[] deliveryOptions = {"Yes", "No"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, deliveryOptions);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        if (spinnerCanDeliverProfile != null) spinnerCanDeliverProfile.setAdapter(adapter);
     }
 
     private void setupButtons() {
-
-        if (btnSpeaker != null) {
-            btnSpeaker.setOnClickListener(v -> speakText());
-        }
-
-        if (btnChangePic != null) {
-            btnChangePic.setOnClickListener(v ->
-                    imagePicker.launch("image/*")
-            );
-        }
-
-        if (btnEditProfile != null) {
-            btnEditProfile.setOnClickListener(v ->
-                    openEditMode()
-            );
-        }
-
-        if (btnSave != null) {
-            btnSave.setOnClickListener(v ->
-                    saveChanges()
-            );
-        }
-
-        if (btnCancelEdit != null) {
-            btnCancelEdit.setOnClickListener(v ->
-                    closeEditMode()
-            );
-        }
+        if (btnSpeaker != null) btnSpeaker.setOnClickListener(v -> speakText());
+        if (btnChangePic != null) btnChangePic.setOnClickListener(v -> imagePicker.launch("image/*"));
+        if (btnEditProfile != null) btnEditProfile.setOnClickListener(v -> openEditMode());
+        if (btnSave != null) btnSave.setOnClickListener(v -> saveChanges());
+        if (btnCancelEdit != null) btnCancelEdit.setOnClickListener(v -> closeEditMode());
 
         if (btnMyOrders != null) {
-            btnMyOrders.setOnClickListener(v ->
-                    startActivity(
-                            new Intent(
-                                    ProfileActivity.this,
-                                    MyOrdersActivity.class
-                            )
-                    )
-            );
+            btnMyOrders.setOnClickListener(v -> startActivity(new Intent(ProfileActivity.this, MyOrdersActivity.class)));
         }
 
         if (btnLogout != null) {
             btnLogout.setOnClickListener(v -> {
-
                 session.logout();
-
-                Intent intent =
-                        new Intent(
-                                ProfileActivity.this,
-                                MainActivity.class
-                        );
-
-                intent.addFlags(
-                        Intent.FLAG_ACTIVITY_CLEAR_TOP |
-                                Intent.FLAG_ACTIVITY_NEW_TASK
-                );
-
+                Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 finish();
             });
         }
 
-        if (btnSwitchRole != null) {
-            btnSwitchRole.setOnClickListener(v ->
-                    showRoleSwitchDialog()
-            );
-        }
+        if (btnSwitchRole != null) btnSwitchRole.setOnClickListener(v -> showRoleSwitchDialog());
     }
 
     private void speakText() {
-        VoiceGuide.announceScreen(this,
-                "یہ آپ کی پروفائل کی سکرین ہے۔ یہاں آپ اپنی معلومات دیکھ اور تبدیل کر سکتی ہیں۔");
+        VoiceGuide.announceScreen(this, "یہ آپ کی پروفائل کی سکرین ہے۔ یہاں آپ اپنی معلومات دیکھ اور تبدیل کر سکتی ہیں۔");
     }
 
     private void loadUser() {
-
         String uid = session.getUid();
+        if (uid == null) return;
 
-        if (uid == null) {
-            return;
-        }
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child(Constants.NODE_USERS).child(uid);
 
-        DatabaseReference userRef =
-                FirebaseDatabase.getInstance()
-                        .getReference()
-                        .child(Constants.NODE_USERS)
-                        .child(uid);
-
-        userRef.addListenerForSingleValueEvent(
-                new ValueEventListener() {
-
-                    @Override
-                    public void onDataChange(
-                            DataSnapshot snapshot
-                    ) {
-
-                        currentUser =
-                                snapshot.getValue(User.class);
-
-                        if (currentUser == null) {
-                            return;
-                        }
-
-                        showUserInformation(currentUser);
-
-                        if ("seller".equalsIgnoreCase(
-                                safe(currentUser.getRole())
-                        )) {
-
-                            loadSellerInformation(uid);
-
-                        } else {
-
-                            showBuyerProfile();
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(
-                            DatabaseError error
-                    ) {
-
-                        Toast.makeText(
-                                ProfileActivity.this,
-                                "Profile load nahi ho saki",
-                                Toast.LENGTH_SHORT
-                        ).show();
-                    }
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                currentUser = snapshot.getValue(User.class);
+                if (currentUser == null) return;
+                showUserInformation(currentUser);
+                if ("seller".equalsIgnoreCase(safe(currentUser.getRole()))) {
+                    loadSellerInformation(uid);
+                } else {
+                    showBuyerProfile();
                 }
-        );
+            }
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Toast.makeText(ProfileActivity.this, "Profile load nahi ho saki", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void showUserInformation(User user) {
-
-        if (user == null) {
-            return;
-        }
-
+        if (user == null) return;
         String name = safe(user.getName());
         String email = safe(user.getEmail());
         String phone = safe(user.getPhone());
 
         if (tvName != null) tvName.setText(name);
         if (tvEmail != null) tvEmail.setText(email);
-
-        if (tvPersonalName != null) {
-            tvPersonalName.setText("Full Name\n" + name);
-        }
-
-        if (tvPersonalEmail != null) {
-            tvPersonalEmail.setText("Email\n" + email);
-        }
-
-        if (tvWhatsApp != null) {
-            tvWhatsApp.setText("WhatsApp / Phone\n" + phone);
-        }
-
+        if (tvPersonalName != null) tvPersonalName.setText("Full Name\n" + name);
+        if (tvPersonalEmail != null) tvPersonalEmail.setText("Email\n" + email);
+        if (tvWhatsApp != null) tvWhatsApp.setText("WhatsApp / Phone\n" + phone);
         if (etFullName != null) etFullName.setText(name);
         if (etPhone != null) etPhone.setText(phone);
 
         if (ivProfilePic != null && !safe(user.getImageUrl()).isEmpty()) {
-
-            Glide.with(this)
-                    .load(user.getImageUrl())
-                    .into(ivProfilePic);
+            Glide.with(this).load(user.getImageUrl()).into(ivProfilePic);
         }
     }
 
     private void loadSellerInformation(String uid) {
+        DatabaseReference sellerRef = FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS).child(uid);
 
-        DatabaseReference sellerRef =
-                FirebaseDatabase.getInstance()
-                        .getReference()
-                        .child(Constants.NODE_SELLERS)
-                        .child(uid);
-
-        sellerRef.addListenerForSingleValueEvent(
-                new ValueEventListener() {
-
-                    @Override
-                    public void onDataChange(
-                            DataSnapshot snapshot
-                    ) {
-
-                        currentSeller =
-                                snapshot.getValue(Seller.class);
-
-                        if (currentSeller == null) {
-
-                            Toast.makeText(
-                                    ProfileActivity.this,
-                                    "Seller details nahi milin",
-                                    Toast.LENGTH_SHORT
-                            ).show();
-
-                            return;
-                        }
-
-                        showSellerInformation(
-                                currentSeller
-                        );
-                    }
-
-                    @Override
-                    public void onCancelled(
-                            DatabaseError error
-                    ) {
-
-                        Toast.makeText(
-                                ProfileActivity.this,
-                                "Seller details load nahi ho saken",
-                                Toast.LENGTH_SHORT
-                        ).show();
-                    }
+        sellerRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                currentSeller = snapshot.getValue(Seller.class);
+                if (currentSeller == null) {
+                    Toast.makeText(ProfileActivity.this, "Seller details nahi milin", Toast.LENGTH_SHORT).show();
+                    return;
                 }
-        );
+                showSellerInformation(currentSeller);
+            }
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Toast.makeText(ProfileActivity.this, "Seller details load nahi ho saken", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    private void showSellerInformation(
-            Seller seller
-    ) {
+    private void showSellerInformation(Seller seller) {
+        String business = safe(seller.getBusinessName());
+        String owner = safe(seller.getOwnerName());
+        String email = safe(seller.getEmail());
+        String phone = safe(seller.getPhone());
+        String whatsapp = safe(seller.getWhatsappNumber());
+        String category = safe(seller.getCategory());
+        String bio = safe(seller.getBio());
+        String city = safe(seller.getCity());
+        String address = safe(seller.getShopAddress());
+        String capacity = safe(seller.getCapacityDescription());
 
-        String business =
-                safe(seller.getBusinessName());
-
-        String owner =
-                safe(seller.getOwnerName());
-
-        String email =
-                safe(seller.getEmail());
-
-        String phone =
-                safe(seller.getPhone());
-
-        String whatsapp =
-                safe(seller.getWhatsappNumber());
-
-        String category =
-                safe(seller.getCategory());
-
-        String bio =
-                safe(seller.getBio());
-
-        String city =
-                safe(seller.getCity());
-
-        String address =
-                safe(seller.getShopAddress());
-
-        String capacity =
-                safe(seller.getCapacityDescription());
-
-        if (tvBusinessHeader != null) {
-            tvBusinessHeader.setText("🎨 " + business + " Profile");
-        }
-
+        if (tvBusinessHeader != null) tvBusinessHeader.setText("🎨 " + business + " Profile");
         if (tvOwnerHeader != null) tvOwnerHeader.setText(owner);
         if (tvName != null) tvName.setText(owner);
         if (tvEmail != null) tvEmail.setText(email);
 
-        if (tvPersonalName != null) {
-            tvPersonalName.setText("Full Name\n" + owner);
-        }
+        if (tvPersonalName != null) tvPersonalName.setText("Full Name\n" + owner);
+        if (tvPersonalEmail != null) tvPersonalEmail.setText("Email\n" + email);
+        if (tvWhatsApp != null) tvWhatsApp.setText("WhatsApp\n" + whatsapp);
 
-        if (tvPersonalEmail != null) {
-            tvPersonalEmail.setText("Email\n" + email);
-        }
+        if (tvBusinessName != null) tvBusinessName.setText("Business / Shop Name\n" + business);
+        if (tvCategory != null) tvCategory.setText("Category\n" + category);
+        if (tvBio != null) tvBio.setText("Bio / Description\n" + bio);
 
-        if (tvWhatsApp != null) {
-            tvWhatsApp.setText("WhatsApp\n" + whatsapp);
-        }
-
-        if (tvBusinessName != null) {
-            tvBusinessName.setText("Business / Shop Name\n" + business);
-        }
-
-        if (tvCategory != null) {
-            tvCategory.setText("Category\n" + category);
-        }
-
-        if (tvBio != null) {
-            tvBio.setText("Bio / Description\n" + bio);
-        }
-
-        if (tvCity != null) {
-            tvCity.setText("City\n" + city);
-        }
-
-        if (tvShopAddress != null) {
-            tvShopAddress.setText("Shop Address\n" + address);
-        }
-
-        if (tvDelivery != null) {
-            tvDelivery.setText("Can Deliver\n" + (seller.isCanDeliver() ? "Yes" : "No"));
-        }
-
-        if (tvCapacity != null) {
-            tvCapacity.setText("Capacity / Daily Work\n" + capacity);
-        }
+        if (tvCity != null) tvCity.setText("City\n" + city);
+        if (tvShopAddress != null) tvShopAddress.setText("Shop Address\n" + address);
+        if (tvDelivery != null) tvDelivery.setText("Can Deliver\n" + (seller.isCanDeliver() ? "Yes" : "No"));
+        if (tvCapacity != null) tvCapacity.setText("Capacity / Daily Work\n" + capacity);
 
         String verification = safe(seller.getVerificationStatus());
+        boolean approved = Constants.isApproved(verification);
+
+        // ✅ NAYA — Instagram-jesa tick badge, sirf approved hone par dikhega
+        if (ivVerifiedBadge != null) {
+            ivVerifiedBadge.setVisibility(approved ? View.VISIBLE : View.GONE);
+        }
 
         if (tvVerificationStatus != null) {
-            tvVerificationStatus.setText("⏳ Verification: " + verification);
+            tvVerificationStatus.setText(approved ? "✅ Verified" : "⏳ Verification: " + verification);
         }
 
         if (tvCnicStatus != null) {
-            if (!safe(seller.getCnicUrl()).isEmpty()) {
-                tvCnicStatus.setText("CNIC Verification\nDocument submitted");
-            } else {
-                tvCnicStatus.setText("CNIC Verification\nNot submitted");
-            }
+            tvCnicStatus.setText(!safe(seller.getCnicUrl()).isEmpty() ? "CNIC Verification\nDocument submitted" : "CNIC Verification\nNot submitted");
         }
-
         if (tvVoiceStatus != null) {
-            if (!safe(seller.getVoiceUrl()).isEmpty()) {
-                tvVoiceStatus.setText("Voice Verification\nSubmitted");
-            } else {
-                tvVoiceStatus.setText("Voice Verification\nNot submitted");
-            }
+            tvVoiceStatus.setText(!safe(seller.getVoiceUrl()).isEmpty() ? "Voice Verification\nSubmitted" : "Voice Verification\nNot submitted");
         }
-
-        if (tvRating != null) {
-            tvRating.setText("Rating\n" + seller.getRating());
-        }
-
-        if (tvRatingCount != null) {
-            tvRatingCount.setText("Rating Count\n" + seller.getRatingCount());
-        }
-
-        if (tvTopRated != null) {
-            tvTopRated.setText("Top Rated\n" + (seller.isTopRated() ? "Yes" : "No"));
-        }
+        if (tvRating != null) tvRating.setText("Rating\n" + seller.getRating());
+        if (tvRatingCount != null) tvRatingCount.setText("Rating Count\n" + seller.getRatingCount());
+        if (tvTopRated != null) tvTopRated.setText("Top Rated\n" + (seller.isTopRated() ? "Yes" : "No"));
 
         if (etFullName != null) etFullName.setText(owner);
         if (etPhone != null) etPhone.setText(phone);
-
         if (etBusinessName != null) etBusinessName.setText(business);
         if (etBio != null) etBio.setText(bio);
         if (etCity != null) etCity.setText(city);
@@ -605,26 +410,16 @@ public class ProfileActivity extends AppCompatActivity {
         if (etCapacity != null) etCapacity.setText(capacity);
         if (etShopAddress != null) etShopAddress.setText(address);
 
-        if (spinnerCategoryProfile != null) {
-            setSpinnerValue(spinnerCategoryProfile, category);
-        }
-
-        if (spinnerCanDeliverProfile != null) {
-            setSpinnerValue(spinnerCanDeliverProfile, seller.isCanDeliver() ? "Yes" : "No");
-        }
+        if (spinnerCategoryProfile != null) setSpinnerValue(spinnerCategoryProfile, category);
+        if (spinnerCanDeliverProfile != null) setSpinnerValue(spinnerCanDeliverProfile, seller.isCanDeliver() ? "Yes" : "No");
 
         if (ivProfilePic != null && !safe(seller.getImageUrl()).isEmpty()) {
-            Glide.with(this)
-                    .load(seller.getImageUrl())
-                    .into(ivProfilePic);
+            Glide.with(this).load(seller.getImageUrl()).into(ivProfilePic);
         }
     }
 
     private void showBuyerProfile() {
-
-        if (tvBusinessHeader != null) {
-            tvBusinessHeader.setText("💗 Buyer Profile");
-        }
+        if (tvBusinessHeader != null) tvBusinessHeader.setText("💗 Buyer Profile");
 
         String userName = currentUser != null ? safe(currentUser.getName()) : "";
         String userEmail = currentUser != null ? safe(currentUser.getEmail()) : "";
@@ -633,553 +428,232 @@ public class ProfileActivity extends AppCompatActivity {
         if (tvName != null) tvName.setText(userName);
         if (tvEmail != null) tvEmail.setText(userEmail);
 
+        if (ivVerifiedBadge != null) ivVerifiedBadge.setVisibility(View.GONE);
         if (tvVerificationStatus != null) tvVerificationStatus.setVisibility(View.GONE);
         if (layoutSellerEditFields != null) layoutSellerEditFields.setVisibility(View.GONE);
 
         if (tvBusinessName != null) tvBusinessName.setVisibility(View.GONE);
         if (tvCategory != null) tvCategory.setVisibility(View.GONE);
         if (tvBio != null) tvBio.setVisibility(View.GONE);
-
         if (tvCity != null) tvCity.setVisibility(View.GONE);
         if (tvShopAddress != null) tvShopAddress.setVisibility(View.GONE);
         if (tvDelivery != null) tvDelivery.setVisibility(View.GONE);
         if (tvCapacity != null) tvCapacity.setVisibility(View.GONE);
-
         if (tvCnicStatus != null) tvCnicStatus.setVisibility(View.GONE);
         if (tvVoiceStatus != null) tvVoiceStatus.setVisibility(View.GONE);
         if (tvRating != null) tvRating.setVisibility(View.GONE);
         if (tvRatingCount != null) tvRatingCount.setVisibility(View.GONE);
         if (tvTopRated != null) tvTopRated.setVisibility(View.GONE);
 
-        if (btnSwitchRole != null) {
-            btnSwitchRole.setText("👤  BUYER  ▼");
-        }
+        if (btnSwitchRole != null) btnSwitchRole.setText("👤  BUYER  ▼");
     }
 
     private void openEditMode() {
-
         if (layoutProfileView != null) layoutProfileView.setVisibility(View.GONE);
         if (layoutEditProfile != null) layoutEditProfile.setVisibility(View.VISIBLE);
         if (btnEditProfile != null) btnEditProfile.setVisibility(View.GONE);
 
         if (layoutSellerEditFields != null) {
-            if (session.isSeller()) {
-                layoutSellerEditFields.setVisibility(View.VISIBLE);
-            } else {
-                layoutSellerEditFields.setVisibility(View.GONE);
-            }
+            layoutSellerEditFields.setVisibility(session.isSeller() ? View.VISIBLE : View.GONE);
         }
     }
 
     private void closeEditMode() {
-
         if (layoutEditProfile != null) layoutEditProfile.setVisibility(View.GONE);
         if (layoutProfileView != null) layoutProfileView.setVisibility(View.VISIBLE);
         if (btnEditProfile != null) btnEditProfile.setVisibility(View.VISIBLE);
-
         loadUser();
     }
 
     private void saveChanges() {
-
         String uid = session.getUid();
+        if (uid == null) return;
 
-        if (uid == null) {
-            return;
-        }
-
-        String name =
-                etFullName.getText()
-                        .toString()
-                        .trim();
-
-        String phone =
-                etPhone.getText()
-                        .toString()
-                        .trim();
+        String name = etFullName.getText().toString().trim();
+        String phone = etPhone.getText().toString().trim();
 
         if (TextUtils.isEmpty(name)) {
-
-            etFullName.setError(
-                    "Name required"
-            );
-
+            etFullName.setError("Name required");
             return;
         }
 
-        DatabaseReference userRef =
-                FirebaseDatabase.getInstance()
-                        .getReference()
-                        .child(Constants.NODE_USERS)
-                        .child(uid);
-
-        userRef.child("name")
-                .setValue(name);
-
-        userRef.child("phone")
-                .setValue(phone)
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child(Constants.NODE_USERS).child(uid);
+        userRef.child("name").setValue(name);
+        userRef.child("phone").setValue(phone)
                 .addOnSuccessListener(v -> {
-
                     session.saveName(name);
-
                     if (session.isSeller()) {
-
-                        saveSellerInformation(
-                                uid,
-                                name,
-                                phone
-                        );
-
+                        saveSellerInformation(uid, name, phone);
                     } else {
-
-                        Toast.makeText(
-                                this,
-                                "Profile updated successfully",
-                                Toast.LENGTH_SHORT
-                        ).show();
-
+                        Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
                         closeEditMode();
                     }
                 })
-                .addOnFailureListener(e -> {
-
-                    Toast.makeText(
-                            this,
-                            "Save failed: " +
-                                    e.getMessage(),
-                            Toast.LENGTH_LONG
-                    ).show();
-                });
+                .addOnFailureListener(e -> Toast.makeText(this, "Save failed: " + e.getMessage(), Toast.LENGTH_LONG).show());
     }
 
-    private void saveSellerInformation(
-            String uid,
-            String ownerName,
-            String phone
-    ) {
+    private void saveSellerInformation(String uid, String ownerName, String phone) {
+        String business = etBusinessName.getText().toString().trim();
+        String bio = etBio.getText().toString().trim();
+        String city = etCity.getText().toString().trim();
+        String whatsapp = etWhatsApp.getText().toString().trim();
+        String capacity = etCapacity.getText().toString().trim();
+        String address = etShopAddress.getText().toString().trim();
+        String category = spinnerCategoryProfile.getSelectedItem().toString();
+        String delivery = spinnerCanDeliverProfile.getSelectedItem().toString();
+        boolean canDeliver = delivery.equalsIgnoreCase("Yes");
 
-        String business =
-                etBusinessName.getText()
-                        .toString()
-                        .trim();
+        DatabaseReference sellerRef = FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS).child(uid);
 
-        String bio =
-                etBio.getText()
-                        .toString()
-                        .trim();
-
-        String city =
-                etCity.getText()
-                        .toString()
-                        .trim();
-
-        String whatsapp =
-                etWhatsApp.getText()
-                        .toString()
-                        .trim();
-
-        String capacity =
-                etCapacity.getText()
-                        .toString()
-                        .trim();
-
-        String address =
-                etShopAddress.getText()
-                        .toString()
-                        .trim();
-
-        String category =
-                spinnerCategoryProfile
-                        .getSelectedItem()
-                        .toString();
-
-        String delivery =
-                spinnerCanDeliverProfile
-                        .getSelectedItem()
-                        .toString();
-
-        boolean canDeliver =
-                delivery.equalsIgnoreCase("Yes");
-
-        DatabaseReference sellerRef =
-                FirebaseDatabase.getInstance()
-                        .getReference()
-                        .child(Constants.NODE_SELLERS)
-                        .child(uid);
-
-        sellerRef.child("ownerName")
-                .setValue(ownerName);
-
-        sellerRef.child("phone")
-                .setValue(phone);
-
-        sellerRef.child("businessName")
-                .setValue(business);
-
-        sellerRef.child("bio")
-                .setValue(bio);
-
-        sellerRef.child("city")
-                .setValue(city);
-
-        sellerRef.child("category")
-                .setValue(category);
-
-        sellerRef.child("whatsappNumber")
-                .setValue(whatsapp);
-
-        sellerRef.child("capacityDescription")
-                .setValue(capacity);
-
-        sellerRef.child("shopAddress")
-                .setValue(address);
-
-        sellerRef.child("canDeliver")
-                .setValue(canDeliver)
+        sellerRef.child("ownerName").setValue(ownerName);
+        sellerRef.child("phone").setValue(phone);
+        sellerRef.child("businessName").setValue(business);
+        sellerRef.child("bio").setValue(bio);
+        sellerRef.child("city").setValue(city);
+        sellerRef.child("category").setValue(category);
+        sellerRef.child("whatsappNumber").setValue(whatsapp);
+        sellerRef.child("capacityDescription").setValue(capacity);
+        sellerRef.child("shopAddress").setValue(address);
+        sellerRef.child("canDeliver").setValue(canDeliver)
                 .addOnSuccessListener(v -> {
-
                     session.saveName(ownerName);
-
-                    Toast.makeText(
-                            this,
-                            "All profile information updated",
-                            Toast.LENGTH_SHORT
-                    ).show();
-
+                    Toast.makeText(this, "All profile information updated", Toast.LENGTH_SHORT).show();
                     closeEditMode();
                 })
-                .addOnFailureListener(e -> {
-
-                    Toast.makeText(
-                            this,
-                            "Seller details save failed: " +
-                                    e.getMessage(),
-                            Toast.LENGTH_LONG
-                    ).show();
-                });
+                .addOnFailureListener(e -> Toast.makeText(this, "Seller details save failed: " + e.getMessage(), Toast.LENGTH_LONG).show());
     }
 
     private void uploadProfilePic(Uri uri) {
-
-        Toast.makeText(
-                this,
-                "تصویر اپلوڈ ہو رہی ہے...",
-                Toast.LENGTH_SHORT
-        ).show();
-
-        CloudinaryHelper.upload(
-                this,
-                uri,
-                "profile_pictures",
-                (url, error) -> {
-
-                    if (url != null) {
-
-                        Glide.with(this)
-                                .load(url)
-                                .into(ivProfilePic);
-
-                        FirebaseDatabase
-                                .getInstance()
-                                .getReference()
-                                .child(Constants.NODE_USERS)
-                                .child(session.getUid())
-                                .child("imageUrl")
-                                .setValue(url)
-                                .addOnSuccessListener(v ->
-                                        Toast.makeText(
-                                                this,
-                                                "تصویر تبدیل ہو گئی",
-                                                Toast.LENGTH_SHORT
-                                        ).show()
-                                );
-
-                    } else {
-
-                        Toast.makeText(
-                                this,
-                                "اپلوڈ ناکام: " + error,
-                                Toast.LENGTH_LONG
-                        ).show();
-                    }
-                }
-        );
+        Toast.makeText(this, "تصویر اپلوڈ ہو رہی ہے...", Toast.LENGTH_SHORT).show();
+        CloudinaryHelper.upload(this, uri, "profile_pictures", (url, error) -> {
+            if (url != null) {
+                Glide.with(this).load(url).into(ivProfilePic);
+                FirebaseDatabase.getInstance().getReference().child(Constants.NODE_USERS)
+                        .child(session.getUid()).child("imageUrl").setValue(url)
+                        .addOnSuccessListener(v -> Toast.makeText(this, "تصویر تبدیل ہو گئی", Toast.LENGTH_SHORT).show());
+            } else {
+                Toast.makeText(this, "اپلوڈ ناکام: " + error, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
-    private void setSpinnerValue(
-            Spinner spinner,
-            String value
-    ) {
-
-        if (value == null) {
-            return;
-        }
-
-        for (int i = 0;
-             i < spinner.getCount();
-             i++) {
-
-            Object item =
-                    spinner.getItemAtPosition(i);
-
-            if (item != null &&
-                    value.equalsIgnoreCase(
-                            item.toString()
-                    )) {
-
+    private void setSpinnerValue(Spinner spinner, String value) {
+        if (value == null) return;
+        for (int i = 0; i < spinner.getCount(); i++) {
+            Object item = spinner.getItemAtPosition(i);
+            if (item != null && value.equalsIgnoreCase(item.toString())) {
                 spinner.setSelection(i);
                 return;
             }
         }
     }
-    private void showRoleSwitchDialog() {
 
+    private void showRoleSwitchDialog() {
         String currentRole = session.getRole();
 
         if ("seller".equalsIgnoreCase(currentRole)) {
-
             String uid = session.getUid();
-
             if (uid == null) {
-                Toast.makeText(
-                        this,
-                        "Session expired. Please login again.",
-                        Toast.LENGTH_LONG
-                ).show();
+                Toast.makeText(this, "Session expired. Please login again.", Toast.LENGTH_LONG).show();
                 return;
             }
 
-            DatabaseReference buyerRef =
-                    FirebaseDatabase.getInstance()
-                            .getReference()
-                            .child(Constants.NODE_BUYERS)
-                            .child(uid);
-
-            buyerRef.addListenerForSingleValueEvent(
-                    new ValueEventListener() {
-
-                        @Override
-                        public void onDataChange(DataSnapshot snapshot) {
-
-                            if (snapshot.exists()) {
-
-                                new AlertDialog.Builder(
-                                        ProfileActivity.this
-                                )
-                                        .setTitle("Switch Account")
-                                        .setItems(
-                                                new String[]{
-                                                        "👤 Switch to Buyer",
-                                                        "Cancel"
-                                                },
-                                                (dialog, which) -> {
-
-                                                    if (which == 0) {
-                                                        switchToBuyer();
-                                                    }
-                                                }
-                                        )
-                                        .show();
-
-                            } else {
-
-                                new AlertDialog.Builder(
-                                        ProfileActivity.this
-                                )
-                                        .setTitle("Switch Account")
-                                        .setItems(
-                                                new String[]{
-                                                        "➕ Create Buyer Profile",
-                                                        "Cancel"
-                                                },
-                                                (dialog, which) -> {
-
-                                                    if (which == 0) {
-
-                                                        Intent intent =
-                                                                new Intent(
-                                                                        ProfileActivity.this,
-                                                                        BuyerProfileActivity.class
-                                                                );
-
-                                                        startActivity(intent);
-                                                    }
-                                                }
-                                        )
-                                        .show();
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError error) {
-
-                            Toast.makeText(
-                                    ProfileActivity.this,
-                                    "Buyer profile check failed: "
-                                            + error.getMessage(),
-                                    Toast.LENGTH_LONG
-                            ).show();
-                        }
+            DatabaseReference buyerRef = FirebaseDatabase.getInstance().getReference().child(Constants.NODE_BUYERS).child(uid);
+            buyerRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        new AlertDialog.Builder(ProfileActivity.this)
+                                .setTitle("Switch Account")
+                                .setItems(new String[]{"👤 Switch to Buyer", "Cancel"}, (dialog, which) -> {
+                                    if (which == 0) switchToBuyer();
+                                }).show();
+                    } else {
+                        new AlertDialog.Builder(ProfileActivity.this)
+                                .setTitle("Switch Account")
+                                .setItems(new String[]{"➕ Create Buyer Profile", "Cancel"}, (dialog, which) -> {
+                                    if (which == 0) startActivity(new Intent(ProfileActivity.this, BuyerProfileActivity.class));
+                                }).show();
                     }
-            );
+                }
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    Toast.makeText(ProfileActivity.this, "Buyer profile check failed: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
 
         } else if ("buyer".equalsIgnoreCase(currentRole)) {
-
             new AlertDialog.Builder(this)
                     .setTitle("Switch Account")
                     .setMessage("Switch to your Seller account?")
-                    .setPositiveButton(
-                            "Switch to Seller",
-                            (dialog, which) -> switchToSeller()
-                    )
+                    .setPositiveButton("Switch to Seller", (dialog, which) -> switchToSeller())
                     .setNegativeButton("Cancel", null)
                     .show();
         }
     }
+
     private void switchToBuyer() {
-
         String uid = session.getUid();
-
         if (uid == null) {
-            Toast.makeText(
-                    this,
-                    "Session expired. Please login again.",
-                    Toast.LENGTH_LONG
-            ).show();
+            Toast.makeText(this, "Session expired. Please login again.", Toast.LENGTH_LONG).show();
             return;
         }
 
-        DatabaseReference buyerRef =
-                FirebaseDatabase.getInstance()
-                        .getReference()
-                        .child(Constants.NODE_BUYERS)
-                        .child(uid);
-
-        buyerRef.addListenerForSingleValueEvent(
-                new ValueEventListener() {
-
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
-
-                        if (!snapshot.exists()) {
-
-                            Toast.makeText(
-                                    ProfileActivity.this,
-                                    "Buyer profile not found.",
-                                    Toast.LENGTH_LONG
-                            ).show();
-
-                            return;
-                        }
-
-                        Buyer buyer = snapshot.getValue(Buyer.class);
-
-                        if (buyer != null &&
-                                !TextUtils.isEmpty(buyer.getName())) {
-
-                            session.saveName(buyer.getName());
-                        }
-
-                        session.switchRole(Constants.ROLE_BUYER);
-
-                        Intent intent = new Intent(
-                                ProfileActivity.this,
-                                MainActivity.class
-                        );
-
-                        intent.addFlags(
-                                Intent.FLAG_ACTIVITY_CLEAR_TOP |
-                                        Intent.FLAG_ACTIVITY_NEW_TASK
-                        );
-
-                        startActivity(intent);
-                        finish();
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError error) {
-
-                        Toast.makeText(
-                                ProfileActivity.this,
-                                "Buyer switch failed: "
-                                        + error.getMessage(),
-                                Toast.LENGTH_LONG
-                        ).show();
-                    }
+        DatabaseReference buyerRef = FirebaseDatabase.getInstance().getReference().child(Constants.NODE_BUYERS).child(uid);
+        buyerRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (!snapshot.exists()) {
+                    Toast.makeText(ProfileActivity.this, "Buyer profile not found.", Toast.LENGTH_LONG).show();
+                    return;
                 }
-        );
+                Buyer buyer = snapshot.getValue(Buyer.class);
+                if (buyer != null && !TextUtils.isEmpty(buyer.getName())) {
+                    session.saveName(buyer.getName());
+                }
+                session.switchRole(Constants.ROLE_BUYER);
+                Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
+            }
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Toast.makeText(ProfileActivity.this, "Buyer switch failed: " + error.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
     }
+
     private void switchToSeller() {
-
         String uid = session.getUid();
-
         if (uid == null) {
-            Toast.makeText(
-                    this,
-                    "Session expired. Please login again.",
-                    Toast.LENGTH_LONG
-            ).show();
+            Toast.makeText(this, "Session expired. Please login again.", Toast.LENGTH_LONG).show();
             return;
         }
 
-        DatabaseReference sellerRef =
-                FirebaseDatabase.getInstance()
-                        .getReference()
-                        .child(Constants.NODE_SELLERS)
-                        .child(uid);
-
-        sellerRef.addListenerForSingleValueEvent(
-                new ValueEventListener() {
-
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
-
-                        if (!snapshot.exists()) {
-
-                            Toast.makeText(
-                                    ProfileActivity.this,
-                                    "Seller profile not found.",
-                                    Toast.LENGTH_LONG
-                            ).show();
-
-                            return;
-                        }
-
-                        session.switchRole(Constants.ROLE_SELLER);
-
-                        Intent intent = new Intent(
-                                ProfileActivity.this,
-                                SellerDashboardActivity.class
-                        );
-
-                        intent.addFlags(
-                                Intent.FLAG_ACTIVITY_CLEAR_TOP |
-                                        Intent.FLAG_ACTIVITY_NEW_TASK
-                        );
-
-                        startActivity(intent);
-                        finish();
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError error) {
-
-                        Toast.makeText(
-                                ProfileActivity.this,
-                                "Seller profile check failed.",
-                                Toast.LENGTH_LONG
-                        ).show();
-                    }
+        DatabaseReference sellerRef = FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS).child(uid);
+        sellerRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (!snapshot.exists()) {
+                    Toast.makeText(ProfileActivity.this, "Seller profile not found.", Toast.LENGTH_LONG).show();
+                    return;
                 }
-        );
+                session.switchRole(Constants.ROLE_SELLER);
+                Intent intent = new Intent(ProfileActivity.this, SellerDashboardActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
+            }
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Toast.makeText(ProfileActivity.this, "Seller profile check failed.", Toast.LENGTH_LONG).show();
+            }
+        });
     }
-
 
     private String safe(String value) {
-
-        return value == null
-                ? ""
-                : value;
+        return value == null ? "" : value;
     }
 
     private void applyTheme() {

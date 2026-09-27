@@ -1,45 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent" android:layout_height="wrap_content"
-    android:layout_marginBottom="10dp" app:cardCornerRadius="14dp" app:cardElevation="2dp">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/bg_skeu_card"
+    android:orientation="vertical"
+    android:padding="16dp">
 
     <LinearLayout
-        android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="?android:attr/windowBackground"
-        android:padding="14dp">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-            <TextView android:id="@+id/tvOrderProduct"
-                android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
-                android:textStyle="bold" android:textSize="15sp" />
-            <TextView android:id="@+id/tvOrderAmount"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:textColor="#FF4081" android:textStyle="bold" />
-        </LinearLayout>
+        <TextView
+            android:id="@+id/tvOrderProduct"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif-black"
+            android:textColor="@color/text_dark"
+            android:textSize="15sp" />
 
-        <TextView android:id="@+id/tvOrderParty"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:textColor="#555555" android:textSize="12sp" android:textStyle="bold" android:layout_marginTop="4dp" />
-
-        <TextView android:id="@+id/tvOrderDetails"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:textColor="#666666" android:textSize="12sp" android:layout_marginTop="4dp" />
-
-        <TextView android:id="@+id/tvOrderAddress"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:textColor="#888888" android:textSize="12sp" />
-
-        <TextView android:id="@+id/tvOrderStatus"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:background="@drawable/bg_rounded_pink" android:padding="6dp"
-            android:textColor="#FF4081" android:textSize="12sp" android:layout_marginTop="8dp" />
-
-        <Button android:id="@+id/btnAdvanceStatus"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:backgroundTint="#4CAF50" android:textColor="#FFFFFF" android:textSize="12sp"
-            android:layout_marginTop="8dp" />
-
+        <TextView
+            android:id="@+id/tvOrderAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/lavender_primary"
+            android:fontFamily="sans-serif-bold"
+            android:textSize="15sp" />
     </LinearLayout>
-</androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/tvOrderParty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_dark"
+        android:textSize="12sp"
+        android:fontFamily="sans-serif-medium"
+        android:layout_marginTop="4dp" />
+
+    <TextView
+        android:id="@+id/tvOrderDetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_gray"
+        android:textSize="12sp"
+        android:layout_marginTop="4dp" />
+
+    <TextView
+        android:id="@+id/tvOrderAddress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_gray"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/tvOrderStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_skeu_button_cream"
+        android:padding="8dp"
+        android:textColor="@color/lavender_primary"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="12sp"
+        android:layout_marginTop="8dp" />
+
+    <Button
+        android:id="@+id/btnAdvanceStatus"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@drawable/bg_skeu_button_green"
+        android:textColor="#FFFFFF"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="12sp"
+        android:layout_marginTop="8dp" />
+
+</LinearLayout>

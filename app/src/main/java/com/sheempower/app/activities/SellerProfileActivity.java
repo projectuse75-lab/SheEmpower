@@ -1,8 +1,12 @@
 package com.sheempower.app.activities;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.*;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,7 +17,6 @@ import com.sheempower.app.adapters.ProductAdapter;
 import com.sheempower.app.models.Product;
 import com.sheempower.app.models.Seller;
 import com.sheempower.app.utils.*;
-import com.sheempower.app.utils.PreferencesManager;
 import de.hdodenhof.circleimageview.CircleImageView;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,11 +26,18 @@ public class SellerProfileActivity extends AppCompatActivity {
     public static final String EXTRA_SELLER_ID = "sellerId";
 
     private CircleImageView ivSellerAvatar;
+    private ImageView ivSellerVerifiedBadge;
     private TextView tvName, tvCategory, tvCity, tvBio, tvRating, tvStatus, tvCapacity, tvDeliveryBadge;
     private Button btnPlaceOrder, btnWhatsAppChat;
     private RecyclerView rvProducts;
     private ProductAdapter productAdapter;
     private final List<Product> productList = new ArrayList<>();
+
+    // ✅ Admin-only panel
+    private View layoutBuyerActions;
+    private View layoutAdminReview;
+    private Button btnViewCnic, btnPlayVoice, btnAdminApprove, btnAdminReject;
+    private MediaPlayer mediaPlayer;
 
     private String sellerId;
     private Seller currentSeller;
@@ -35,25 +45,19 @@ public class SellerProfileActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        applyTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_seller_profile);
 
         session  = new SessionManager(this);
-        if (getIntent() != null && getIntent().hasExtra(EXTRA_SELLER_ID)) {
-            sellerId = getIntent().getStringExtra(EXTRA_SELLER_ID);
-            if (sellerId != null) sellerId = sellerId.trim();
-        }
+        sellerId = getIntent().getStringExtra(EXTRA_SELLER_ID);
 
         if (sellerId == null || sellerId.isEmpty()) {
             Toast.makeText(this, "بیچنے والی کی شناخت نہیں ملی", Toast.LENGTH_LONG).show();
             finish(); return;
         }
 
-        VoiceGuide.announceScreen(this,
-                "یہ بیچنے والی کی پروفائل ہے۔ نیچے اس کی تمام اشیاء نظر آئیں گی۔ آرڈر دیں کا بٹن دبا کر آپ کئی چیزیں ایک ساتھ منتخب کر سکتی ہیں، یا کسی ایک چیز پر آرڈر کا بٹن دبا کر صرف وہی چیز منگوا سکتی ہیں۔ چیٹ کے بٹن سے واٹس ایپ پر براہ راست بات کریں۔");
-
-        ivSellerAvatar  = findViewById(R.id.ivSellerAvatar);
+        ivSellerAvatar        = findViewById(R.id.ivSellerAvatar);
+        ivSellerVerifiedBadge = findViewById(R.id.ivSellerVerifiedBadge);
         tvName          = findViewById(R.id.tvSellerName);
         tvCategory      = findViewById(R.id.tvSellerCategory);
         tvCity          = findViewById(R.id.tvSellerCity);
@@ -65,6 +69,16 @@ public class SellerProfileActivity extends AppCompatActivity {
         btnPlaceOrder   = findViewById(R.id.btnPlaceOrder);
         btnWhatsAppChat = findViewById(R.id.btnWhatsAppChat);
         rvProducts      = findViewById(R.id.rvSellerProducts);
+
+        layoutBuyerActions = findViewById(R.id.layoutBuyerActions);
+        layoutAdminReview  = findViewById(R.id.layoutAdminReview);
+        btnViewCnic     = findViewById(R.id.btnViewCnic);
+        btnPlayVoice    = findViewById(R.id.btnPlayVoice);
+        btnAdminApprove = findViewById(R.id.btnAdminApprove);
+        btnAdminReject  = findViewById(R.id.btnAdminReject);
+
+        VoiceGuide.announceScreen(this,
+                "یہ بیچنے والی کی پروفائل ہے۔ نیچے اس کی تمام اشیاء نظر آئیں گی۔");
 
         rvProducts.setLayoutManager(new GridLayoutManager(this, 2));
         productAdapter = new ProductAdapter(productList,
@@ -82,24 +96,77 @@ public class SellerProfileActivity extends AppCompatActivity {
 
         loadSellerData();
 
-        // Yahan sirf sellerId jata hai (koi ek product nahi) — is se PlaceOrderActivity
-        // saari products ki checklist dikhaye gi, price-with-checkbox tareeqe se
-        btnPlaceOrder.setOnClickListener(v -> requireBuyerLogin(() -> {
-            Intent i = new Intent(this, PlaceOrderActivity.class);
-            i.putExtra(PlaceOrderActivity.EXTRA_SELLER_ID, sellerId);
-            startActivity(i);
-        }));
+        // ✅ Admin hai to sirf review panel dikhega, buyer wale buttons chhupenge
+        if (session.isAdmin()) {
+            layoutBuyerActions.setVisibility(android.view.View.GONE);
+            layoutAdminReview.setVisibility(android.view.View.VISIBLE);
+            setupAdminActions();
+        } else {
+            layoutBuyerActions.setVisibility(android.view.View.VISIBLE);
+            layoutAdminReview.setVisibility(android.view.View.GONE);
 
-        btnWhatsAppChat.setOnClickListener(v -> WhatsAppHelper.openChat(this,
-                currentSeller != null ? currentSeller.getWhatsappNumber() : null, null));
+            btnPlaceOrder.setOnClickListener(v -> requireBuyerLogin(() -> {
+                Intent i = new Intent(this, PlaceOrderActivity.class);
+                i.putExtra(PlaceOrderActivity.EXTRA_SELLER_ID, sellerId);
+                startActivity(i);
+            }));
+
+            btnWhatsAppChat.setOnClickListener(v -> WhatsAppHelper.openChat(this,
+                    currentSeller != null ? currentSeller.getWhatsappNumber() : null, null));
+        }
+    }
+
+    /** ✅ NAYA — admin CNIC dekh sakta hai, voice sun sakta hai, aur seedha yahin se approve/reject kar sakta hai */
+    private void setupAdminActions() {
+        btnViewCnic.setOnClickListener(v -> {
+            if (currentSeller == null || currentSeller.getCnicUrl() == null || currentSeller.getCnicUrl().isEmpty()) {
+                Toast.makeText(this, "شناختی کارڈ اپلوڈ نہیں ہوا", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            ImageView fullImage = new ImageView(this);
+            fullImage.setAdjustViewBounds(true);
+            fullImage.setPadding(20, 20, 20, 20);
+            Glide.with(this).load(currentSeller.getCnicUrl()).into(fullImage);
+            new AlertDialog.Builder(this)
+                    .setTitle("شناختی کارڈ / CNIC")
+                    .setView(fullImage)
+                    .setPositiveButton("بند کریں", null)
+                    .show();
+        });
+
+        btnPlayVoice.setOnClickListener(v -> {
+            if (currentSeller == null || currentSeller.getVoiceUrl() == null || currentSeller.getVoiceUrl().isEmpty()) {
+                Toast.makeText(this, "آواز کا نمونہ اپلوڈ نہیں ہوا", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            try {
+                if (mediaPlayer != null) { mediaPlayer.release(); mediaPlayer = null; }
+                mediaPlayer = new MediaPlayer();
+                mediaPlayer.setDataSource(currentSeller.getVoiceUrl());
+                mediaPlayer.setOnPreparedListener(MediaPlayer::start);
+                mediaPlayer.setOnCompletionListener(mp -> Toast.makeText(this, "آواز مکمل ہوئی", Toast.LENGTH_SHORT).show());
+                mediaPlayer.prepareAsync();
+                Toast.makeText(this, "آواز چل رہی ہے...", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Toast.makeText(this, "آواز چلانے میں خرابی: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+
+        btnAdminApprove.setOnClickListener(v -> updateVerification("verified"));
+        btnAdminReject.setOnClickListener(v -> updateVerification("rejected"));
+    }
+
+    private void updateVerification(String status) {
+        FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS)
+                .child(sellerId).child("verificationStatus").setValue(status)
+                .addOnSuccessListener(v -> {
+                    Toast.makeText(this, "حیثیت اپڈیٹ ہو گئی: " + status, Toast.LENGTH_SHORT).show();
+                    loadSellerData(); // badge turant refresh ho jaye
+                })
+                .addOnFailureListener(e -> Toast.makeText(this, "خرابی: " + e.getMessage(), Toast.LENGTH_LONG).show());
     }
 
     private void loadSellerData() {
-        if (sellerId == null || sellerId.isEmpty()) {
-            Toast.makeText(this, "بیچنے والی کی شناخت نہیں ملی", Toast.LENGTH_LONG).show();
-            finish();
-            return;
-        }
         FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS).child(sellerId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override public void onDataChange(DataSnapshot snapshot) {
@@ -108,10 +175,6 @@ public class SellerProfileActivity extends AppCompatActivity {
                             Toast.makeText(SellerProfileActivity.this, "یہ بیچنے والی اب دستیاب نہیں ہے", Toast.LENGTH_LONG).show();
                             return;
                         }
-                        // ✅ FIX: UID fallback
-                        if (currentSeller.getUid() == null || currentSeller.getUid().isEmpty())
-                            currentSeller.setUid(snapshot.getKey());
-
                         bindSellerData();
                         loadSellerProducts();
                     }
@@ -127,7 +190,10 @@ public class SellerProfileActivity extends AppCompatActivity {
         tvCity.setText(currentSeller.getCity());
         tvBio.setText(currentSeller.getBio());
         tvRating.setText(String.format("⭐ %.1f (%d)", currentSeller.getRating(), currentSeller.getRatingCount()));
-        tvStatus.setText("✓ تصدیق شدہ");
+
+        boolean approved = Constants.isApproved(currentSeller.getVerificationStatus());
+        tvStatus.setText(approved ? "✅ تصدیق شدہ" : "⏳ " + currentSeller.getVerificationStatus());
+        ivSellerVerifiedBadge.setVisibility(approved ? android.view.View.VISIBLE : android.view.View.GONE);
 
         boolean travelType = Constants.isTravelType(currentSeller.getCategory());
         if (currentSeller.isCanDeliver()) {
@@ -150,24 +216,14 @@ public class SellerProfileActivity extends AppCompatActivity {
     }
 
     private void loadSellerProducts() {
-        if (sellerId == null || sellerId.isEmpty()) return;
         FirebaseDatabase.getInstance().getReference().child(Constants.NODE_PRODUCTS)
+                .orderByChild("sellerId").equalTo(sellerId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override public void onDataChange(DataSnapshot snapshot) {
                         productList.clear();
                         for (DataSnapshot child : snapshot.getChildren()) {
                             Product p = child.getValue(Product.class);
-                            if (p != null) {
-                                // ✅ FIX: ID fallback & Trim
-                                String pid = child.getKey() != null ? child.getKey().trim() : "";
-                                p.setId(pid);
-
-                                // Filter by sellerId (trimmed for safety)
-                                String pSellerId = p.getSellerId() != null ? p.getSellerId().trim() : "";
-                                if (pSellerId.equals(sellerId.trim())) {
-                                    productList.add(p);
-                                }
-                            }
+                            if (p != null) productList.add(p);
                         }
                         productAdapter.notifyDataSetChanged();
                     }
@@ -189,13 +245,8 @@ public class SellerProfileActivity extends AppCompatActivity {
         else { Toast.makeText(this, "پہلے لاگ ان کریں", Toast.LENGTH_SHORT).show(); startActivity(new Intent(this, LoginActivity.class)); }
     }
 
-    // ✅ DARK THEME - ADD AT END OF CLASS
-    private void applyTheme() {
-        PreferencesManager prefs = new PreferencesManager(this);
-        if (prefs.isDarkThemeEnabled()) {
-            setTheme(R.style.Theme_SheEmpower_Dark);
-        } else {
-            setTheme(R.style.Theme_SheEmpower);
-        }
+    @Override protected void onDestroy() {
+        super.onDestroy();
+        if (mediaPlayer != null) { mediaPlayer.release(); mediaPlayer = null; }
     }
 }

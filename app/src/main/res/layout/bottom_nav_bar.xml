@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="64dp"
     android:orientation="horizontal"
-    android:background="?android:attr/windowBackground"
+    android:background="@drawable/bg_skeu_nav"
     android:elevation="12dp">
 
     <!-- HOME / BROWSE -->
@@ -30,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="10sp"
-            android:textColor="@color/screen_text"/>
+            android:textColor="@color/lavender_text"/>
 
     </LinearLayout>
 
@@ -56,7 +56,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="10sp"
-            android:textColor="@color/screen_text"/>
+            android:textColor="@color/lavender_text"/>
 
     </LinearLayout>
 
@@ -82,7 +82,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="10sp"
-            android:textColor="@color/screen_text"/>
+            android:textColor="@color/lavender_text"/>
 
     </LinearLayout>
 
@@ -110,7 +110,7 @@
             android:layout_height="wrap_content"
             android:text="سیٹنگز"
             android:textSize="10sp"
-            android:textColor="@color/screen_text"/>
+            android:textColor="@color/lavender_text"/>
 
     </LinearLayout>
 

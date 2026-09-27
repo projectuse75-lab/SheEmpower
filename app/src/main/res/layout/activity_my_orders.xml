@@ -1,23 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="?android:attr/windowBackground">
+    android:background="@color/bg_cream">
 
     <LinearLayout
-        android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"
-        android:orientation="vertical" android:padding="16dp">
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="📦 میرے آرڈرز / My Orders" android:textSize="18sp" android:textStyle="bold" android:textColor="#FF4081" android:layout_marginBottom="12dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📦 میرے آرڈرز / My Orders"
+            android:textSize="20sp"
+            android:fontFamily="sans-serif-black"
+            android:textColor="@color/lavender_text"
+            android:layout_marginBottom="12dp" />
 
-        <TextView android:id="@+id/tvEmpty"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:text="ابھی تک کوئی آرڈر نہیں" android:gravity="center" android:textColor="#888888" android:visibility="gone" />
+        <TextView
+            android:id="@+id/tvEmpty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ابھی تک کوئی آرڈر نہیں"
+            android:gravity="center"
+            android:textColor="@color/text_gray"
+            android:visibility="gone" />
 
-        <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvOrders"
-            android:layout_width="match_parent" android:layout_height="match_parent" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvOrders"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
     </LinearLayout>
 
-    <include layout="@layout/bottom_nav_bar" android:id="@+id/bottomNav" />
+    <include
+        layout="@layout/bottom_nav_bar"
+        android:id="@+id/bottomNav" />
 </LinearLayout>
