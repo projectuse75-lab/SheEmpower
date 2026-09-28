@@ -88,16 +88,90 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- SEARCH -->
-            <EditText
-                android:id="@+id/etSearch"
+            <!-- SEARCH & FILTERS -->
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:layout_margin="16dp"
-                android:hint="🔍 تلاش کریں..."
-                android:textSize="14sp"
-                android:padding="14dp"
-                android:background="@drawable/bg_skeu_input" />
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp">
+
+                <EditText
+                    android:id="@+id/etSearch"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_weight="1"
+                    android:hint="🔍 تلاش کریں..."
+                    android:textSize="14sp"
+                    android:padding="14dp"
+                    android:background="@drawable/bg_skeu_input"
+                    android:layout_marginEnd="8dp" />
+
+                <Button
+                    android:id="@+id/btnSearch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="52dp"
+                    android:text="تلاش"
+                    android:textColor="#FFFFFF"
+                    android:background="@drawable/bg_skeu_button_primary" />
+            </LinearLayout>
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="8dp"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btnCategoryFilter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:text="Category ▾"
+                        android:textSize="12sp"
+                        android:textColor="@color/lavender_text"
+                        android:background="@drawable/bg_skeu_button_cream"
+                        android:layout_marginEnd="8dp" />
+
+                    <Button
+                        android:id="@+id/btnPriceFilter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:text="Price ▾"
+                        android:textSize="12sp"
+                        android:textColor="@color/lavender_text"
+                        android:background="@drawable/bg_skeu_button_cream"
+                        android:layout_marginEnd="8dp" />
+
+                    <Button
+                        android:id="@+id/btnRatingFilter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:text="Rating ▾"
+                        android:textSize="12sp"
+                        android:textColor="@color/lavender_text"
+                        android:background="@drawable/bg_skeu_button_cream"
+                        android:layout_marginEnd="8dp" />
+
+                    <Button
+                        android:id="@+id/btnClearFilters"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:text="Clear ✕"
+                        android:textSize="12sp"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/bg_skeu_button_primary" />
+
+                </LinearLayout>
+            </HorizontalScrollView>
 
             <!-- CATEGORIES -->
             <TextView

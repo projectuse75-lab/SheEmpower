@@ -22,6 +22,9 @@ import com.sheempower.app.activities.SellerOrdersActivity;
 
 public class BottomNavHelper {
 
+    public static final String EXTRA_LOGIN_DESTINATION = "extra_login_destination";
+    public static final String DESTINATION_PROFILE = "destination_profile";
+
     public static void setupForBuyerOrVisitor(
             Context context,
             View view,
