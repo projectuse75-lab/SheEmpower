@@ -18,14 +18,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:fontFamily="sans-serif-black"
-            android:textColor="@color/text_dark"
+            android:textColor="@color/text_primary"
             android:textSize="15sp" />
 
         <TextView
             android:id="@+id/tvOrderAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/lavender_primary"
+            android:textColor="@color/primary"
             android:fontFamily="sans-serif-bold"
             android:textSize="15sp" />
     </LinearLayout>
@@ -34,7 +34,7 @@
         android:id="@+id/tvOrderParty"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/text_dark"
+        android:textColor="@color/text_primary"
         android:textSize="12sp"
         android:fontFamily="sans-serif-medium"
         android:layout_marginTop="4dp" />
@@ -43,7 +43,7 @@
         android:id="@+id/tvOrderDetails"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/text_gray"
+        android:textColor="@color/text_secondary"
         android:textSize="12sp"
         android:layout_marginTop="4dp" />
 
@@ -51,7 +51,7 @@
         android:id="@+id/tvOrderAddress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/text_gray"
+        android:textColor="@color/text_secondary"
         android:textSize="12sp" />
 
     <TextView
@@ -60,7 +60,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/bg_skeu_button_cream"
         android:padding="8dp"
-        android:textColor="@color/lavender_primary"
+        android:textColor="@color/primary"
         android:fontFamily="sans-serif-medium"
         android:textSize="12sp"
         android:layout_marginTop="8dp" />

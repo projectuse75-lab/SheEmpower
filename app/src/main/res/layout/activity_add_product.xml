@@ -33,7 +33,7 @@
                     android:text="➕ نئی چیز شامل کریں"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="#FF4081" />
+                    android:textColor="#192A56" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -60,7 +60,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="چیز کا نام / Product Name"
-            android:textColor="#AA3366"
+            android:textColor="#192A56"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="4dp" />
 
@@ -80,7 +80,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="تفصیل / Description"
-            android:textColor="#AA3366"
+            android:textColor="#192A56"
             android:layout_marginBottom="4dp" />
 
         <com.google.android.material.textfield.TextInputEditText
@@ -100,7 +100,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="قیمت (روپے) / Price (PKR)"
-            android:textColor="#AA3366"
+            android:textColor="#192A56"
             android:layout_marginBottom="4dp" />
 
         <com.google.android.material.textfield.TextInputEditText
@@ -122,8 +122,8 @@
             android:layout_height="54dp"
             android:text="📷 تصویر اپلوڈ کریں / Upload Image"
             android:textSize="14sp"
-            android:backgroundTint="#FFE4EC"
-            android:textColor="#FF4081" />
+            android:backgroundTint="#FBEBD1"
+            android:textColor="#192A56" />
 
         <TextView
             android:id="@+id/tvImageStatus"

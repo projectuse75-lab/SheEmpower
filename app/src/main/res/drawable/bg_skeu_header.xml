@@ -1,28 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Bottom Drop Shadow -->
-    <item android:top="3dp">
-        <shape android:shape="rectangle">
-            <solid android:color="#332D253B" />
-        </shape>
-    </item>
-    <!-- Main Header Gradient -->
-    <item android:bottom="3dp">
-        <shape android:shape="rectangle">
-            <gradient
-                android:startColor="#8B5CF6"
-                android:centerColor="@color/lavender_primary"
-                android:endColor="@color/lavender_dark"
-                android:angle="270" />
-        </shape>
-    </item>
-    <!-- Top Gloss Shine Highlight -->
-    <item android:bottom="3dp" android:top="0dp" android:left="8dp" android:right="8dp">
-        <shape android:shape="rectangle">
-            <gradient
-                android:startColor="#50FFFFFF"
-                android:endColor="#00FFFFFF"
-                android:angle="270" />
-        </shape>
-    </item>
-</layer-list>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <gradient
+        android:startColor="#0F1B3D"
+        android:centerColor="#192A56"
+        android:endColor="#192A56"
+        android:angle="270" />
+</shape>

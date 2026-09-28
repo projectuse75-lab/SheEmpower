@@ -44,7 +44,7 @@ public class ProfileActivity extends AppCompatActivity {
     private CircleImageView ivProfilePic;
     private ImageButton btnChangePic;
     private ImageButton btnSpeaker;
-    private ImageView ivVerifiedBadge; // ✅ NAYA
+    private ImageView ivVerifiedBadge;
 
     private TextView tvBusinessHeader;
     private TextView tvOwnerHeader;
@@ -55,7 +55,7 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView btnSwitchRole;
 
     private View layoutProfileView;
-    private View layoutGuestState; // ✅ NAYA
+    private View layoutGuestState;
 
     private TextView tvPersonalName;
     private TextView tvPersonalEmail;
@@ -96,8 +96,8 @@ public class ProfileActivity extends AppCompatActivity {
     private Button btnCancelEdit;
     private Button btnMyOrders;
     private Button btnLogout;
-    private Button btnGuestLogin;   // ✅ NAYA
-    private Button btnGuestRegister; // ✅ NAYA
+    private Button btnGuestLogin;
+    private Button btnGuestRegister;
 
     private SessionManager session;
 
@@ -108,9 +108,7 @@ public class ProfileActivity extends AppCompatActivity {
             registerForActivityResult(
                     new ActivityResultContracts.GetContent(),
                     uri -> {
-                        if (uri != null) {
-                            uploadProfilePic(uri);
-                        }
+                        if (uri != null) uploadProfilePic(uri);
                     }
             );
 
@@ -124,7 +122,6 @@ public class ProfileActivity extends AppCompatActivity {
 
         initializeViews();
 
-        // ✅ ASAL FIX — agar koi login nahi hai, seller/buyer wala template kabhi mat dikhao
         if (!session.isLoggedIn()) {
             showGuestState();
             View bottomNav = findViewById(R.id.bottomNav);
@@ -134,6 +131,19 @@ public class ProfileActivity extends AppCompatActivity {
 
         VoiceGuide.announceScreen(this,
                 "یہ آپ کی پروفائل کی سکرین ہے۔ یہاں آپ اپنی معلومات دیکھ اور تبدیل کر سکتی ہیں۔");
+
+        // ✅ ASAL FIX — admin ke liye Firebase se "users" node dhoondhne ki koshish
+        // hi nahi karte (jo waha kabhi likha hi nahi gaya), seedha admin ki apni
+        // screen dikha dete hain
+        if (session.isAdmin()) {
+            setupCategorySpinner();
+            setupDeliverySpinner();
+            setupButtons();
+            showAdminProfile();
+            View bottomNav = findViewById(R.id.bottomNav);
+            if (bottomNav != null) BottomNavHelper.setupForAdmin(this, bottomNav, 3);
+            return;
+        }
 
         setupCategorySpinner();
         setupDeliverySpinner();
@@ -151,7 +161,38 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
-    /** ✅ NAYA — visitor ko sirf login/register offer karo, koi fake seller info nahi */
+    /** ✅ NAYI — admin ki apni saaf-suthri identity screen, koi seller/buyer field nahi */
+    private void showAdminProfile() {
+        tvBusinessHeader.setText("🛡️ Admin");
+        tvOwnerHeader.setText("Administrator");
+        tvName.setText(session.getName() != null && !session.getName().isEmpty() ? session.getName() : "Admin");
+        tvEmail.setText(Constants.ADMIN_EMAIL);
+        ivVerifiedBadge.setVisibility(View.GONE);
+        tvVerificationStatus.setVisibility(View.GONE);
+
+        if (layoutSellerEditFields != null) layoutSellerEditFields.setVisibility(View.GONE);
+
+        if (tvBusinessName != null) tvBusinessName.setVisibility(View.GONE);
+        if (tvCategory != null) tvCategory.setVisibility(View.GONE);
+        if (tvBio != null) tvBio.setVisibility(View.GONE);
+        if (tvCity != null) tvCity.setVisibility(View.GONE);
+        if (tvShopAddress != null) tvShopAddress.setVisibility(View.GONE);
+        if (tvDelivery != null) tvDelivery.setVisibility(View.GONE);
+        if (tvCapacity != null) tvCapacity.setVisibility(View.GONE);
+        if (tvCnicStatus != null) tvCnicStatus.setVisibility(View.GONE);
+        if (tvVoiceStatus != null) tvVoiceStatus.setVisibility(View.GONE);
+        if (tvRating != null) tvRating.setVisibility(View.GONE);
+        if (tvRatingCount != null) tvRatingCount.setVisibility(View.GONE);
+        if (tvTopRated != null) tvTopRated.setVisibility(View.GONE);
+
+        tvPersonalName.setText("Full Name\nAdmin");
+        tvPersonalEmail.setText("Email\n" + Constants.ADMIN_EMAIL);
+        tvWhatsApp.setVisibility(View.GONE);
+
+        if (btnSwitchRole != null) btnSwitchRole.setVisibility(View.GONE);
+        if (btnMyOrders != null) btnMyOrders.setVisibility(View.GONE); // admin ke apne orders nahi hote
+    }
+
     private void showGuestState() {
         layoutGuestState.setVisibility(View.VISIBLE);
         layoutProfileView.setVisibility(View.GONE);
@@ -382,14 +423,8 @@ public class ProfileActivity extends AppCompatActivity {
         String verification = safe(seller.getVerificationStatus());
         boolean approved = Constants.isApproved(verification);
 
-        // ✅ NAYA — Instagram-jesa tick badge, sirf approved hone par dikhega
-        if (ivVerifiedBadge != null) {
-            ivVerifiedBadge.setVisibility(approved ? View.VISIBLE : View.GONE);
-        }
-
-        if (tvVerificationStatus != null) {
-            tvVerificationStatus.setText(approved ? "✅ Verified" : "⏳ Verification: " + verification);
-        }
+        if (ivVerifiedBadge != null) ivVerifiedBadge.setVisibility(approved ? View.VISIBLE : View.GONE);
+        if (tvVerificationStatus != null) tvVerificationStatus.setText(approved ? "✅ Verified" : "⏳ Verification: " + verification);
 
         if (tvCnicStatus != null) {
             tvCnicStatus.setText(!safe(seller.getCnicUrl()).isEmpty() ? "CNIC Verification\nDocument submitted" : "CNIC Verification\nNot submitted");

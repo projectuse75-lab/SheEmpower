@@ -2,13 +2,12 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_cream">
+    android:background="@color/background">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@color/bg_cream"
         android:padding="24dp">
 
         <RelativeLayout
@@ -21,7 +20,7 @@
                 android:text="🎁 خریدار بنیں"
                 android:textSize="22sp"
                 android:fontFamily="sans-serif-black"
-                android:textColor="@color/lavender_text" />
+                android:textColor="@color/text_primary" />
 
             <ImageButton
                 android:id="@+id/btnSpeaker"
@@ -39,7 +38,7 @@
             android:layout_height="wrap_content"
             android:text="Buyer Registration"
             android:textSize="12sp"
-            android:textColor="@color/text_gray"
+            android:textColor="@color/text_secondary"
             android:layout_marginBottom="20dp" />
 
         <TextView
@@ -47,7 +46,7 @@
             android:layout_height="wrap_content"
             android:text="اپنا نام"
             android:fontFamily="sans-serif-medium"
-            android:textColor="@color/lavender_text"
+            android:textColor="@color/text_primary"
             android:layout_marginBottom="4dp" />
 
         <com.google.android.material.textfield.TextInputEditText
@@ -63,7 +62,7 @@
             android:layout_height="wrap_content"
             android:text="ای میل"
             android:fontFamily="sans-serif-medium"
-            android:textColor="@color/lavender_text"
+            android:textColor="@color/text_primary"
             android:layout_marginBottom="4dp" />
 
         <com.google.android.material.textfield.TextInputEditText
@@ -79,7 +78,7 @@
             android:layout_height="wrap_content"
             android:text="پاس ورڈ"
             android:fontFamily="sans-serif-medium"
-            android:textColor="@color/lavender_text"
+            android:textColor="@color/text_primary"
             android:layout_marginBottom="4dp" />
 
         <FrameLayout
@@ -124,7 +123,7 @@
             android:text="کمزور ❌"
             android:textSize="12sp"
             android:fontFamily="sans-serif-medium"
-            android:textColor="@color/lavender_primary"
+            android:textColor="@color/primary"
             android:layout_marginBottom="12dp" />
 
         <TextView
@@ -132,7 +131,7 @@
             android:layout_height="wrap_content"
             android:text="فون / واٹس ایپ (اختیاری)"
             android:fontFamily="sans-serif-medium"
-            android:textColor="@color/lavender_text"
+            android:textColor="@color/text_primary"
             android:layout_marginBottom="4dp" />
 
         <com.google.android.material.textfield.TextInputEditText

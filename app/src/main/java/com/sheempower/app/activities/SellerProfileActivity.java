@@ -2,8 +2,8 @@ package com.sheempower.app.activities;
 
 import android.content.Intent;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.*;
 import androidx.appcompat.app.AlertDialog;
@@ -33,7 +33,6 @@ public class SellerProfileActivity extends AppCompatActivity {
     private ProductAdapter productAdapter;
     private final List<Product> productList = new ArrayList<>();
 
-    // ✅ Admin-only panel
     private View layoutBuyerActions;
     private View layoutAdminReview;
     private Button btnViewCnic, btnPlayVoice, btnAdminApprove, btnAdminReject;
@@ -96,7 +95,6 @@ public class SellerProfileActivity extends AppCompatActivity {
 
         loadSellerData();
 
-        // ✅ Admin hai to sirf review panel dikhega, buyer wale buttons chhupenge
         if (session.isAdmin()) {
             layoutBuyerActions.setVisibility(android.view.View.GONE);
             layoutAdminReview.setVisibility(android.view.View.VISIBLE);
@@ -116,20 +114,27 @@ public class SellerProfileActivity extends AppCompatActivity {
         }
     }
 
-    /** ✅ NAYA — admin CNIC dekh sakta hai, voice sun sakta hai, aur seedha yahin se approve/reject kar sakta hai */
     private void setupAdminActions() {
+        // ✅ ASAL FIX — pehle "new ImageView(this)" tha jise koi size nahi milti thi.
+        // Ab ek dedicated layout inflate karte hain jisme ImageView ki fixed height hai,
+        // is se Glide ko target size mil jati hai aur tasveer dikh jati hai.
         btnViewCnic.setOnClickListener(v -> {
             if (currentSeller == null || currentSeller.getCnicUrl() == null || currentSeller.getCnicUrl().isEmpty()) {
                 Toast.makeText(this, "شناختی کارڈ اپلوڈ نہیں ہوا", Toast.LENGTH_SHORT).show();
                 return;
             }
-            ImageView fullImage = new ImageView(this);
-            fullImage.setAdjustViewBounds(true);
-            fullImage.setPadding(20, 20, 20, 20);
-            Glide.with(this).load(currentSeller.getCnicUrl()).into(fullImage);
+            View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_cnic_view, null);
+            ImageView ivCnicFull = dialogView.findViewById(R.id.ivCnicFull);
+
+            Glide.with(this)
+                    .load(currentSeller.getCnicUrl())
+                    .placeholder(R.drawable.placeholder_product)
+                    .error(R.drawable.placeholder_product)
+                    .into(ivCnicFull);
+
             new AlertDialog.Builder(this)
                     .setTitle("شناختی کارڈ / CNIC")
-                    .setView(fullImage)
+                    .setView(dialogView)
                     .setPositiveButton("بند کریں", null)
                     .show();
         });
@@ -161,7 +166,7 @@ public class SellerProfileActivity extends AppCompatActivity {
                 .child(sellerId).child("verificationStatus").setValue(status)
                 .addOnSuccessListener(v -> {
                     Toast.makeText(this, "حیثیت اپڈیٹ ہو گئی: " + status, Toast.LENGTH_SHORT).show();
-                    loadSellerData(); // badge turant refresh ho jaye
+                    loadSellerData();
                 })
                 .addOnFailureListener(e -> Toast.makeText(this, "خرابی: " + e.getMessage(), Toast.LENGTH_LONG).show());
     }
@@ -202,7 +207,7 @@ public class SellerProfileActivity extends AppCompatActivity {
             tvDeliveryBadge.setTextColor(0xFF2E7D32);
         } else {
             tvDeliveryBadge.setText("⚠️ صرف خود آ کر لینا ہوگا\n📍 " + (currentSeller.getShopAddress() != null ? currentSeller.getShopAddress() : currentSeller.getCity()));
-            tvDeliveryBadge.setBackgroundResource(R.drawable.bg_rounded_pink);
+            tvDeliveryBadge.setBackgroundResource(R.drawable.bg_profile_field);
             tvDeliveryBadge.setTextColor(0xFFB25E00);
         }
 

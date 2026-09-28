@@ -1,47 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Settings Card Style -->
     <style name="SettingsCardStyle">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">76dp</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">horizontal</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:paddingStart">16dp</item>
-        <item name="android:paddingEnd">12dp</item>
-        <item name="android:paddingTop">8dp</item>
-        <item name="android:paddingBottom">8dp</item>
+        <item name="android:padding">16dp</item>
         <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:minHeight">68dp</item>
     </style>
 
+    <!-- Settings Icon Style -->
     <style name="SettingsIconStyle">
-        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:gravity">center</item>
-        <item name="android:textSize">25sp</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:layout_marginEnd">14dp</item>
     </style>
 
+    <!-- Settings Title Style -->
     <style name="SettingsTitleStyle">
-        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">@color/text_dark</item>
-        <item name="android:textSize">17sp</item>
+        <item name="android:textSize">16sp</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/settings_card_text</item>
     </style>
 
+    <!-- Settings Subtitle Style -->
     <style name="SettingsSubtitleStyle">
-        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">@color/text_gray</item>
         <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/text_secondary</item>
         <item name="android:layout_marginTop">2dp</item>
     </style>
 
+    <!-- Settings Arrow Style -->
     <style name="SettingsArrowStyle">
-        <item name="android:layout_width">30dp</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:gravity">center</item>
-        <item name="android:textColor">@color/text_gray</item>
-        <item name="android:textSize">30sp</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/text_secondary</item>
     </style>
 
 </resources>

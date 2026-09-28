@@ -2,12 +2,11 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_cream">
+    android:background="@color/background">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/bg_cream"
         android:orientation="vertical">
 
         <ImageView
@@ -15,7 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="260dp"
             android:scaleType="centerCrop"
-            android:background="@color/skeu_cream_dark" />
+            android:background="@color/gray_light" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -29,14 +28,14 @@
                 android:layout_height="wrap_content"
                 android:textSize="22sp"
                 android:fontFamily="sans-serif-black"
-                android:textColor="@color/text_dark" />
+                android:textColor="@color/text_primary" />
 
             <TextView
                 android:id="@+id/tvProductPrice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="18sp"
-                android:textColor="@color/lavender_primary"
+                android:textColor="@color/primary"
                 android:fontFamily="sans-serif-bold"
                 android:layout_marginTop="4dp" />
 
@@ -61,14 +60,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-black"
-                        android:textColor="@color/text_dark"
+                        android:textColor="@color/text_primary"
                         android:textSize="15sp" />
 
                     <TextView
                         android:id="@+id/tvSellerMeta"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/text_gray"
+                        android:textColor="@color/text_secondary"
                         android:textSize="12sp" />
 
                     <TextView
@@ -96,14 +95,14 @@
                 android:text="📝 تفصیل"
                 android:fontFamily="sans-serif-black"
                 android:textSize="15sp"
-                android:textColor="@color/lavender_text"
+                android:textColor="@color/text_primary"
                 android:layout_marginTop="20dp" />
 
             <TextView
                 android:id="@+id/tvDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/text_dark"
+                android:textColor="@color/text_primary"
                 android:textSize="14sp"
                 android:layout_marginTop="6dp" />
 

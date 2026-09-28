@@ -274,7 +274,7 @@ public class PlaceOrderActivity extends AppCompatActivity {
                 input.setHint(field.hintUrdu);
                 input.setTextSize(16);
                 input.setPadding(28, 28, 28, 28);
-                input.setBackgroundResource(R.drawable.bg_rounded_pink);
+                input.setBackgroundResource(R.drawable.bg_skeu_input);
                 if ("number".equals(field.type)) input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
                 layoutDynamicFields.addView(input);
                 dynamicTextInputs.put(field.labelEnglish, input);

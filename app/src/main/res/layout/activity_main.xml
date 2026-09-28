@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_cream"
+    android:background="@color/background"
     android:orientation="vertical">
 
     <ScrollView
@@ -31,7 +31,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
-                        android:text="💜 شی ایمپاور"
+                        android:text="✨ شی ایمپاور"
                         android:textSize="24sp"
                         android:fontFamily="sans-serif-black"
                         android:textColor="#FFFFFF" />
@@ -53,7 +53,7 @@
                     android:text="SHE EMPOWER"
                     android:textSize="11sp"
                     android:gravity="center"
-                    android:textColor="@color/lavender_soft"
+                    android:textColor="@color/accent"
                     android:layout_marginTop="2dp" />
 
                 <LinearLayout
@@ -71,7 +71,7 @@
                         android:textSize="13sp"
                         android:fontFamily="sans-serif-medium"
                         android:background="@drawable/bg_skeu_button_cream"
-                        android:textColor="@color/lavender_text"
+                        android:textColor="@color/text_primary"
                         android:layout_marginEnd="8dp" />
 
                     <Button
@@ -106,7 +106,7 @@
                 android:layout_marginStart="16dp"
                 android:text="🛍️ زمرہ جات"
                 android:fontFamily="sans-serif-black"
-                android:textColor="@color/lavender_text"
+                android:textColor="@color/text_primary"
                 android:textSize="16sp" />
 
             <HorizontalScrollView
@@ -128,7 +128,7 @@
                 android:layout_marginStart="16dp"
                 android:text="⭐ بہترین بیچنے والیاں"
                 android:fontFamily="sans-serif-black"
-                android:textColor="@color/lavender_text"
+                android:textColor="@color/text_primary"
                 android:textSize="16sp" />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -166,7 +166,7 @@
                     android:gravity="center"
                     android:padding="12dp"
                     android:fontFamily="sans-serif-medium"
-                    android:textColor="@color/lavender_text"
+                    android:textColor="@color/text_primary"
                     android:background="@drawable/bg_skeu_button_cream" />
             </LinearLayout>
 

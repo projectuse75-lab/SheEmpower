@@ -16,7 +16,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#FF4081"
+            android:background="#192A56"
             android:padding="16dp"
             android:orientation="horizontal"
             android:gravity="center_vertical">
@@ -39,7 +39,7 @@
                     android:id="@+id/tvSellerCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="#FFE0EC"
+                    android:textColor="#F7D794"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -62,7 +62,7 @@
             android:text="🏪 بیچنے والیاں / Sellers"
             android:textStyle="bold"
             android:textSize="15sp"
-            android:textColor="#FF4081"
+            android:textColor="#192A56"
             android:layout_margin="16dp" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -81,7 +81,7 @@
             android:text="🛍️ اشیاء / Products"
             android:textStyle="bold"
             android:textSize="15sp"
-            android:textColor="#FF4081"
+            android:textColor="#192A56"
             android:layout_margin="16dp" />
 
         <androidx.recyclerview.widget.RecyclerView

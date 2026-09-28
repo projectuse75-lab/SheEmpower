@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/bg_cream">
+    android:background="@color/background">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -25,7 +25,7 @@
                 android:orientation="vertical"
                 android:gravity="center"
                 android:paddingBottom="24dp"
-                android:background="@color/bg_cream">
+                android:background="@color/background">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -57,7 +57,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
                             android:text="Seller"
-                            android:textColor="@color/lavender_soft"
+                            android:textColor="@color/accent"
                             android:fontFamily="sans-serif-medium"
                             android:textSize="14sp"
                             android:gravity="center"/>
@@ -113,7 +113,7 @@
                         android:src="@android:drawable/ic_menu_camera"
                         android:scaleType="centerInside"
                         android:padding="8dp"
-                        app:tint="@color/lavender_primary"
+                        app:tint="@color/primary"
                         android:contentDescription="Change profile picture"/>
 
                 </FrameLayout>
@@ -124,7 +124,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
                     android:text="Seller Name"
-                    android:textColor="@color/text_dark"
+                    android:textColor="@color/text_primary"
                     android:fontFamily="sans-serif-black"
                     android:textSize="22sp"/>
 
@@ -134,7 +134,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:text="email@gmail.com"
-                    android:textColor="@color/text_gray"
+                    android:textColor="@color/text_secondary"
                     android:fontFamily="sans-serif"
                     android:textSize="14sp"/>
 
@@ -175,7 +175,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="آپ نے ابھی لاگ ان نہیں کیا\nYou are not logged in"
-                    android:textColor="@color/text_dark"
+                    android:textColor="@color/text_primary"
                     android:fontFamily="sans-serif-black"
                     android:textSize="17sp"
                     android:gravity="center"
@@ -185,7 +185,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="اپنی پروفائل دیکھنے کے لیے لاگ ان کریں یا نیا اکاؤنٹ بنائیں"
-                    android:textColor="@color/text_gray"
+                    android:textColor="@color/text_secondary"
                     android:fontFamily="sans-serif"
                     android:textSize="13sp"
                     android:gravity="center"
@@ -207,7 +207,7 @@
                     android:layout_height="54dp"
                     android:layout_marginTop="10dp"
                     android:text="📝 نیا اکاؤنٹ / Register"
-                    android:textColor="@color/lavender_text"
+                    android:textColor="@color/text_primary"
                     android:fontFamily="sans-serif-medium"
                     android:background="@drawable/bg_skeu_button_cream" />
 
@@ -220,7 +220,7 @@
                 android:layout_height="52dp"
                 android:gravity="center"
                 android:text="👤  SELLER  ▼"
-                android:textColor="@color/lavender_text"
+                android:textColor="@color/text_primary"
                 android:fontFamily="sans-serif-medium"
                 android:textSize="15sp"
                 android:background="@drawable/bg_skeu_button_cream"/>
@@ -237,7 +237,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="👤  Personal Information"
-                    android:textColor="@color/lavender_text"
+                    android:textColor="@color/text_primary"
                     android:fontFamily="sans-serif-black"
                     android:textSize="16sp"
                     android:paddingBottom="10dp"/>
@@ -249,7 +249,7 @@
                     android:layout_marginBottom="10dp"
                     android:padding="16dp"
                     android:background="@drawable/bg_skeu_input"
-                    android:textColor="@color/text_dark"
+                    android:textColor="@color/text_primary"
                     android:fontFamily="sans-serif"
                     android:textSize="14sp"
                     android:text="Full Name"/>
@@ -261,7 +261,7 @@
                     android:layout_marginBottom="10dp"
                     android:padding="16dp"
                     android:background="@drawable/bg_skeu_input"
-                    android:textColor="@color/text_dark"
+                    android:textColor="@color/text_primary"
                     android:fontFamily="sans-serif"
                     android:textSize="14sp"
                     android:text="Email"/>
@@ -273,7 +273,7 @@
                     android:layout_marginBottom="10dp"
                     android:padding="16dp"
                     android:background="@drawable/bg_skeu_input"
-                    android:textColor="@color/text_dark"
+                    android:textColor="@color/text_primary"
                     android:fontFamily="sans-serif"
                     android:textSize="14sp"
                     android:text="WhatsApp"/>
@@ -283,7 +283,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:text="🏪  Business Information"
-                    android:textColor="@color/lavender_text"
+                    android:textColor="@color/text_primary"
                     android:fontFamily="sans-serif-black"
                     android:textSize="16sp"
                     android:paddingBottom="10dp"/>
@@ -295,7 +295,7 @@
                     android:layout_marginBottom="10dp"
                     android:padding="16dp"
                     android:background="@drawable/bg_skeu_input"
-                    android:textColor="@color/text_dark"
+                    android:textColor="@color/text_primary"
                     android:fontFamily="sans-serif"
                     android:textSize="14sp"
                     android:text="Shop Name"/>
@@ -307,7 +307,7 @@
                     android:layout_marginBottom="10dp"
                     android:padding="16dp"
                     android:background="@drawable/bg_skeu_input"
-                    android:textColor="@color/text_dark"
+                    android:textColor="@color/text_primary"
                     android:fontFamily="sans-serif"
                     android:textSize="14sp"
                     android:text="Category"/>
@@ -319,7 +319,7 @@
                     android:layout_marginBottom="10dp"
                     android:padding="16dp"
                     android:background="@drawable/bg_skeu_input"
-                    android:textColor="@color/text_dark"
+                    android:textColor="@color/text_primary"
                     android:fontFamily="sans-serif"
                     android:textSize="14sp"
                     android:text="Bio / Description"/>
@@ -329,7 +329,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:text="📍  Location &amp; Delivery"
-                    android:textColor="@color/lavender_text"
+                    android:textColor="@color/text_primary"
                     android:fontFamily="sans-serif-black"
                     android:textSize="16sp"
                     android:paddingBottom="10dp"/>
@@ -341,7 +341,7 @@
                     android:layout_marginBottom="10dp"
                     android:padding="16dp"
                     android:background="@drawable/bg_skeu_input"
-                    android:textColor="@color/text_dark"
+                    android:textColor="@color/text_primary"
                     android:fontFamily="sans-serif"
                     android:textSize="14sp"
                     android:text="City"/>
@@ -353,7 +353,7 @@
                     android:layout_marginBottom="10dp"
                     android:padding="16dp"
                     android:background="@drawable/bg_skeu_input"
-                    android:textColor="@color/text_dark"
+                    android:textColor="@color/text_primary"
                     android:fontFamily="sans-serif"
                     android:textSize="14sp"
                     android:text="Shop Address"/>
@@ -365,7 +365,7 @@
                     android:layout_marginBottom="10dp"
                     android:padding="16dp"
                     android:background="@drawable/bg_skeu_input"
-                    android:textColor="@color/text_dark"
+                    android:textColor="@color/text_primary"
                     android:fontFamily="sans-serif"
                     android:textSize="14sp"
                     android:text="Can Deliver"/>
@@ -377,7 +377,7 @@
                     android:layout_marginBottom="10dp"
                     android:padding="16dp"
                     android:background="@drawable/bg_skeu_input"
-                    android:textColor="@color/text_dark"
+                    android:textColor="@color/text_primary"
                     android:fontFamily="sans-serif"
                     android:textSize="14sp"
                     android:text="Capacity"/>
@@ -387,7 +387,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:text="🛡️  Verification &amp; Rating"
-                    android:textColor="@color/lavender_text"
+                    android:textColor="@color/text_primary"
                     android:fontFamily="sans-serif-black"
                     android:textSize="16sp"
                     android:paddingBottom="10dp"/>
@@ -399,7 +399,7 @@
                     android:layout_marginBottom="10dp"
                     android:padding="16dp"
                     android:background="@drawable/bg_skeu_input"
-                    android:textColor="@color/text_dark"
+                    android:textColor="@color/text_primary"
                     android:fontFamily="sans-serif"
                     android:textSize="14sp"
                     android:text="CNIC Verification"/>
@@ -411,7 +411,7 @@
                     android:layout_marginBottom="10dp"
                     android:padding="16dp"
                     android:background="@drawable/bg_skeu_input"
-                    android:textColor="@color/text_dark"
+                    android:textColor="@color/text_primary"
                     android:fontFamily="sans-serif"
                     android:textSize="14sp"
                     android:text="Voice Verification"/>
@@ -423,7 +423,7 @@
                     android:layout_marginBottom="10dp"
                     android:padding="16dp"
                     android:background="@drawable/bg_skeu_input"
-                    android:textColor="@color/text_dark"
+                    android:textColor="@color/text_primary"
                     android:fontFamily="sans-serif"
                     android:textSize="14sp"
                     android:text="Rating"/>
@@ -435,7 +435,7 @@
                     android:layout_marginBottom="10dp"
                     android:padding="16dp"
                     android:background="@drawable/bg_skeu_input"
-                    android:textColor="@color/text_dark"
+                    android:textColor="@color/text_primary"
                     android:fontFamily="sans-serif"
                     android:textSize="14sp"
                     android:text="Rating Count"/>
@@ -447,7 +447,7 @@
                     android:layout_marginBottom="10dp"
                     android:padding="16dp"
                     android:background="@drawable/bg_skeu_input"
-                    android:textColor="@color/text_dark"
+                    android:textColor="@color/text_primary"
                     android:fontFamily="sans-serif"
                     android:textSize="14sp"
                     android:text="Top Rated"/>
@@ -467,7 +467,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="✏️  Edit Profile"
-                    android:textColor="@color/lavender_text"
+                    android:textColor="@color/text_primary"
                     android:fontFamily="sans-serif-black"
                     android:textSize="20sp"
                     android:paddingBottom="16dp"/>
@@ -601,7 +601,7 @@
                     android:layout_height="52dp"
                     android:layout_marginTop="10dp"
                     android:text="CANCEL"
-                    android:textColor="@color/lavender_text"
+                    android:textColor="@color/text_primary"
                     android:fontFamily="sans-serif-medium"
                     android:background="@drawable/bg_skeu_button_cream"
                     android:textSize="14sp"/>
@@ -630,7 +630,7 @@
                 android:layout_marginRight="18dp"
                 android:layout_marginTop="10dp"
                 android:fontFamily="sans-serif-medium"
-                android:textColor="@color/lavender_text"
+                android:textColor="@color/text_primary"
                 android:background="@drawable/bg_skeu_button_cream"
                 android:text="📦  MY ORDERS"/>
 
