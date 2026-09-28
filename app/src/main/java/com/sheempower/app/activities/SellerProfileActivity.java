@@ -96,12 +96,12 @@ public class SellerProfileActivity extends AppCompatActivity {
         loadSellerData();
 
         if (session.isAdmin()) {
-            layoutBuyerActions.setVisibility(android.view.View.GONE);
-            layoutAdminReview.setVisibility(android.view.View.VISIBLE);
+            layoutBuyerActions.setVisibility(View.GONE);
+            layoutAdminReview.setVisibility(View.VISIBLE);
             setupAdminActions();
         } else {
-            layoutBuyerActions.setVisibility(android.view.View.VISIBLE);
-            layoutAdminReview.setVisibility(android.view.View.GONE);
+            layoutBuyerActions.setVisibility(View.VISIBLE);
+            layoutAdminReview.setVisibility(View.GONE);
 
             btnPlaceOrder.setOnClickListener(v -> requireBuyerLogin(() -> {
                 Intent i = new Intent(this, PlaceOrderActivity.class);
@@ -115,9 +115,6 @@ public class SellerProfileActivity extends AppCompatActivity {
     }
 
     private void setupAdminActions() {
-        // ✅ ASAL FIX — pehle "new ImageView(this)" tha jise koi size nahi milti thi.
-        // Ab ek dedicated layout inflate karte hain jisme ImageView ki fixed height hai,
-        // is se Glide ko target size mil jati hai aur tasveer dikh jati hai.
         btnViewCnic.setOnClickListener(v -> {
             if (currentSeller == null || currentSeller.getCnicUrl() == null || currentSeller.getCnicUrl().isEmpty()) {
                 Toast.makeText(this, "شناختی کارڈ اپلوڈ نہیں ہوا", Toast.LENGTH_SHORT).show();
@@ -198,7 +195,7 @@ public class SellerProfileActivity extends AppCompatActivity {
 
         boolean approved = Constants.isApproved(currentSeller.getVerificationStatus());
         tvStatus.setText(approved ? "✅ تصدیق شدہ" : "⏳ " + currentSeller.getVerificationStatus());
-        ivSellerVerifiedBadge.setVisibility(approved ? android.view.View.VISIBLE : android.view.View.GONE);
+        ivSellerVerifiedBadge.setVisibility(approved ? View.VISIBLE : View.GONE);
 
         boolean travelType = Constants.isTravelType(currentSeller.getCategory());
         if (currentSeller.isCanDeliver()) {
@@ -213,8 +210,8 @@ public class SellerProfileActivity extends AppCompatActivity {
 
         if (currentSeller.getCapacityDescription() != null && !currentSeller.getCapacityDescription().isEmpty()) {
             tvCapacity.setText("🙋‍♀️ " + currentSeller.getCapacityDescription());
-            tvCapacity.setVisibility(android.view.View.VISIBLE);
-        } else tvCapacity.setVisibility(android.view.View.GONE);
+            tvCapacity.setVisibility(View.VISIBLE);
+        } else tvCapacity.setVisibility(View.GONE);
 
         if (currentSeller.getImageUrl() != null && !currentSeller.getImageUrl().isEmpty())
             Glide.with(this).load(currentSeller.getImageUrl()).into(ivSellerAvatar);
@@ -228,7 +225,11 @@ public class SellerProfileActivity extends AppCompatActivity {
                         productList.clear();
                         for (DataSnapshot child : snapshot.getChildren()) {
                             Product p = child.getValue(Product.class);
-                            if (p != null) productList.add(p);
+                            if (p != null) {
+                                // ✅ YEH LINE ADD KI — Firebase key se ID set karo
+                                p.setId(child.getKey());
+                                productList.add(p);
+                            }
                         }
                         productAdapter.notifyDataSetChanged();
                     }
