@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/bg_cream">
+    android:background="@color/background">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,7 +18,7 @@
             android:text="📦 میرے آرڈرز / My Orders"
             android:textSize="20sp"
             android:fontFamily="sans-serif-black"
-            android:textColor="@color/lavender_text"
+            android:textColor="@color/text_primary"
             android:layout_marginBottom="12dp" />
 
         <TextView
@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:text="ابھی تک کوئی آرڈر نہیں"
             android:gravity="center"
-            android:textColor="@color/text_gray"
+            android:textColor="@color/text_secondary"
             android:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView

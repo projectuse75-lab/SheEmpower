@@ -71,7 +71,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Logged in as"
-                    android:textColor="@color/settings_card_text"
+                    android:textColor="@color/skeu_pink_light"
                     android:textSize="13sp"/>
 
                 <TextView
@@ -79,7 +79,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="User"
-                    android:textColor="@color/settings_card_text"
+                    android:textColor="@color/card_bg"
                     android:textSize="21sp"
                     android:textStyle="bold"
                     android:layout_marginTop="4dp"/>
@@ -89,7 +89,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Email"
-                    android:textColor="@color/settings_card_text"
+                    android:textColor="@color/card_bg"
                     android:textSize="14sp"
                     android:layout_marginTop="3dp"/>
 
@@ -98,7 +98,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Contact"
-                    android:textColor="@color/settings_card_text"
+                    android:textColor="@color/accent"
                     android:textSize="14sp"
                     android:layout_marginTop="2dp"/>
 

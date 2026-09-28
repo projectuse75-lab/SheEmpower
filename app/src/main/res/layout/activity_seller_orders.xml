@@ -15,7 +15,7 @@
             android:layout_marginBottom="12dp">
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:text="📋 آرڈرز کا انتظام / Manage Orders" android:textSize="18sp" android:textStyle="bold"
-                android:textColor="#FF4081" />
+                android:textColor="#192A56" />
             <ImageButton
                 android:id="@+id/btnSpeaker"
                 android:layout_width="40dp"

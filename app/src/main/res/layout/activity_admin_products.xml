@@ -4,7 +4,7 @@
     android:background="?android:attr/windowBackground"
     android:orientation="vertical">
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:text="🛍️ تمام اشیاء" android:textSize="18sp" android:textStyle="bold" android:textColor="#FF4081" android:padding="16dp" />
+        android:text="🛍️ تمام اشیاء" android:textSize="18sp" android:textStyle="bold" android:textColor="#192A56" android:padding="16dp" />
     <TextView android:id="@+id/tvEmpty" android:layout_width="match_parent" android:layout_height="wrap_content"
         android:text="کوئی چیز موجود نہیں" android:gravity="center" android:textColor="#888888" android:visibility="gone" />
     <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvProducts"

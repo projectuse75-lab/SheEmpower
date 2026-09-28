@@ -2,44 +2,45 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_cream"
+    android:background="@color/background"
     android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@color/bg_cream"
         android:paddingBottom="24dp">
 
-        <!-- HEADER -->
+        <!-- LOGO & BRAND HEADER (WHITE BACKGROUND TO MATCH LOGO) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@drawable/bg_skeu_header"
-            android:padding="20dp"
+            android:background="@color/white"
+            android:paddingTop="28dp"
+            android:paddingBottom="20dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
             android:gravity="center">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <ImageView
+                    android:id="@+id/ivLogo"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
                     android:layout_centerInParent="true"
-                    android:text="💜 شی ایمپاور"
-                    android:textSize="28sp"
-                    android:fontFamily="sans-serif-black"
-                    android:textColor="#FFFFFF" />
+                    android:src="@drawable/logo_512"
+                    android:contentDescription="She Empower Logo" />
 
                 <ImageButton
                     android:id="@+id/btnSpeaker"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
+                    android:layout_alignParentTop="true"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@drawable/ic_speaker"
                     android:contentDescription="Speaker"
@@ -51,14 +52,24 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="SHE EMPOWER"
-                android:textSize="12sp"
-                android:textColor="@color/lavender_soft"
+                android:textSize="20sp"
+                android:fontFamily="sans-serif-black"
+                android:textColor="@color/primary"
                 android:layout_marginTop="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="شی ایمپاور"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-bold"
+                android:textColor="@color/secondary"
+                android:layout_marginTop="2dp" />
 
         </LinearLayout>
 
 
-        <!-- MAIN CONTENT -->
+        <!-- MAIN CONTENT CONTAINER -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -73,7 +84,7 @@
                 android:text="🔑 لاگ ان / Login"
                 android:textSize="22sp"
                 android:fontFamily="sans-serif-black"
-                android:textColor="@color/lavender_text"
+                android:textColor="@color/text_primary"
                 android:gravity="center"
                 android:layout_marginBottom="24dp" />
 
@@ -85,7 +96,7 @@
                 android:text="📧 ای میل ایڈریس / Email Address"
                 android:textSize="13sp"
                 android:fontFamily="sans-serif-medium"
-                android:textColor="@color/lavender_text"
+                android:textColor="@color/text_primary"
                 android:layout_marginBottom="8dp" />
 
             <com.google.android.material.textfield.TextInputEditText
@@ -107,7 +118,7 @@
                 android:text="🔐 پاس ورڈ / Password"
                 android:textSize="13sp"
                 android:fontFamily="sans-serif-medium"
-                android:textColor="@color/lavender_text"
+                android:textColor="@color/text_primary"
                 android:layout_marginBottom="8dp" />
 
             <FrameLayout
@@ -161,7 +172,7 @@
                     android:layout_weight="1"
                     android:text="طاقت / Strength:"
                     android:textSize="11sp"
-                    android:textColor="@color/text_gray" />
+                    android:textColor="@color/text_secondary" />
 
                 <TextView
                     android:id="@+id/passwordStrengthText"
@@ -170,7 +181,7 @@
                     android:text="کمزور ❌"
                     android:textSize="11sp"
                     android:fontFamily="sans-serif-medium"
-                    android:textColor="@color/lavender_primary" />
+                    android:textColor="@color/primary" />
 
             </LinearLayout>
 
@@ -195,19 +206,35 @@
                 android:layout_height="wrap_content"
                 android:text="❓ پاس ورڈ بھول گئے؟ / Forgot Password?"
                 android:textSize="12sp"
-                android:textColor="@color/lavender_primary"
+                android:textColor="@color/primary"
                 android:fontFamily="sans-serif-medium"
                 android:gravity="center"
-                android:padding="12dp"
+                android:padding="10dp"
                 android:layout_marginBottom="4dp" />
+
+
+            <!-- VISITOR / GUEST MODE OPTION -->
+            <TextView
+                android:id="@+id/tvContinueVisitor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="👀 بغیر اکاؤنٹ آگے بڑھیں (میہمان / Visitor Mode)"
+                android:textSize="13sp"
+                android:textColor="@color/text_primary"
+                android:fontFamily="sans-serif-bold"
+                android:gravity="center"
+                android:padding="12dp"
+                android:background="@drawable/bg_skeu_button_cream"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="12dp" />
 
 
             <!-- DIVIDER -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/skeu_cream_border"
-                android:layout_marginTop="8dp"
+                android:background="@color/divider"
+                android:layout_marginTop="4dp"
                 android:layout_marginBottom="18dp" />
 
 
@@ -218,7 +245,7 @@
                 android:text="📝 نیا اکاؤنٹ بنائیں / Create Account"
                 android:textSize="15sp"
                 android:fontFamily="sans-serif-black"
-                android:textColor="@color/lavender_text"
+                android:textColor="@color/text_primary"
                 android:gravity="center"
                 android:layout_marginBottom="12dp" />
 
@@ -238,7 +265,7 @@
                     android:text="🛍️ خریدار / Buyer"
                     android:textSize="14sp"
                     android:fontFamily="sans-serif-black"
-                    android:textColor="@color/lavender_text"
+                    android:textColor="@color/text_primary"
                     android:gravity="center"
                     android:layout_marginBottom="8dp" />
 
@@ -249,7 +276,7 @@
                     android:text="نیا خریدار ہوں - اکاؤنٹ بنائیں\nNew buyer - Create account"
                     android:textSize="12sp"
                     android:fontFamily="sans-serif-medium"
-                    android:textColor="@color/lavender_text"
+                    android:textColor="@color/text_primary"
                     android:padding="12dp"
                     android:background="@drawable/bg_skeu_button_cream"
                     android:gravity="center" />
@@ -271,7 +298,7 @@
                     android:text="🏪 بیچنے والی / Seller"
                     android:textSize="14sp"
                     android:fontFamily="sans-serif-black"
-                    android:textColor="@color/lavender_text"
+                    android:textColor="@color/text_primary"
                     android:gravity="center"
                     android:layout_marginBottom="8dp" />
 
@@ -282,7 +309,7 @@
                     android:text="کام شروع کرنا چاہتی ہیں - رجسٹر کریں\nWant to sell - Register"
                     android:textSize="12sp"
                     android:fontFamily="sans-serif-medium"
-                    android:textColor="@color/lavender_text"
+                    android:textColor="@color/text_primary"
                     android:padding="12dp"
                     android:background="@drawable/bg_skeu_button_cream"
                     android:gravity="center" />

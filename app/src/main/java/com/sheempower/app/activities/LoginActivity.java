@@ -104,6 +104,17 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         btnSpeaker.setOnClickListener(v -> speakText());
+
+        TextView tvContinueVisitor = findViewById(R.id.tvContinueVisitor);
+        if (tvContinueVisitor != null) {
+            tvContinueVisitor.setOnClickListener(v -> {
+                session.saveUser("guest", Constants.ROLE_BUYER, "Visitor");
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+            });
+        }
     }
 
     // ============ Initialize All Views ============
