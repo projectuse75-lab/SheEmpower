@@ -1,43 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent" android:background="#FFFFFF">
-    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:background="?android:attr/windowBackground"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_cream">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bg_cream"
         android:orientation="vertical">
 
-        <ImageView android:id="@+id/ivProduct"
-            android:layout_width="match_parent" android:layout_height="260dp" android:scaleType="centerCrop" android:background="#FFF0F5" />
+        <ImageView
+            android:id="@+id/ivProduct"
+            android:layout_width="match_parent"
+            android:layout_height="260dp"
+            android:scaleType="centerCrop"
+            android:background="@color/skeu_cream_dark" />
 
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
 
-            <TextView android:id="@+id/tvProductName" android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:textSize="20sp" android:textStyle="bold" android:textColor="#333333" />
+            <TextView
+                android:id="@+id/tvProductName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="22sp"
+                android:fontFamily="sans-serif-black"
+                android:textColor="@color/text_dark" />
 
-            <TextView android:id="@+id/tvProductPrice" android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:textSize="18sp" android:textColor="#FF4081" android:textStyle="bold" android:layout_marginTop="4dp" />
+            <TextView
+                android:id="@+id/tvProductPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textColor="@color/lavender_primary"
+                android:fontFamily="sans-serif-bold"
+                android:layout_marginTop="4dp" />
 
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal"
-                android:background="@drawable/bg_rounded_pink" android:padding="12dp" android:layout_marginTop="16dp" android:gravity="center_vertical">
-                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
-                    <TextView android:id="@+id/tvSellerName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textStyle="bold" android:textSize="15sp" />
-                    <TextView android:id="@+id/tvSellerMeta" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#777777" android:textSize="12sp" />
-                    <TextView android:id="@+id/tvSellerRating" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#FFA000" android:textSize="12sp" />
+            <!-- SELLER CARD -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@drawable/bg_skeu_card"
+                android:padding="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvSellerName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black"
+                        android:textColor="@color/text_dark"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/tvSellerMeta"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/text_gray"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tvSellerRating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/star_gold"
+                        android:fontFamily="sans-serif-medium"
+                        android:textSize="12sp" />
                 </LinearLayout>
-                <Button android:id="@+id/btnViewSeller" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="دیکھیں →" android:backgroundTint="#FF4081" android:textColor="#FFFFFF" />
+
+                <Button
+                    android:id="@+id/btnViewSeller"
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dp"
+                    android:text="دیکھیں →"
+                    android:fontFamily="sans-serif-medium"
+                    android:background="@drawable/bg_skeu_button_primary"
+                    android:textColor="#FFFFFF" />
             </LinearLayout>
 
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="📝 تفصیل" android:textStyle="bold" android:textSize="15sp" android:textColor="#FF4081" android:layout_marginTop="20dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📝 تفصیل"
+                android:fontFamily="sans-serif-black"
+                android:textSize="15sp"
+                android:textColor="@color/lavender_text"
+                android:layout_marginTop="20dp" />
 
-            <TextView android:id="@+id/tvDescription" android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:textColor="#666666" android:layout_marginTop="6dp" />
+            <TextView
+                android:id="@+id/tvDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_dark"
+                android:textSize="14sp"
+                android:layout_marginTop="6dp" />
 
-            <Button android:id="@+id/btnPlaceOrder" android:layout_width="match_parent" android:layout_height="56dp"
-                android:text="🛒 آرڈر دیں" android:textSize="15sp" android:backgroundTint="#FF4081" android:textColor="#FFFFFF" android:layout_marginTop="20dp" />
+            <Button
+                android:id="@+id/btnPlaceOrder"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="🛒 آرڈر دیں"
+                android:textSize="15sp"
+                android:fontFamily="sans-serif-medium"
+                android:background="@drawable/bg_skeu_button_primary"
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="20dp" />
 
-            <Button android:id="@+id/btnWhatsApp" android:layout_width="match_parent" android:layout_height="56dp"
-                android:text="📱 واٹس ایپ پر بات کریں" android:textSize="14sp" android:backgroundTint="#25D366" android:textColor="#FFFFFF" android:layout_marginTop="10dp" />
+            <Button
+                android:id="@+id/btnWhatsApp"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="📱 واٹس ایپ پر بات کریں"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-medium"
+                android:background="@drawable/bg_skeu_button_green"
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="10dp" />
 
         </LinearLayout>
     </LinearLayout>

@@ -4,18 +4,30 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.database.*;
 import com.sheempower.app.R;
+import com.sheempower.app.adapters.ProductAdapter;
 import com.sheempower.app.models.Order;
+import com.sheempower.app.models.Product;
 import com.sheempower.app.models.Seller;
 import com.sheempower.app.utils.*;
 import com.sheempower.app.utils.PreferencesManager;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SellerDashboardActivity extends AppCompatActivity {
 
     private TextView tvCategory, tvWelcome, tvStatus, tvTotalOrders, tvPendingOrders, tvCompletedOrders, tvEarnings;
     private Button btnAddProduct;
     private SessionManager session;
+
+    // ✅ NAYA — "My Products" section
+    private RecyclerView rvMyProducts;
+    private TextView tvNoProducts;
+    private ProductAdapter myProductAdapter;
+    private final List<Product> myProductList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +39,7 @@ public class SellerDashboardActivity extends AppCompatActivity {
         session = new SessionManager(this);
 
         VoiceGuide.announceScreen(this,
-                "یہ آپ کی دکان کا ڈیش بورڈ ہے۔ یہاں آپ اپنی کل کمائی اور آرڈرز کی تعداد دیکھ سکتی ہیں۔ نئی چیز شامل کرنے کے لیے نیچے بٹن دبائیں۔ آرڈرز دیکھنے کے لیے نیچے مینو سے آرڈرز پر جائیں۔");
+                "یہ آپ کی دکان کا ڈیش بورڈ ہے۔ یہاں آپ اپنی کل کمائی اور آرڈرز کی تعداد دیکھ سکتی ہیں۔ نیچے آپ کی شامل کردہ تمام اشیاء بھی نظر آئیں گی۔ نئی چیز شامل کرنے کے لیے بٹن دبائیں۔");
 
         // ============ Initialize Views ============
         tvCategory        = findViewById(R.id.tvCategory);
@@ -38,13 +50,18 @@ public class SellerDashboardActivity extends AppCompatActivity {
         tvCompletedOrders = findViewById(R.id.tvCompletedOrders);
         tvEarnings        = findViewById(R.id.tvEarnings);
         btnAddProduct     = findViewById(R.id.btnAddProduct);
+        rvMyProducts      = findViewById(R.id.rvMyProducts);
+        tvNoProducts      = findViewById(R.id.tvNoProducts);
 
         tvWelcome.setText("👋 " + session.getName());
 
         btnAddProduct.setOnClickListener(v -> startActivity(new Intent(this, AddProductActivity.class)));
 
+        setupMyProductsList();
+
         loadSellerStatus();
         loadStats();
+        loadMyProducts();
 
         BottomNavHelper.setupForSeller(this, findViewById(R.id.bottomNav), 1);
     }
@@ -55,6 +72,46 @@ public class SellerDashboardActivity extends AppCompatActivity {
         super.onResume();
         loadSellerStatus();
         loadStats();
+        loadMyProducts();
+    }
+
+    // ============ SETUP MY PRODUCTS RECYCLERVIEW ============
+    private void setupMyProductsList() {
+        rvMyProducts.setLayoutManager(new GridLayoutManager(this, 2));
+        myProductAdapter = new ProductAdapter(
+                myProductList,
+                product -> {
+                    Intent i = new Intent(this, ProductDetailActivity.class);
+                    i.putExtra(ProductDetailActivity.EXTRA_PRODUCT_ID, product.getId());
+                    startActivity(i);
+                },
+                // Apni khud ki cheez par order/chat dabana kuch nahi karta — sirf batata hai
+                product -> Toast.makeText(this, "یہ آپ کی اپنی چیز ہے", Toast.LENGTH_SHORT).show(),
+                product -> Toast.makeText(this, "یہ آپ کی اپنی چیز ہے", Toast.LENGTH_SHORT).show()
+        );
+        rvMyProducts.setAdapter(myProductAdapter);
+    }
+
+    // ============ LOAD SELLER'S OWN PRODUCTS ============
+    private void loadMyProducts() {
+        FirebaseDatabase.getInstance().getReference()
+                .child(Constants.NODE_PRODUCTS)
+                .orderByChild("sellerId")
+                .equalTo(session.getUid())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        myProductList.clear();
+                        for (DataSnapshot child : snapshot.getChildren()) {
+                            Product p = child.getValue(Product.class);
+                            if (p != null) myProductList.add(p);
+                        }
+                        myProductAdapter.notifyDataSetChanged();
+                        tvNoProducts.setVisibility(myProductList.isEmpty() ? android.view.View.VISIBLE : android.view.View.GONE);
+                        rvMyProducts.setVisibility(myProductList.isEmpty() ? android.view.View.GONE : android.view.View.VISIBLE);
+                    }
+                    @Override public void onCancelled(DatabaseError error) {}
+                });
     }
 
     // ============ LOAD SELLER STATUS + CATEGORY ============
@@ -68,14 +125,12 @@ public class SellerDashboardActivity extends AppCompatActivity {
                         Seller s = snapshot.getValue(Seller.class);
                         if (s == null) return;
 
-                        // ============ LOAD CATEGORY ============
                         String categoryCode = s.getCategory();
                         if (categoryCode != null && !categoryCode.isEmpty()) {
                             String categoryDisplayName = getCategoryDisplayName(categoryCode);
                             tvCategory.setText(categoryDisplayName);
                         }
 
-                        // ============ LOAD VERIFICATION STATUS ============
                         if (Constants.isApproved(s.getVerificationStatus())) {
                             tvStatus.setText("✅ تصدیق شدہ — آپ کی دکان خریداروں کو نظر آ رہی ہے / Verified");
                             tvStatus.setTextColor(0xFF4CAF50);
@@ -92,9 +147,7 @@ public class SellerDashboardActivity extends AppCompatActivity {
                 });
     }
 
-    // ============ GET CATEGORY DISPLAY NAME (WITH EMOJI + URDU + ENGLISH) ============
     private String getCategoryDisplayName(String categoryCode) {
-        // Map category code to index
         int index = -1;
         for (int i = 0; i < Constants.CATEGORIES.length; i++) {
             if (Constants.CATEGORIES[i].equals(categoryCode)) {
@@ -113,7 +166,6 @@ public class SellerDashboardActivity extends AppCompatActivity {
         return "📦 " + categoryCode;
     }
 
-    // ============ GET EMOJI FOR CATEGORY ============
     private String getCategoryEmoji(String category) {
         switch (category.toLowerCase()) {
             case "stitching": return "🧵";
@@ -163,7 +215,6 @@ public class SellerDashboardActivity extends AppCompatActivity {
                             }
                         }
 
-                        // ============ UPDATE UI ============
                         tvTotalOrders.setText(String.valueOf(total));
                         tvPendingOrders.setText(String.valueOf(pending));
                         tvCompletedOrders.setText(String.valueOf(completed));
@@ -174,7 +225,7 @@ public class SellerDashboardActivity extends AppCompatActivity {
                     public void onCancelled(DatabaseError error) {}
                 });
     }
-    // ✅ Apply Dark Theme
+
     private void applyTheme() {
         PreferencesManager prefs = new PreferencesManager(this);
         if (prefs.isDarkThemeEnabled()) {
@@ -183,6 +234,4 @@ public class SellerDashboardActivity extends AppCompatActivity {
             setTheme(R.style.Theme_SheEmpower);
         }
     }
-
-
 }

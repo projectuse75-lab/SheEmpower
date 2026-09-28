@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/bottomNav"
     android:layout_width="match_parent"
     android:layout_height="64dp"
     android:orientation="horizontal"
-    android:background="?android:attr/windowBackground"
+    android:background="@drawable/bg_skeu_nav"
     android:elevation="12dp">
 
     <!-- HOME / BROWSE -->
-
     <LinearLayout
         android:id="@+id/navItem1"
         android:layout_width="0dp"
@@ -32,13 +30,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="10sp"
-            android:textColor="@color/screen_text"/>
+            android:textColor="@color/lavender_text"/>
 
     </LinearLayout>
 
-
     <!-- ORDERS -->
-
     <LinearLayout
         android:id="@+id/navItem2"
         android:layout_width="0dp"
@@ -60,13 +56,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="10sp"
-            android:textColor="@color/screen_text"/>
+            android:textColor="@color/lavender_text"/>
 
     </LinearLayout>
 
-
     <!-- PROFILE -->
-
     <LinearLayout
         android:id="@+id/navItem3"
         android:layout_width="0dp"
@@ -88,13 +82,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="10sp"
-            android:textColor="@color/screen_text"/>
+            android:textColor="@color/lavender_text"/>
 
     </LinearLayout>
 
-
     <!-- SETTINGS -->
-
     <LinearLayout
         android:id="@+id/navItem4"
         android:layout_width="0dp"
@@ -118,7 +110,7 @@
             android:layout_height="wrap_content"
             android:text="سیٹنگز"
             android:textSize="10sp"
-            android:textColor="@color/screen_text"/>
+            android:textColor="@color/lavender_text"/>
 
     </LinearLayout>
 

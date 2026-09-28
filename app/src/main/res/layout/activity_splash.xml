@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:background="?android:attr/windowBackground">
+    android:background="@color/bg_cream">
 
     <!-- Logo -->
     <ImageView
@@ -14,23 +14,24 @@
         android:src="@drawable/logo_512"
         android:contentDescription="She Empower Logo" />
 
-    <!-- App Name (Stylish English) -->
+    <!-- App Name -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="She Empower"
-        android:textSize="26sp"
-        android:textStyle="bold"
-        android:textColor="#8B2942"
+        android:textSize="28sp"
+        android:fontFamily="sans-serif-black"
+        android:textColor="@color/lavender_text"
         android:layout_marginTop="16dp" />
 
     <!-- Quote -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="💗 Empowering Women, One Sale at a Time"
-        android:textSize="12sp"
-        android:textColor="#888888"
-        android:layout_marginTop="4dp" />
+        android:text="💜 Empowering Women, One Sale at a Time"
+        android:textSize="13sp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/text_gray"
+        android:layout_marginTop="6dp" />
 
 </LinearLayout>
