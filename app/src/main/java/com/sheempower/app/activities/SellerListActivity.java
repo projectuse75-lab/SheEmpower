@@ -2,22 +2,30 @@ package com.sheempower.app.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.google.firebase.database.*;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.sheempower.app.R;
 import com.sheempower.app.adapters.ProductAdapter;
 import com.sheempower.app.adapters.SellerAdapter;
 import com.sheempower.app.models.Product;
 import com.sheempower.app.models.Seller;
 import com.sheempower.app.utils.Constants;
+import com.sheempower.app.utils.PreferencesManager;
 import com.sheempower.app.utils.SessionManager;
 import com.sheempower.app.utils.VoiceGuide;
 import com.sheempower.app.utils.WhatsAppHelper;
-import com.sheempower.app.utils.PreferencesManager;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,12 +35,14 @@ public class SellerListActivity extends AppCompatActivity {
 
     private TextView tvCategoryTitle, tvSellerCount;
     private RecyclerView rvSellers, rvProducts;
+
     private SellerAdapter sellerAdapter;
     private ProductAdapter productAdapter;
 
     private final List<Seller> sellerList = new ArrayList<>();
     private final List<Product> productList = new ArrayList<>();
-    private String category;
+
+    private String selectedCategory;
     private SessionManager session;
 
     @Override
@@ -42,118 +52,249 @@ public class SellerListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_seller_list);
 
         session = new SessionManager(this);
-        category = getIntent().getStringExtra(EXTRA_CATEGORY);
+        selectedCategory = getIntent().getStringExtra(EXTRA_CATEGORY);
 
+        if (selectedCategory != null) {
+            selectedCategory = selectedCategory.trim();
+        }
+
+        if (TextUtils.isEmpty(selectedCategory)) {
+            Toast.makeText(this, "زمرہ منتخب نہیں کیا گیا", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
+        initializeViews();
+        setupSellerRecyclerView();
+        setupProductRecyclerView();
+        updateCategoryHeader();
+        loadSellers();
+        loadProducts();
+    }
+
+    private void initializeViews() {
         tvCategoryTitle = findViewById(R.id.tvCategoryTitle);
         tvSellerCount   = findViewById(R.id.tvSellerCount);
         rvSellers       = findViewById(R.id.rvSellers);
         rvProducts      = findViewById(R.id.rvProducts);
 
-        tvCategoryTitle.setText(Constants.getUrduLabel(category) + " (" + category + ")");
+        ImageButton btnSpeaker = findViewById(R.id.btnSpeaker);
+        if (btnSpeaker != null) {
+            btnSpeaker.setOnClickListener(v -> VoiceGuide.announceScreen(
+                    this,
+                    Constants.getUrduLabel(selectedCategory)
+                            + " کی بیچنے والیاں اور اشیاء دیکھیں۔ "
+            ));
+        }
 
-        VoiceGuide.announceScreen(this,
-                Constants.getUrduLabel(category) + " کی بیچنے والیاں اور اشیاء کی فہرست ہے۔ کسی بیچنے والی کی تصویر پر کلک کر کے اس کی پوری پروفائل دیکھیں، یا کسی چیز پر کلک کر کے اس کی تفصیل دیکھیں۔");
-
-        rvSellers.setLayoutManager(new GridLayoutManager(this, 2));
-        sellerAdapter = new SellerAdapter(sellerList, seller -> {
-            if (seller == null || seller.getUid() == null || seller.getUid().trim().isEmpty()) {
-                Toast.makeText(this, "بیچنے والی کی معلومات نہیں ملی", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            Intent i = new Intent(this, SellerProfileActivity.class);
-            i.putExtra(SellerProfileActivity.EXTRA_SELLER_ID, seller.getUid().trim());
-            startActivity(i);
-        });
-        rvSellers.setAdapter(sellerAdapter);
-
-        rvProducts.setLayoutManager(new GridLayoutManager(this, 2));
-        productAdapter = new ProductAdapter(productList,
-                product -> {
-                    Intent i = new Intent(this, ProductDetailActivity.class);
-                    i.putExtra(ProductDetailActivity.EXTRA_PRODUCT_ID, product.getId());
-                    startActivity(i);
-                },
-                product -> requireBuyerLogin(() -> {
-                    Intent i = new Intent(this, PlaceOrderActivity.class);
-                    i.putExtra(PlaceOrderActivity.EXTRA_SELLER_ID, product.getSellerId());
-                    i.putExtra(PlaceOrderActivity.EXTRA_PRODUCT_ID, product.getId());
-                    i.putExtra(PlaceOrderActivity.EXTRA_PRODUCT_NAME, product.getName());
-                    i.putExtra(PlaceOrderActivity.EXTRA_PRODUCT_PRICE, product.getPrice());
-                    startActivity(i);
-                }),
-                product -> chatWithSellerOfProduct(product.getSellerId())
-        );
-        rvProducts.setAdapter(productAdapter);
-
-        loadData();
+        if (tvCategoryTitle != null) {
+            tvCategoryTitle.setText(
+                    Constants.getUrduLabel(selectedCategory)
+                            + " ("
+                            + selectedCategory
+                            + ")"
+            );
+        }
     }
 
-    @Override protected void onResume() { super.onResume(); loadData(); }
+    private void updateCategoryHeader() {
+        if (tvCategoryTitle != null) {
+            tvCategoryTitle.setText(
+                    Constants.getUrduLabel(selectedCategory)
+                            + " ("
+                            + selectedCategory
+                            + ")"
+            );
+        }
 
-    private void loadData() {
+        VoiceGuide.announceScreen(
+                this,
+                Constants.getUrduLabel(selectedCategory)
+                        + " کی بیچنے والیاں اور اشیاء دیکھیں۔"
+        );
+    }
+
+    private void setupSellerRecyclerView() {
+        if (rvSellers == null) return;
+
+        rvSellers.setLayoutManager(new GridLayoutManager(this, 2));
+        rvSellers.setNestedScrollingEnabled(false);
+
+        sellerAdapter = new SellerAdapter(
+                sellerList,
+                seller -> {
+                    if (seller == null || TextUtils.isEmpty(seller.getUid())) {
+                        Toast.makeText(this, "بیچنے والی کی معلومات نہیں ملی", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    Intent intent = new Intent(SellerListActivity.this, SellerProfileActivity.class);
+                    intent.putExtra(SellerProfileActivity.EXTRA_SELLER_ID, seller.getUid().trim());
+                    intent.putExtra(SellerProfileActivity.EXTRA_SELECTED_CATEGORY, selectedCategory);
+                    startActivity(intent);
+                }
+        );
+
+        rvSellers.setAdapter(sellerAdapter);
+    }
+
+    private void setupProductRecyclerView() {
+        if (rvProducts == null) return;
+
+        rvProducts.setLayoutManager(new GridLayoutManager(this, 2));
+        rvProducts.setNestedScrollingEnabled(false);
+
+        productAdapter = new ProductAdapter(
+                productList,
+                product -> {
+                    Intent intent = new Intent(this, ProductDetailActivity.class);
+                    intent.putExtra(ProductDetailActivity.EXTRA_PRODUCT_ID, product.getId());
+                    startActivity(intent);
+                },
+                product -> requireBuyerLogin(() -> goToOrder(product)),
+                product -> chatOnWhatsApp(product.getSellerId())
+        );
+
+        rvProducts.setAdapter(productAdapter);
+    }
+
+    private void loadSellers() {
         FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS)
-                .orderByChild("category").equalTo(category)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override public void onDataChange(DataSnapshot snapshot) {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
                         sellerList.clear();
-                        List<String> sellerIds = new ArrayList<>();
+
                         for (DataSnapshot child : snapshot.getChildren()) {
-                            Seller s = child.getValue(Seller.class);
-                            if (s != null && Constants.isApproved(s.getVerificationStatus())) {
-                                // ✅ FIX: UID fallback
-                                if (s.getUid() == null || s.getUid().isEmpty()) s.setUid(child.getKey());
-                                sellerList.add(s);
-                                sellerIds.add(s.getUid());
+                            Seller seller = child.getValue(Seller.class);
+                            if (seller == null) continue;
+
+                            if (TextUtils.isEmpty(seller.getUid())) {
+                                seller.setUid(child.getKey());
+                            }
+
+                            if ("blocked".equalsIgnoreCase(seller.getVerificationStatus()) ||
+                                "rejected".equalsIgnoreCase(seller.getVerificationStatus())) {
+                                continue;
+                            }
+
+                            if (sellerProvidesCategory(seller, selectedCategory)) {
+                                sellerList.add(seller);
                             }
                         }
-                        sellerAdapter.notifyDataSetChanged();
-                        tvSellerCount.setText(sellerList.size() + " تصدیق شدہ بیچنے والیاں");
-                        loadProductsForSellers(sellerIds);
+
+                        if (sellerAdapter != null) {
+                            sellerAdapter.notifyDataSetChanged();
+                        }
+
+                        updateSellerCount();
                     }
-                    @Override public void onCancelled(DatabaseError error) {
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {
                         Toast.makeText(SellerListActivity.this, "خرابی: " + error.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
     }
 
-    private void loadProductsForSellers(List<String> sellerIds) {
+    private void loadProducts() {
+        if (TextUtils.isEmpty(selectedCategory)) return;
+
         FirebaseDatabase.getInstance().getReference().child(Constants.NODE_PRODUCTS)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override public void onDataChange(DataSnapshot snapshot) {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
                         productList.clear();
+
                         for (DataSnapshot child : snapshot.getChildren()) {
                             Product p = child.getValue(Product.class);
                             if (p != null) {
-                                // ✅ FIX: ID fallback
-                                if (p.getId() == null || p.getId().isEmpty()) p.setId(child.getKey());
+                                String pid = child.getKey();
+                                if (pid != null) p.setId(pid.trim());
 
-                                if (sellerIds.contains(p.getSellerId())) productList.add(p);
+                                if (p.getCategory() != null && selectedCategory.equalsIgnoreCase(p.getCategory().trim())) {
+                                    productList.add(p);
+                                }
                             }
                         }
-                        productAdapter.notifyDataSetChanged();
+
+                        if (productAdapter != null) {
+                            productAdapter.notifyDataSetChanged();
+                        }
                     }
-                    @Override public void onCancelled(DatabaseError error) {}
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {}
                 });
     }
 
-    private void chatWithSellerOfProduct(String sellerId) {
-        if (sellerId == null || sellerId.trim().isEmpty()) return;
-        FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS).child(sellerId.trim())
+    private void goToOrder(Product product) {
+        Intent i = new Intent(this, PlaceOrderActivity.class);
+        i.putExtra(PlaceOrderActivity.EXTRA_SELLER_ID, product.getSellerId());
+        i.putExtra(PlaceOrderActivity.EXTRA_PRODUCT_ID, product.getId());
+        i.putExtra(PlaceOrderActivity.EXTRA_PRODUCT_NAME, product.getName());
+        i.putExtra(PlaceOrderActivity.EXTRA_PRODUCT_PRICE, product.getPrice());
+        i.putExtra(PlaceOrderActivity.EXTRA_PRODUCT_CATEGORY, product.getCategory());
+        startActivity(i);
+    }
+
+    private void chatOnWhatsApp(String sellerId) {
+        if (sellerId == null || sellerId.isEmpty()) return;
+        FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS).child(sellerId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override public void onDataChange(DataSnapshot snapshot) {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
                         Seller s = snapshot.getValue(Seller.class);
-                        if (s != null) WhatsAppHelper.openChat(SellerListActivity.this, s.getWhatsappNumber(), null);
+                        if (s != null) {
+                            WhatsAppHelper.openChat(SellerListActivity.this, s.getWhatsappNumber(), null);
+                        }
                     }
                     @Override public void onCancelled(DatabaseError error) {}
                 });
     }
 
     private void requireBuyerLogin(Runnable action) {
-        if (session.isLoggedIn()) action.run();
-        else { Toast.makeText(this, "پہلے لاگ ان کریں", Toast.LENGTH_SHORT).show(); startActivity(new Intent(this, LoginActivity.class)); }
+        if (session == null) session = new SessionManager(this);
+        if (session.isLoggedIn()) {
+            action.run();
+        } else {
+            Toast.makeText(this, "پہلے لاگ ان کریں", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, LoginActivity.class));
+        }
     }
 
-    // ✅ DARK THEME - ADD AT END OF CLASS
+    private boolean sellerProvidesCategory(Seller seller, String category) {
+        if (seller == null || TextUtils.isEmpty(category)) return false;
+
+        if (!TextUtils.isEmpty(seller.getCategory()) && category.equalsIgnoreCase(seller.getCategory().trim())) {
+            return true;
+        }
+
+        List<String> categories = seller.getCategories();
+        if (categories != null) {
+            for (String sellerCategory : categories) {
+                if (TextUtils.isEmpty(sellerCategory)) continue;
+                if (category.equalsIgnoreCase(sellerCategory.trim())) return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void updateSellerCount() {
+        if (tvSellerCount == null) return;
+        tvSellerCount.setText(sellerList.size() + " تصدیق شدہ بیچنے والیاں");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (selectedCategory != null && !selectedCategory.isEmpty()) {
+            loadSellers();
+            loadProducts();
+        }
+    }
+
     private void applyTheme() {
         PreferencesManager prefs = new PreferencesManager(this);
         if (prefs.isDarkThemeEnabled()) {

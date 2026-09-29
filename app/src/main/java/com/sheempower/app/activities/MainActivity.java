@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -719,38 +720,30 @@ public class MainActivity extends AppCompatActivity {
         tvSellersTab.setOnClickListener(
                 v -> switchTab(false)
         );
+
+        rvTopSellers.setNestedScrollingEnabled(false);
+        rvLatestProducts.setNestedScrollingEnabled(false);
     }
 
     private void switchTab(boolean products) {
-
-        tvProductsTab.setAlpha(
-                products ? 1f : 0.5f
-        );
-
-        tvSellersTab.setAlpha(
-                products ? 0.5f : 1f
-        );
-
         if (products) {
+            tvProductsTab.setBackgroundResource(R.drawable.bg_skeu_button_primary);
+            tvProductsTab.setTextColor(0xFFFFFFFF);
+            tvSellersTab.setBackgroundResource(R.drawable.bg_skeu_button_cream);
+            tvSellersTab.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
 
-            rvLatestProducts.setLayoutManager(
-                    new GridLayoutManager(this, 2)
-            );
-
-            rvLatestProducts.setAdapter(
-                    productAdapter
-            );
-
+            rvLatestProducts.setLayoutManager(new GridLayoutManager(this, 2));
+            rvLatestProducts.setAdapter(productAdapter);
         } else {
+            tvSellersTab.setBackgroundResource(R.drawable.bg_skeu_button_primary);
+            tvSellersTab.setTextColor(0xFFFFFFFF);
+            tvProductsTab.setBackgroundResource(R.drawable.bg_skeu_button_cream);
+            tvProductsTab.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
 
-            rvLatestProducts.setLayoutManager(
-                    new LinearLayoutManager(this)
-            );
-
-            rvLatestProducts.setAdapter(
-                    allSellerAdapter
-            );
+            rvLatestProducts.setLayoutManager(new GridLayoutManager(this, 2));
+            rvLatestProducts.setAdapter(allSellerAdapter);
         }
+        rvLatestProducts.setNestedScrollingEnabled(false);
     }
 
     // ---------------------------------------------------------
@@ -767,155 +760,105 @@ public class MainActivity extends AppCompatActivity {
                         new ValueEventListener() {
 
                             @Override
-                            public void onDataChange(
-                                    DataSnapshot snapshot) {
-
+                            public void onDataChange(DataSnapshot snapshot) {
                                 allSellers.clear();
                                 topSellers.clear();
                                 verifiedSellerIds.clear();
 
-                                for (DataSnapshot child :
-                                        snapshot.getChildren()) {
+                                for (DataSnapshot child : snapshot.getChildren()) {
+                                    Seller s = child.getValue(Seller.class);
+                                    if (s == null) continue;
 
-                                    Seller s =
-                                            child.getValue(
-                                                    Seller.class
-                                            );
-
-                                    if (s == null ||
-                                            !Constants.isApproved(
-                                                    s.getVerificationStatus()
-                                            )) {
+                                    if ("blocked".equalsIgnoreCase(s.getVerificationStatus()) ||
+                                        "rejected".equalsIgnoreCase(s.getVerificationStatus())) {
                                         continue;
                                     }
 
-                                    String uid =
-                                            child.getKey();
-
+                                    String uid = child.getKey();
                                     if (uid == null) continue;
 
                                     s.setUid(uid.trim());
 
+                                    if (s.getImageUrl() == null || s.getImageUrl().trim().isEmpty()) {
+                                        FirebaseDatabase.getInstance().getReference().child(Constants.NODE_USERS)
+                                                .child(uid.trim()).child("imageUrl").get()
+                                                .addOnSuccessListener(imgSnap -> {
+                                                    String img = imgSnap.getValue(String.class);
+                                                    if (img != null && !img.trim().isEmpty()) {
+                                                        s.setImageUrl(img.trim());
+                                                        if (topSellerAdapter != null) topSellerAdapter.notifyDataSetChanged();
+                                                        if (allSellerAdapter != null) allSellerAdapter.notifyDataSetChanged();
+                                                    }
+                                                });
+                                    }
+
                                     allSellers.add(s);
+                                    verifiedSellerIds.add(uid.trim());
 
-                                    verifiedSellerIds.add(
-                                            uid.trim()
-                                    );
-
-                                    if (s.isTopRated()) {
+                                    if (s.isTopRated() || Constants.isApproved(s.getVerificationStatus())) {
                                         topSellers.add(s);
                                     }
                                 }
 
-                                Collections.sort(
-                                        topSellers,
-                                        (a, b) ->
-                                                Double.compare(
-                                                        b.getRating(),
-                                                        a.getRating()
-                                                )
-                                );
+                                if (topSellers.isEmpty()) {
+                                    topSellers.addAll(allSellers);
+                                }
 
-                                topSellerAdapter
-                                        .notifyDataSetChanged();
+                                Collections.sort(topSellers, (a, b) -> Double.compare(b.getRating(), a.getRating()));
 
-                                allSellerAdapter
-                                        .notifyDataSetChanged();
+                                topSellerAdapter.notifyDataSetChanged();
+                                allSellerAdapter.notifyDataSetChanged();
 
                                 loadProducts();
 
                                 // Re-apply search/filter
-                                if (!etSearch.getText()
-                                        .toString()
-                                        .trim()
-                                        .isEmpty()
+                                if (!etSearch.getText().toString().trim().isEmpty()
                                         || !selectedCategory.isEmpty()
                                         || !selectedPrice.isEmpty()
                                         || !selectedRating.isEmpty()) {
-
                                     applyAllFilters();
                                 }
                             }
 
                             @Override
-                            public void onCancelled(
-                                    DatabaseError error) {
-
-                                Toast.makeText(
-                                        MainActivity.this,
-                                        "ڈیٹا لوڈ نہیں ہوا: "
-                                                + error.getMessage(),
-                                        Toast.LENGTH_LONG
-                                ).show();
+                            public void onCancelled(DatabaseError error) {
+                                Toast.makeText(MainActivity.this, "ڈیٹا لوڈ نہیں ہوا: " + error.getMessage(), Toast.LENGTH_LONG).show();
                             }
                         }
                 );
     }
 
     private void loadProducts() {
+        FirebaseDatabase.getInstance().getReference().child(Constants.NODE_PRODUCTS)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        allProducts.clear();
 
-        FirebaseDatabase
-                .getInstance()
-                .getReference()
-                .child(Constants.NODE_PRODUCTS)
-                .addListenerForSingleValueEvent(
-                        new ValueEventListener() {
-
-                            @Override
-                            public void onDataChange(
-                                    DataSnapshot snapshot) {
-
-                                allProducts.clear();
-
-                                for (DataSnapshot child :
-                                        snapshot.getChildren()) {
-
-                                    Product p =
-                                            child.getValue(
-                                                    Product.class
-                                            );
-
-                                    if (p != null) {
-
-                                        String pid =
-                                                child.getKey();
-
-                                        if (pid != null) {
-                                            p.setId(pid.trim());
-                                        }
-
-                                        String sellerId =
-                                                p.getSellerId() != null
-                                                        ? p.getSellerId().trim()
-                                                        : "";
-
-                                        if (verifiedSellerIds
-                                                .contains(sellerId)) {
-
-                                            p.setSellerId(
-                                                    sellerId
-                                            );
-
-                                            allProducts.add(p);
-                                        }
-                                    }
+                        for (DataSnapshot child : snapshot.getChildren()) {
+                            Product p = child.getValue(Product.class);
+                            if (p != null) {
+                                String pid = child.getKey();
+                                if (pid != null) {
+                                    p.setId(pid.trim());
                                 }
-
-                                productAdapter
-                                        .notifyDataSetChanged();
-
-                                // Apply active filters
-                                if (!etSearch.getText()
-                                        .toString()
-                                        .trim()
-                                        .isEmpty()
-                                        || !selectedCategory.isEmpty()
-                                        || !selectedPrice.isEmpty()
-                                        || !selectedRating.isEmpty()) {
-
-                                    applyAllFilters();
+                                if (p.getSellerId() != null) {
+                                    p.setSellerId(p.getSellerId().trim());
                                 }
+                                allProducts.add(p);
                             }
+                        }
+
+                        productAdapter.notifyDataSetChanged();
+
+                        // Apply active filters
+                        if (!etSearch.getText().toString().trim().isEmpty()
+                                || !selectedCategory.isEmpty()
+                                || !selectedPrice.isEmpty()
+                                || !selectedRating.isEmpty()) {
+                            applyAllFilters();
+                        }
+                    }
 
                             @Override
                             public void onCancelled(
@@ -1000,6 +943,11 @@ public class MainActivity extends AppCompatActivity {
         i.putExtra(
                 PlaceOrderActivity.EXTRA_PRODUCT_PRICE,
                 product.getPrice()
+        );
+
+        i.putExtra(
+                PlaceOrderActivity.EXTRA_PRODUCT_CATEGORY,
+                product.getCategory()
         );
 
         startActivity(i);

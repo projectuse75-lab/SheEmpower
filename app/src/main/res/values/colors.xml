@@ -13,10 +13,10 @@
     <color name="star_gold">#F7D794</color>
     <color name="champagne">#F7D794</color>
 
-    <!-- Secondary — Dusty Rose -->
-    <color name="secondary">#EDA6A3</color>
-    <color name="dusty_rose">#EDA6A3</color>
-    <color name="dusty_rose_light">#F8D7D5</color>
+    <!-- Secondary — Navy Soft -->
+    <color name="secondary">#2A3F75</color>
+    <color name="dusty_rose">#2A3F75</color>
+    <color name="dusty_rose_light">#E8EEF5</color>
 
     <!-- Backgrounds -->
     <color name="background">#FCFBFB</color>
@@ -41,7 +41,7 @@
     <color name="skeu_cream_dark">#FCFBFB</color>
     <color name="skeu_highlight">#FFF8EA</color>
     <color name="skeu_cream_border">#EAECEE</color>
-    <color name="skeu_pink_light">#F8D7D5</color>
+    <color name="skeu_pink_light">#E8EEF5</color>
     <color name="primary_pink">#192A56</color>
 
     <!-- Settings -->

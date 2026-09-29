@@ -211,10 +211,16 @@
             android:textColor="@color/text_primary"
             android:layout_marginTop="14dp" />
 
-        <Spinner
+        <TextView
             android:id="@+id/spinnerCategory"
             android:layout_width="match_parent"
             android:layout_height="52dp"
+            android:background="@drawable/bg_skeu_input"
+            android:gravity="center_vertical"
+            android:padding="14dp"
+            android:text="زمرہ منتخب کریں / Select Categories"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
             android:layout_marginTop="6dp" />
 
         <!-- CAPACITY -->

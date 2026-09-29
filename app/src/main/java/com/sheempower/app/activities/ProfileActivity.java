@@ -28,6 +28,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import com.sheempower.app.R;
 import com.sheempower.app.models.Seller;
+import java.util.ArrayList;
+import java.util.List;
 import com.sheempower.app.models.User;
 import com.sheempower.app.utils.BottomNavHelper;
 import com.sheempower.app.utils.CloudinaryHelper;
@@ -85,7 +87,8 @@ public class ProfileActivity extends AppCompatActivity {
     private EditText etBusinessName;
     private EditText etBio;
     private EditText etCity;
-    private Spinner spinnerCategoryProfile;
+    private TextView tvCategoryProfile;
+    private final List<String> selectedProfileCategories = new ArrayList<>();
     private EditText etWhatsApp;
     private EditText etCapacity;
     private EditText etShopAddress;
@@ -136,7 +139,6 @@ public class ProfileActivity extends AppCompatActivity {
         // hi nahi karte (jo waha kabhi likha hi nahi gaya), seedha admin ki apni
         // screen dikha dete hain
         if (session.isAdmin()) {
-            setupCategorySpinner();
             setupDeliverySpinner();
             setupButtons();
             showAdminProfile();
@@ -145,7 +147,6 @@ public class ProfileActivity extends AppCompatActivity {
             return;
         }
 
-        setupCategorySpinner();
         setupDeliverySpinner();
         setupButtons();
 
@@ -167,7 +168,7 @@ public class ProfileActivity extends AppCompatActivity {
         tvOwnerHeader.setText("Administrator");
         tvName.setText(session.getName() != null && !session.getName().isEmpty() ? session.getName() : "Admin");
         tvEmail.setText(Constants.ADMIN_EMAIL);
-        ivVerifiedBadge.setVisibility(View.GONE);
+        if (ivVerifiedBadge != null) ivVerifiedBadge.setVisibility(View.GONE);
         tvVerificationStatus.setVisibility(View.GONE);
 
         if (layoutSellerEditFields != null) layoutSellerEditFields.setVisibility(View.GONE);
@@ -201,7 +202,7 @@ public class ProfileActivity extends AppCompatActivity {
         btnEditProfile.setVisibility(View.GONE);
         btnMyOrders.setVisibility(View.GONE);
         btnLogout.setVisibility(View.GONE);
-        ivVerifiedBadge.setVisibility(View.GONE);
+        if (ivVerifiedBadge != null) ivVerifiedBadge.setVisibility(View.GONE);
 
         tvBusinessHeader.setText("👋 خوش آمدید / Welcome");
         tvOwnerHeader.setText("Visitor");
@@ -260,7 +261,8 @@ public class ProfileActivity extends AppCompatActivity {
         etBio = findViewById(R.id.etBio);
         etCity = findViewById(R.id.etCity);
 
-        spinnerCategoryProfile = findViewById(R.id.spinnerCategoryProfile);
+        tvCategoryProfile = findViewById(R.id.tvCategoryProfile);
+        if (tvCategoryProfile != null) tvCategoryProfile.setOnClickListener(v -> showCategoryDialog());
 
         etWhatsApp = findViewById(R.id.etWhatsApp);
         etCapacity = findViewById(R.id.etCapacity);
@@ -277,18 +279,6 @@ public class ProfileActivity extends AppCompatActivity {
 
         btnGuestLogin = findViewById(R.id.btnGuestLogin);
         btnGuestRegister = findViewById(R.id.btnGuestRegister);
-    }
-
-    private void setupCategorySpinner() {
-        String[] categories;
-        if (Constants.CATEGORIES != null && Constants.CATEGORIES.length > 0) {
-            categories = Constants.CATEGORIES;
-        } else {
-            categories = new String[]{"Select Category","Beauty","Clothing","Food","Handmade","Education","Other"};
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        if (spinnerCategoryProfile != null) spinnerCategoryProfile.setAdapter(adapter);
     }
 
     private void setupDeliverySpinner() {
@@ -320,6 +310,44 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
         if (btnSwitchRole != null) btnSwitchRole.setOnClickListener(v -> showRoleSwitchDialog());
+    }
+
+    private void showCategoryDialog() {
+        String[] displayCategories = new String[Constants.CATEGORIES.length];
+        boolean[] checkedItems = new boolean[Constants.CATEGORIES.length];
+
+        for (int i = 0; i < Constants.CATEGORIES.length; i++) {
+            displayCategories[i] = Constants.CATEGORY_LABELS_UR[i] + " / " + Constants.CATEGORIES[i];
+            checkedItems[i] = selectedProfileCategories.contains(Constants.CATEGORIES[i]);
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle("زمرے منتخب کریں / Select Categories")
+                .setMultiChoiceItems(displayCategories, checkedItems, (dialog, which, isChecked) -> {
+                    String cat = Constants.CATEGORIES[which];
+                    if (isChecked) {
+                        if (!selectedProfileCategories.contains(cat)) selectedProfileCategories.add(cat);
+                    } else {
+                        selectedProfileCategories.remove(cat);
+                    }
+                })
+                .setPositiveButton("OK", (dialog, which) -> updateProfileCategoryText())
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void updateProfileCategoryText() {
+        if (tvCategoryProfile == null) return;
+        if (selectedProfileCategories.isEmpty()) {
+            tvCategoryProfile.setText("زمرے منتخب کریں / Select Categories");
+        } else {
+            StringBuilder sb = new StringBuilder();
+            for (String cat : selectedProfileCategories) {
+                if (sb.length() > 0) sb.append(" • ");
+                sb.append(Constants.getUrduLabel(cat)).append(" (").append(cat).append(")");
+            }
+            tvCategoryProfile.setText(sb.toString());
+        }
     }
 
     private void speakText() {
@@ -402,6 +430,23 @@ public class ProfileActivity extends AppCompatActivity {
         String address = safe(seller.getShopAddress());
         String capacity = safe(seller.getCapacityDescription());
 
+        selectedProfileCategories.clear();
+        if (seller.getCategories() != null && !seller.getCategories().isEmpty()) {
+            selectedProfileCategories.addAll(seller.getCategories());
+        } else if (!safe(seller.getCategory()).isEmpty()) {
+            selectedProfileCategories.add(seller.getCategory());
+        } else {
+            selectedProfileCategories.add(Constants.CATEGORIES[0]);
+        }
+
+        updateProfileCategoryText();
+
+        StringBuilder catSb = new StringBuilder();
+        for (String c : selectedProfileCategories) {
+            if (catSb.length() > 0) catSb.append(" • ");
+            catSb.append(Constants.getUrduLabel(c)).append(" (").append(c).append(")");
+        }
+
         if (tvBusinessHeader != null) tvBusinessHeader.setText("🎨 " + business + " Profile");
         if (tvOwnerHeader != null) tvOwnerHeader.setText(owner);
         if (tvName != null) tvName.setText(owner);
@@ -412,7 +457,7 @@ public class ProfileActivity extends AppCompatActivity {
         if (tvWhatsApp != null) tvWhatsApp.setText("WhatsApp\n" + whatsapp);
 
         if (tvBusinessName != null) tvBusinessName.setText("Business / Shop Name\n" + business);
-        if (tvCategory != null) tvCategory.setText("Category\n" + category);
+        if (tvCategory != null) tvCategory.setText("Categories\n" + catSb.toString());
         if (tvBio != null) tvBio.setText("Bio / Description\n" + bio);
 
         if (tvCity != null) tvCity.setText("City\n" + city);
@@ -445,7 +490,6 @@ public class ProfileActivity extends AppCompatActivity {
         if (etCapacity != null) etCapacity.setText(capacity);
         if (etShopAddress != null) etShopAddress.setText(address);
 
-        if (spinnerCategoryProfile != null) setSpinnerValue(spinnerCategoryProfile, category);
         if (spinnerCanDeliverProfile != null) setSpinnerValue(spinnerCanDeliverProfile, seller.isCanDeliver() ? "Yes" : "No");
 
         if (ivProfilePic != null && !safe(seller.getImageUrl()).isEmpty()) {
@@ -534,9 +578,16 @@ public class ProfileActivity extends AppCompatActivity {
         String whatsapp = etWhatsApp.getText().toString().trim();
         String capacity = etCapacity.getText().toString().trim();
         String address = etShopAddress.getText().toString().trim();
-        String category = spinnerCategoryProfile.getSelectedItem().toString();
         String delivery = spinnerCanDeliverProfile.getSelectedItem().toString();
         boolean canDeliver = delivery.equalsIgnoreCase("Yes");
+
+        if (selectedProfileCategories.isEmpty()) {
+            Toast.makeText(this, "کم از کم ایک category منتخب کریں", Toast.LENGTH_SHORT).show();
+            showCategoryDialog();
+            return;
+        }
+
+        String primaryCategory = selectedProfileCategories.get(0);
 
         DatabaseReference sellerRef = FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS).child(uid);
 
@@ -545,7 +596,8 @@ public class ProfileActivity extends AppCompatActivity {
         sellerRef.child("businessName").setValue(business);
         sellerRef.child("bio").setValue(bio);
         sellerRef.child("city").setValue(city);
-        sellerRef.child("category").setValue(category);
+        sellerRef.child("category").setValue(primaryCategory);
+        sellerRef.child("categories").setValue(new ArrayList<>(selectedProfileCategories));
         sellerRef.child("whatsappNumber").setValue(whatsapp);
         sellerRef.child("capacityDescription").setValue(capacity);
         sellerRef.child("shopAddress").setValue(address);
@@ -563,9 +615,15 @@ public class ProfileActivity extends AppCompatActivity {
         CloudinaryHelper.upload(this, uri, "profile_pictures", (url, error) -> {
             if (url != null) {
                 Glide.with(this).load(url).into(ivProfilePic);
-                FirebaseDatabase.getInstance().getReference().child(Constants.NODE_USERS)
-                        .child(session.getUid()).child("imageUrl").setValue(url)
-                        .addOnSuccessListener(v -> Toast.makeText(this, "تصویر تبدیل ہو گئی", Toast.LENGTH_SHORT).show());
+                String uid = session.getUid();
+                if (uid != null) {
+                    DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                    rootRef.child(Constants.NODE_USERS).child(uid).child("imageUrl").setValue(url);
+                    if (session.isSeller()) {
+                        rootRef.child(Constants.NODE_SELLERS).child(uid).child("imageUrl").setValue(url);
+                    }
+                    Toast.makeText(this, "تصویر تبدیل ہو گئی", Toast.LENGTH_SHORT).show();
+                }
             } else {
                 Toast.makeText(this, "اپلوڈ ناکام: " + error, Toast.LENGTH_LONG).show();
             }

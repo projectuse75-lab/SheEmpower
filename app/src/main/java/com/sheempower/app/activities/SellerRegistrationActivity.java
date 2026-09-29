@@ -1246,6 +1246,12 @@ public class SellerRegistrationActivity extends AppCompatActivity {
         seller.setBusinessName(business);
         seller.setBio(bio);
         seller.setCity(city);
+        String whatsappNumber =
+                etWhatsApp.getText()
+                        .toString()
+                        .trim();
+        seller.setPhone(whatsappNumber);
+        seller.setWhatsappNumber(whatsappNumber);
 
         // First selected category remains
         // primary category for old code compatibility.
@@ -1306,15 +1312,9 @@ public class SellerRegistrationActivity extends AppCompatActivity {
                                     this
                             );
 
-                    // IMPORTANT:
-                    // Existing buyer ke common users.role ko
-                    // overwrite nahi kar rahe.
-                    // Sirf current session ko seller bana rahe hain.
-                    session.switchRole(
-                            Constants.ROLE_SELLER
-                    );
-
-                    session.saveName(
+                    session.saveUser(
+                            uid,
+                            Constants.ROLE_SELLER,
                             name
                     );
 

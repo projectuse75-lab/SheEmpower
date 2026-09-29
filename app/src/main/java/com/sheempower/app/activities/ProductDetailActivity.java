@@ -62,6 +62,7 @@ public class ProductDetailActivity extends AppCompatActivity {
             i.putExtra(PlaceOrderActivity.EXTRA_PRODUCT_ID, currentProduct.getId());
             i.putExtra(PlaceOrderActivity.EXTRA_PRODUCT_NAME, currentProduct.getName());
             i.putExtra(PlaceOrderActivity.EXTRA_PRODUCT_PRICE, currentProduct.getPrice());
+            i.putExtra(PlaceOrderActivity.EXTRA_PRODUCT_CATEGORY, currentProduct.getCategory());
             startActivity(i);
         }));
     }

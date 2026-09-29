@@ -24,6 +24,7 @@ import java.util.List;
 public class SellerProfileActivity extends AppCompatActivity {
 
     public static final String EXTRA_SELLER_ID = "sellerId";
+    public static final String EXTRA_SELECTED_CATEGORY = "selectedCategory";
 
     private CircleImageView ivSellerAvatar;
     private ImageView ivSellerVerifiedBadge;
@@ -96,66 +97,74 @@ public class SellerProfileActivity extends AppCompatActivity {
         loadSellerData();
 
         if (session.isAdmin()) {
-            layoutBuyerActions.setVisibility(View.GONE);
-            layoutAdminReview.setVisibility(View.VISIBLE);
+            if (layoutBuyerActions != null) layoutBuyerActions.setVisibility(View.GONE);
+            if (layoutAdminReview != null) layoutAdminReview.setVisibility(View.VISIBLE);
             setupAdminActions();
         } else {
-            layoutBuyerActions.setVisibility(View.VISIBLE);
-            layoutAdminReview.setVisibility(View.GONE);
+            if (layoutBuyerActions != null) layoutBuyerActions.setVisibility(View.VISIBLE);
+            if (layoutAdminReview != null) layoutAdminReview.setVisibility(View.GONE);
 
-            btnPlaceOrder.setOnClickListener(v -> requireBuyerLogin(() -> {
-                Intent i = new Intent(this, PlaceOrderActivity.class);
-                i.putExtra(PlaceOrderActivity.EXTRA_SELLER_ID, sellerId);
-                startActivity(i);
-            }));
+            if (btnPlaceOrder != null) {
+                btnPlaceOrder.setOnClickListener(v -> requireBuyerLogin(() -> {
+                    Intent i = new Intent(this, PlaceOrderActivity.class);
+                    i.putExtra(PlaceOrderActivity.EXTRA_SELLER_ID, sellerId);
+                    startActivity(i);
+                }));
+            }
 
-            btnWhatsAppChat.setOnClickListener(v -> WhatsAppHelper.openChat(this,
-                    currentSeller != null ? currentSeller.getWhatsappNumber() : null, null));
+            if (btnWhatsAppChat != null) {
+                btnWhatsAppChat.setOnClickListener(v -> WhatsAppHelper.openChat(this,
+                        currentSeller != null ? currentSeller.getWhatsappNumber() : null, null));
+            }
         }
     }
 
     private void setupAdminActions() {
-        btnViewCnic.setOnClickListener(v -> {
-            if (currentSeller == null || currentSeller.getCnicUrl() == null || currentSeller.getCnicUrl().isEmpty()) {
-                Toast.makeText(this, "شناختی کارڈ اپلوڈ نہیں ہوا", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_cnic_view, null);
-            ImageView ivCnicFull = dialogView.findViewById(R.id.ivCnicFull);
+        if (btnViewCnic != null) {
+            btnViewCnic.setOnClickListener(v -> {
+                if (currentSeller == null || currentSeller.getCnicUrl() == null || currentSeller.getCnicUrl().isEmpty()) {
+                    Toast.makeText(this, "شناختی کارڈ اپلوڈ نہیں ہوا", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_cnic_view, null);
+                ImageView ivCnicFull = dialogView.findViewById(R.id.ivCnicFull);
 
-            Glide.with(this)
-                    .load(currentSeller.getCnicUrl())
-                    .placeholder(R.drawable.placeholder_product)
-                    .error(R.drawable.placeholder_product)
-                    .into(ivCnicFull);
+                Glide.with(this)
+                        .load(currentSeller.getCnicUrl())
+                        .placeholder(R.drawable.placeholder_product)
+                        .error(R.drawable.placeholder_product)
+                        .into(ivCnicFull);
 
-            new AlertDialog.Builder(this)
-                    .setTitle("شناختی کارڈ / CNIC")
-                    .setView(dialogView)
-                    .setPositiveButton("بند کریں", null)
-                    .show();
-        });
+                new AlertDialog.Builder(this)
+                        .setTitle("شناختی کارڈ / CNIC")
+                        .setView(dialogView)
+                        .setPositiveButton("بند کریں", null)
+                        .show();
+            });
+        }
 
-        btnPlayVoice.setOnClickListener(v -> {
-            if (currentSeller == null || currentSeller.getVoiceUrl() == null || currentSeller.getVoiceUrl().isEmpty()) {
-                Toast.makeText(this, "آواز کا نمونہ اپلوڈ نہیں ہوا", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            try {
-                if (mediaPlayer != null) { mediaPlayer.release(); mediaPlayer = null; }
-                mediaPlayer = new MediaPlayer();
-                mediaPlayer.setDataSource(currentSeller.getVoiceUrl());
-                mediaPlayer.setOnPreparedListener(MediaPlayer::start);
-                mediaPlayer.setOnCompletionListener(mp -> Toast.makeText(this, "آواز مکمل ہوئی", Toast.LENGTH_SHORT).show());
-                mediaPlayer.prepareAsync();
-                Toast.makeText(this, "آواز چل رہی ہے...", Toast.LENGTH_SHORT).show();
-            } catch (Exception e) {
-                Toast.makeText(this, "آواز چلانے میں خرابی: " + e.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
+        if (btnPlayVoice != null) {
+            btnPlayVoice.setOnClickListener(v -> {
+                if (currentSeller == null || currentSeller.getVoiceUrl() == null || currentSeller.getVoiceUrl().isEmpty()) {
+                    Toast.makeText(this, "آواز کا نمونہ اپلوڈ نہیں ہوا", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                try {
+                    if (mediaPlayer != null) { mediaPlayer.release(); mediaPlayer = null; }
+                    mediaPlayer = new MediaPlayer();
+                    mediaPlayer.setDataSource(currentSeller.getVoiceUrl());
+                    mediaPlayer.setOnPreparedListener(MediaPlayer::start);
+                    mediaPlayer.setOnCompletionListener(mp -> Toast.makeText(this, "آواز مکمل ہوئی", Toast.LENGTH_SHORT).show());
+                    mediaPlayer.prepareAsync();
+                    Toast.makeText(this, "آواز چل رہی ہے...", Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    Toast.makeText(this, "آواز چلانے میں خرابی: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
+        }
 
-        btnAdminApprove.setOnClickListener(v -> updateVerification("verified"));
-        btnAdminReject.setOnClickListener(v -> updateVerification("rejected"));
+        if (btnAdminApprove != null) btnAdminApprove.setOnClickListener(v -> updateVerification("verified"));
+        if (btnAdminReject != null) btnAdminReject.setOnClickListener(v -> updateVerification("rejected"));
     }
 
     private void updateVerification(String status) {
@@ -177,8 +186,26 @@ public class SellerProfileActivity extends AppCompatActivity {
                             Toast.makeText(SellerProfileActivity.this, "یہ بیچنے والی اب دستیاب نہیں ہے", Toast.LENGTH_LONG).show();
                             return;
                         }
-                        bindSellerData();
-                        loadSellerProducts();
+
+                        if (currentSeller.getImageUrl() == null || currentSeller.getImageUrl().trim().isEmpty()) {
+                            FirebaseDatabase.getInstance().getReference().child(Constants.NODE_USERS).child(sellerId)
+                                    .child("imageUrl").get()
+                                    .addOnSuccessListener(userImgSnap -> {
+                                        String img = userImgSnap.getValue(String.class);
+                                        if (img != null && !img.trim().isEmpty()) {
+                                            currentSeller.setImageUrl(img.trim());
+                                        }
+                                        bindSellerData();
+                                        loadSellerProducts();
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        bindSellerData();
+                                        loadSellerProducts();
+                                    });
+                        } else {
+                            bindSellerData();
+                            loadSellerProducts();
+                        }
                     }
                     @Override public void onCancelled(DatabaseError error) {
                         Toast.makeText(SellerProfileActivity.this, "ڈیٹا لوڈ نہیں ہو سکا: " + error.getMessage(), Toast.LENGTH_LONG).show();
@@ -187,15 +214,19 @@ public class SellerProfileActivity extends AppCompatActivity {
     }
 
     private void bindSellerData() {
-        tvName.setText(currentSeller.getBusinessName());
-        tvCategory.setText(Constants.getUrduLabel(currentSeller.getCategory()) + " (" + currentSeller.getCategory() + ")");
+        String business = currentSeller.getBusinessName() != null && !currentSeller.getBusinessName().isEmpty()
+                ? currentSeller.getBusinessName()
+                : currentSeller.getOwnerName();
+        tvName.setText(business);
+
+        tvCategory.setText(getCategoriesText(currentSeller));
         tvCity.setText(currentSeller.getCity());
         tvBio.setText(currentSeller.getBio());
         tvRating.setText(String.format("⭐ %.1f (%d)", currentSeller.getRating(), currentSeller.getRatingCount()));
 
         boolean approved = Constants.isApproved(currentSeller.getVerificationStatus());
         tvStatus.setText(approved ? "✅ تصدیق شدہ" : "⏳ " + currentSeller.getVerificationStatus());
-        ivSellerVerifiedBadge.setVisibility(approved ? View.VISIBLE : View.GONE);
+        if (ivSellerVerifiedBadge != null) ivSellerVerifiedBadge.setVisibility(approved ? View.VISIBLE : View.GONE);
 
         boolean travelType = Constants.isTravelType(currentSeller.getCategory());
         if (currentSeller.isCanDeliver()) {
@@ -213,8 +244,28 @@ public class SellerProfileActivity extends AppCompatActivity {
             tvCapacity.setVisibility(View.VISIBLE);
         } else tvCapacity.setVisibility(View.GONE);
 
-        if (currentSeller.getImageUrl() != null && !currentSeller.getImageUrl().isEmpty())
-            Glide.with(this).load(currentSeller.getImageUrl()).into(ivSellerAvatar);
+        if (currentSeller.getImageUrl() != null && !currentSeller.getImageUrl().trim().isEmpty()) {
+            Glide.with(this)
+                    .load(currentSeller.getImageUrl().trim())
+                    .placeholder(R.drawable.placeholder_avatar)
+                    .error(R.drawable.placeholder_avatar)
+                    .into(ivSellerAvatar);
+        } else {
+            ivSellerAvatar.setImageResource(R.drawable.placeholder_avatar);
+        }
+    }
+
+    private String getCategoriesText(Seller seller) {
+        List<String> cats = seller.getCategories();
+        if (cats != null && !cats.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (String c : cats) {
+                if (sb.length() > 0) sb.append(" • ");
+                sb.append(Constants.getUrduLabel(c)).append(" (").append(c).append(")");
+            }
+            return sb.toString();
+        }
+        return Constants.getUrduLabel(seller.getCategory()) + " (" + seller.getCategory() + ")";
     }
 
     private void loadSellerProducts() {
@@ -243,6 +294,7 @@ public class SellerProfileActivity extends AppCompatActivity {
         i.putExtra(PlaceOrderActivity.EXTRA_PRODUCT_ID, product.getId());
         i.putExtra(PlaceOrderActivity.EXTRA_PRODUCT_NAME, product.getName());
         i.putExtra(PlaceOrderActivity.EXTRA_PRODUCT_PRICE, product.getPrice());
+        i.putExtra(PlaceOrderActivity.EXTRA_PRODUCT_CATEGORY, product.getCategory());
         startActivity(i);
     }
 

@@ -26,6 +26,15 @@
             android:textColor="@color/primary"
             android:fontFamily="sans-serif-bold"
             android:textSize="13sp"
+            android:layout_marginBottom="4dp" />
+
+        <Spinner
+            android:id="@+id/spinnerOrderCategory"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_skeu_card"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
             android:layout_marginBottom="10dp" />
 
         <LinearLayout

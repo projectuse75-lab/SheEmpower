@@ -1,7 +1,9 @@
 package com.sheempower.app.activities;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
@@ -24,22 +26,25 @@ import java.util.Map;
 
 public class PlaceOrderActivity extends AppCompatActivity {
 
-    public static final String EXTRA_SELLER_ID     = "sellerId";
-    public static final String EXTRA_PRODUCT_ID    = "productId";
-    public static final String EXTRA_PRODUCT_NAME  = "productName";
-    public static final String EXTRA_PRODUCT_PRICE = "productPrice";
+    public static final String EXTRA_SELLER_ID        = "sellerId";
+    public static final String EXTRA_PRODUCT_ID       = "productId";
+    public static final String EXTRA_PRODUCT_NAME     = "productName";
+    public static final String EXTRA_PRODUCT_PRICE    = "productPrice";
+    public static final String EXTRA_PRODUCT_CATEGORY = "productCategory";
 
     private TextView tvSellerName, tvSellerMeta, tvSellerVerified, tvSelectedItem, tvDeliveryInfo,
             tvCategoryHeader, tvAmountLockedNote, tvChecklistHeader, tvChecklistEmpty;
+    private Spinner spinnerOrderCategory;
     private LinearLayout layoutDynamicFields, layoutBuyerAddress, layoutProductChecklist;
     private TextInputEditText etAmount, etAddress, etNotes;
     private Button btnSubmitOrder;
 
-    private String sellerId, productId, productName;
+    private String sellerId, productId, productName, productCategory;
     private double productPrice;
     private Seller currentSeller;
     private SessionManager session;
     private String resolvedDeliveryMethod = Constants.DELIVERY_METHOD_PICKUP;
+    private boolean isUpdatingCategorySpinner = false;
 
     /** Agar buyer seedha ek product select karke aaya ho (single, fixed price) */
     private boolean singleProductMode;
@@ -60,12 +65,13 @@ public class PlaceOrderActivity extends AppCompatActivity {
         session = new SessionManager(this);
 
         if (getIntent() != null) {
-            sellerId     = getIntent().getStringExtra(EXTRA_SELLER_ID);
+            sellerId         = getIntent().getStringExtra(EXTRA_SELLER_ID);
             if (sellerId != null) sellerId = sellerId.trim();
-            productId    = getIntent().getStringExtra(EXTRA_PRODUCT_ID);
+            productId        = getIntent().getStringExtra(EXTRA_PRODUCT_ID);
             if (productId != null) productId = productId.trim();
-            productName  = getIntent().getStringExtra(EXTRA_PRODUCT_NAME);
-            productPrice = getIntent().getDoubleExtra(EXTRA_PRODUCT_PRICE, 0);
+            productName      = getIntent().getStringExtra(EXTRA_PRODUCT_NAME);
+            productPrice     = getIntent().getDoubleExtra(EXTRA_PRODUCT_PRICE, 0);
+            productCategory  = getIntent().getStringExtra(EXTRA_PRODUCT_CATEGORY);
         }
         singleProductMode = (productId != null && !productId.isEmpty());
 
@@ -75,6 +81,7 @@ public class PlaceOrderActivity extends AppCompatActivity {
         tvSelectedItem      = findViewById(R.id.tvSelectedItem);
         tvDeliveryInfo      = findViewById(R.id.tvDeliveryInfo);
         tvCategoryHeader    = findViewById(R.id.tvCategoryHeader);
+        spinnerOrderCategory = findViewById(R.id.spinnerOrderCategory);
         tvAmountLockedNote  = findViewById(R.id.tvAmountLockedNote);
         tvChecklistHeader   = findViewById(R.id.tvChecklistHeader);
         tvChecklistEmpty    = findViewById(R.id.tvChecklistEmpty);
@@ -93,6 +100,8 @@ public class PlaceOrderActivity extends AppCompatActivity {
             return;
         }
         if (sellerId == null) { Toast.makeText(this, "بیچنے والی نہیں ملی", Toast.LENGTH_LONG).show(); finish(); return; }
+
+        setupOrderCategorySpinner();
 
         // ہمیشہ قیمت کا خانہ بند رکھتے ہیں — خریدار کبھی خود قیمت تبدیل نہیں کر سکے گا
         etAmount.setEnabled(false);
@@ -121,6 +130,54 @@ public class PlaceOrderActivity extends AppCompatActivity {
         btnSubmitOrder.setOnClickListener(v -> submitOrder());
     }
 
+    private void setupOrderCategorySpinner() {
+        if (spinnerOrderCategory == null) return;
+        String[] categoryDisplayNames = new String[Constants.CATEGORIES.length];
+        for (int i = 0; i < Constants.CATEGORIES.length; i++) {
+            categoryDisplayNames[i] = Constants.CATEGORY_LABELS_UR[i] + " / " + Constants.CATEGORIES[i];
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categoryDisplayNames);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerOrderCategory.setAdapter(adapter);
+
+        spinnerOrderCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (isUpdatingCategorySpinner) return;
+                if (position >= 0 && position < Constants.CATEGORIES.length) {
+                    String selectedCat = Constants.CATEGORIES[position];
+                    tvCategoryHeader.setText("📋 " + Constants.getUrduLabel(selectedCat) + " کی تفصیلات");
+                    buildDynamicForm(selectedCat);
+                }
+            }
+            @Override public void onNothingSelected(AdapterView<?> parent) {}
+        });
+    }
+
+    private void applyActiveCategory() {
+        String category = (productCategory != null && !productCategory.trim().isEmpty())
+                ? productCategory.trim()
+                : (currentSeller != null ? currentSeller.getCategory() : "Cooking");
+
+        if (category == null || category.isEmpty()) category = "Cooking";
+
+        int selectionIndex = 0;
+        for (int i = 0; i < Constants.CATEGORIES.length; i++) {
+            if (Constants.CATEGORIES[i].equalsIgnoreCase(category)) {
+                selectionIndex = i;
+                break;
+            }
+        }
+
+        isUpdatingCategorySpinner = true;
+        if (spinnerOrderCategory != null) spinnerOrderCategory.setSelection(selectionIndex);
+        isUpdatingCategorySpinner = false;
+
+        String selectedCat = Constants.CATEGORIES[selectionIndex];
+        tvCategoryHeader.setText("📋 " + Constants.getUrduLabel(selectedCat) + " کی تفصیلات");
+        buildDynamicForm(selectedCat);
+    }
+
     private void loadSellerAndBuildForm() {
         if (sellerId == null || sellerId.isEmpty()) {
             Toast.makeText(this, "بیچنے والی نہیں ملی", Toast.LENGTH_LONG).show();
@@ -140,12 +197,25 @@ public class PlaceOrderActivity extends AppCompatActivity {
                         tvSellerMeta.setText(currentSeller.getCategory() + " · ⭐ " + currentSeller.getRating());
                         tvSellerVerified.setText("✓ تصدیق شدہ");
 
-                        String category = currentSeller.getCategory();
-                        tvCategoryHeader.setText("📋 " + Constants.getUrduLabel(category) + " کی تفصیلات");
-                        buildDynamicForm(category);
                         buildDeliveryBlock(currentSeller);
-
                         if (!singleProductMode) buildProductChecklist(sellerId);
+
+                        if (singleProductMode && productId != null && (productCategory == null || productCategory.trim().isEmpty())) {
+                            FirebaseDatabase.getInstance().getReference().child(Constants.NODE_PRODUCTS).child(productId)
+                                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot prodSnap) {
+                                            Product prod = prodSnap.getValue(Product.class);
+                                            if (prod != null && prod.getCategory() != null && !prod.getCategory().trim().isEmpty()) {
+                                                productCategory = prod.getCategory();
+                                            }
+                                            applyActiveCategory();
+                                        }
+                                        @Override public void onCancelled(DatabaseError error) { applyActiveCategory(); }
+                                    });
+                        } else {
+                            applyActiveCategory();
+                        }
                     }
                     @Override public void onCancelled(DatabaseError error) {
                         Toast.makeText(PlaceOrderActivity.this, "خرابی: " + error.getMessage(), Toast.LENGTH_LONG).show();
@@ -170,10 +240,10 @@ public class PlaceOrderActivity extends AppCompatActivity {
                         }
 
                         if (products.isEmpty()) {
-                            tvChecklistEmpty.setVisibility(android.view.View.VISIBLE);
+                            tvChecklistEmpty.setVisibility(View.VISIBLE);
                             return;
                         }
-                        tvChecklistEmpty.setVisibility(android.view.View.GONE);
+                        tvChecklistEmpty.setVisibility(View.GONE);
 
                         for (Product p : products) {
                             LinearLayout row = new LinearLayout(PlaceOrderActivity.this);
@@ -190,10 +260,16 @@ public class PlaceOrderActivity extends AppCompatActivity {
 
                             TextView tvPrice = new TextView(PlaceOrderActivity.this);
                             tvPrice.setText("PKR " + (long) p.getPrice());
-                            tvPrice.setTextColor(0xFFFF4081);
-                            tvPrice.setTypeface(null, android.graphics.Typeface.BOLD);
+                            tvPrice.setTextColor(0xFF192A56);
+                            tvPrice.setTypeface(null, Typeface.BOLD);
 
-                            cb.setOnCheckedChangeListener((buttonView, isChecked) -> recalcTotal());
+                            cb.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                                recalcTotal();
+                                if (isChecked && p.getCategory() != null && !p.getCategory().trim().isEmpty()) {
+                                    productCategory = p.getCategory();
+                                    applyActiveCategory();
+                                }
+                            });
 
                             row.addView(cb);
                             row.addView(tvPrice);
@@ -220,7 +296,7 @@ public class PlaceOrderActivity extends AppCompatActivity {
             resolvedDeliveryMethod = Constants.DELIVERY_METHOD_DELIVERY;
             tvDeliveryInfo.setText(travelType ? "✅ یہ بیچنے والی خود آپ کے پاس آ سکتی ہیں" : "✅ یہ بیچنے والی گھر ڈیلیوری کر سکتی ہیں");
             tvDeliveryInfo.setTextColor(0xFF4CAF50);
-            layoutBuyerAddress.setVisibility(android.view.View.VISIBLE);
+            layoutBuyerAddress.setVisibility(View.VISIBLE);
         } else {
             resolvedDeliveryMethod = Constants.DELIVERY_METHOD_PICKUP;
             String note = travelType
@@ -228,7 +304,7 @@ public class PlaceOrderActivity extends AppCompatActivity {
                     : "⚠️ یہ بیچنے والی ڈیلیوری نہیں کرتیں — آپ کو خود لینے جانا ہوگا۔";
             tvDeliveryInfo.setText(note + "\n📍 پتہ: " + (seller.getShopAddress() != null ? seller.getShopAddress() : seller.getCity()));
             tvDeliveryInfo.setTextColor(0xFFFF6F00);
-            layoutBuyerAddress.setVisibility(android.view.View.GONE);
+            layoutBuyerAddress.setVisibility(View.GONE);
         }
     }
 
@@ -242,7 +318,7 @@ public class PlaceOrderActivity extends AppCompatActivity {
         for (OrderField field : fields) {
             TextView label = new TextView(this);
             label.setText(field.labelUrdu + " / " + field.labelEnglish);
-            label.setTextColor(0xFFAA3366);
+            label.setTextColor(0xFF192A56);
             label.setTextSize(15);
             label.setPadding(0, 24, 0, 6);
             layoutDynamicFields.addView(label);
@@ -275,7 +351,7 @@ public class PlaceOrderActivity extends AppCompatActivity {
                 input.setTextSize(16);
                 input.setPadding(28, 28, 28, 28);
                 input.setBackgroundResource(R.drawable.bg_skeu_input);
-                if ("number".equals(field.type)) input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+                if ("number".equals(field.type)) input.setInputType(InputType.TYPE_CLASS_NUMBER);
                 layoutDynamicFields.addView(input);
                 dynamicTextInputs.put(field.labelEnglish, input);
             }

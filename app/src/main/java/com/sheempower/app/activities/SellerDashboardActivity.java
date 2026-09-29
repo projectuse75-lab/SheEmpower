@@ -2,6 +2,7 @@ package com.sheempower.app.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -94,10 +95,13 @@ public class SellerDashboardActivity extends AppCompatActivity {
 
     // ============ LOAD SELLER'S OWN PRODUCTS ============
     private void loadMyProducts() {
+        String uid = session.getUid();
+        if (uid == null || uid.trim().isEmpty()) return;
+
         FirebaseDatabase.getInstance().getReference()
                 .child(Constants.NODE_PRODUCTS)
                 .orderByChild("sellerId")
-                .equalTo(session.getUid())
+                .equalTo(uid.trim())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
@@ -107,8 +111,8 @@ public class SellerDashboardActivity extends AppCompatActivity {
                             if (p != null) myProductList.add(p);
                         }
                         myProductAdapter.notifyDataSetChanged();
-                        tvNoProducts.setVisibility(myProductList.isEmpty() ? android.view.View.VISIBLE : android.view.View.GONE);
-                        rvMyProducts.setVisibility(myProductList.isEmpty() ? android.view.View.GONE : android.view.View.VISIBLE);
+                        tvNoProducts.setVisibility(myProductList.isEmpty() ? View.VISIBLE : View.GONE);
+                        rvMyProducts.setVisibility(myProductList.isEmpty() ? View.GONE : View.VISIBLE);
                     }
                     @Override public void onCancelled(DatabaseError error) {}
                 });
@@ -116,19 +120,29 @@ public class SellerDashboardActivity extends AppCompatActivity {
 
     // ============ LOAD SELLER STATUS + CATEGORY ============
     private void loadSellerStatus() {
+        String uid = session.getUid();
+        if (uid == null || uid.trim().isEmpty()) return;
+
         FirebaseDatabase.getInstance().getReference()
                 .child(Constants.NODE_SELLERS)
-                .child(session.getUid())
+                .child(uid.trim())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
                         Seller s = snapshot.getValue(Seller.class);
                         if (s == null) return;
 
-                        String categoryCode = s.getCategory();
-                        if (categoryCode != null && !categoryCode.isEmpty()) {
-                            String categoryDisplayName = getCategoryDisplayName(categoryCode);
-                            tvCategory.setText(categoryDisplayName);
+                        List<String> sellerCategories = s.getCategories();
+                        if (sellerCategories != null && !sellerCategories.isEmpty()) {
+                            StringBuilder sb = new StringBuilder();
+                            sb.append("🛍️ آپ کے منتخب کردہ زمرے (Categories):\n");
+                            for (int i = 0; i < sellerCategories.size(); i++) {
+                                if (i > 0) sb.append("\n");
+                                sb.append(i + 1).append(". ").append(getCategoryDisplayName(sellerCategories.get(i)));
+                            }
+                            tvCategory.setText(sb.toString());
+                        } else if (s.getCategory() != null && !s.getCategory().isEmpty()) {
+                            tvCategory.setText("🛍️ آپ کا زمرہ (Category):\n1. " + getCategoryDisplayName(s.getCategory()));
                         }
 
                         if (Constants.isApproved(s.getVerificationStatus())) {
@@ -189,10 +203,13 @@ public class SellerDashboardActivity extends AppCompatActivity {
 
     // ============ LOAD ORDER STATISTICS ============
     private void loadStats() {
+        String uid = session.getUid();
+        if (uid == null || uid.trim().isEmpty()) return;
+
         FirebaseDatabase.getInstance().getReference()
                 .child(Constants.NODE_ORDERS)
                 .orderByChild("sellerId")
-                .equalTo(session.getUid())
+                .equalTo(uid.trim())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
