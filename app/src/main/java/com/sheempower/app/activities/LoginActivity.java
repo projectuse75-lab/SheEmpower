@@ -1,12 +1,14 @@
 package com.sheempower.app.activities;
 
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Patterns;
+import android.view.Gravity;
 import android.widget.*;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -47,11 +49,15 @@ public class LoginActivity extends AppCompatActivity {
         mAuth   = FirebaseAuth.getInstance();
         session = new SessionManager(this);
 
-        VoiceGuide.announceScreen(this,
-                "یہ لاگ ان سکرین ہے۔ سب سے پہلے خانے میں اپنا ای میل لکھیں، پھر نیچے والے خانے میں اپنا پاس ورڈ لکھیں، اور آخر میں لاگ ان کے بٹن پر کلک کریں۔ اگر آپ کا اکاؤنٹ نہیں ہے تو نیچے دیے گئے آپشن سے نیا اکاؤنٹ بنائیں۔");
+        ImageButton btnSpeaker = findViewById(R.id.btnSpeaker);
+        VoiceGuide.setupSpeakerButton(btnSpeaker, this,
+                "یہ لاگ ان سکرین ہے۔ سب سے پہلے خانے میں اپنا ای میل لکھیں، پھر نیچے والے خانے میں اپنا پاس ورڈ لکھیں، اور آخر میں لاگ ان کے بٹن پر کلک کریں۔"
+        );
 
         // ============ Initialize Views ============
         initializeViews();
+
+        BottomNavHelper.setupBackButton(this);
 
         // ============ Setup Password Visibility Toggle ============
         setupPasswordVisibilityToggle();
@@ -261,7 +267,7 @@ public class LoginActivity extends AppCompatActivity {
         // Update Color
         int color = getStrengthColor(strength);
         passwordStrengthBar.setProgressDrawable(
-                new android.graphics.drawable.ColorDrawable(color));
+                new ColorDrawable(color));
 
         // Update Label Text
         passwordStrengthText.setText(getStrengthLabel(strength));
@@ -400,7 +406,7 @@ public class LoginActivity extends AppCompatActivity {
                         (int) (64 * getResources().getDisplayMetrics().density)
                 );
 
-        params.gravity = android.view.Gravity.BOTTOM;
+        params.gravity = Gravity.BOTTOM;
 
         root.addView(bottomNav, params);
 

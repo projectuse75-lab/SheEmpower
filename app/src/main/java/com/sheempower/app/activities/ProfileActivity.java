@@ -149,6 +149,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         setupDeliverySpinner();
         setupButtons();
+        BottomNavHelper.setupBackButton(this);
 
         loadUser();
 
@@ -289,7 +290,11 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void setupButtons() {
-        if (btnSpeaker != null) btnSpeaker.setOnClickListener(v -> speakText());
+        if (btnSpeaker != null) {
+            VoiceGuide.setupSpeakerButton(btnSpeaker, this,
+                    "یہ آپ کی پروفائل کی سکرین ہے۔ یہاں آپ اپنی معلومات دیکھ اور تبدیل کر سکتی ہیں۔"
+            );
+        }
         if (btnChangePic != null) btnChangePic.setOnClickListener(v -> imagePicker.launch("image/*"));
         if (btnEditProfile != null) btnEditProfile.setOnClickListener(v -> openEditMode());
         if (btnSave != null) btnSave.setOnClickListener(v -> saveChanges());
@@ -358,15 +363,18 @@ public class ProfileActivity extends AppCompatActivity {
         String uid = session.getUid();
         if (uid == null) return;
 
+        boolean isSellerMode = session.isSeller();
+
         DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child(Constants.NODE_USERS).child(uid);
 
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 currentUser = snapshot.getValue(User.class);
-                if (currentUser == null) return;
-                showUserInformation(currentUser);
-                if ("seller".equalsIgnoreCase(safe(currentUser.getRole()))) {
+                if (currentUser != null) {
+                    showUserInformation(currentUser);
+                }
+                if (isSellerMode || (currentUser != null && "seller".equalsIgnoreCase(safe(currentUser.getRole())))) {
                     loadSellerInformation(uid);
                 } else {
                     showBuyerProfile();
@@ -374,7 +382,11 @@ public class ProfileActivity extends AppCompatActivity {
             }
             @Override
             public void onCancelled(DatabaseError error) {
-                Toast.makeText(ProfileActivity.this, "Profile load nahi ho saki", Toast.LENGTH_SHORT).show();
+                if (isSellerMode) {
+                    loadSellerInformation(uid);
+                } else {
+                    Toast.makeText(ProfileActivity.this, "Profile load nahi ho saki", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -491,6 +503,11 @@ public class ProfileActivity extends AppCompatActivity {
         if (etShopAddress != null) etShopAddress.setText(address);
 
         if (spinnerCanDeliverProfile != null) setSpinnerValue(spinnerCanDeliverProfile, seller.isCanDeliver() ? "Yes" : "No");
+
+        if (btnSwitchRole != null) {
+            btnSwitchRole.setVisibility(View.VISIBLE);
+            btnSwitchRole.setText("👤  SELLER  ▼");
+        }
 
         if (ivProfilePic != null && !safe(seller.getImageUrl()).isEmpty()) {
             Glide.with(this).load(seller.getImageUrl()).into(ivProfilePic);

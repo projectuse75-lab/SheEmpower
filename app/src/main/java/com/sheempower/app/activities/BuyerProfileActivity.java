@@ -15,6 +15,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import com.sheempower.app.R;
 import com.sheempower.app.models.Buyer;
+import com.sheempower.app.utils.BottomNavHelper;
 import com.sheempower.app.utils.Constants;
 import com.sheempower.app.utils.SessionManager;
 import com.sheempower.app.utils.PreferencesManager;
@@ -47,6 +48,7 @@ public class BuyerProfileActivity extends AppCompatActivity {
         session = new SessionManager(this);
 
         initializeViews();
+        BottomNavHelper.setupBackButton(this);
         loadExistingInformation();
         setupButtons();
     }

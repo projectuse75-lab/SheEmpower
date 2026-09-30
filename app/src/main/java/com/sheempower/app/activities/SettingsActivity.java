@@ -22,7 +22,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.sheempower.app.R;
 import com.sheempower.app.utils.BottomNavHelper;
 import com.sheempower.app.utils.Constants;
+import com.sheempower.app.utils.LanguageHelper;
 import com.sheempower.app.utils.PreferencesManager;
+import com.sheempower.app.utils.VoiceGuide;
+import android.widget.ImageButton;
 import com.sheempower.app.utils.SessionManager;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -31,10 +34,10 @@ public class SettingsActivity extends AppCompatActivity {
     private PreferencesManager preferencesManager;
     private FirebaseAuth firebaseAuth;
     private DatabaseReference database;
-    private TextView tvUserName, tvUserEmail, tvUserContact;
+    private TextView tvUserName, tvUserEmail, tvUserContact, tvCurrentLanguage;
     private Switch switchNotifications, switchDarkTheme;
     private LinearLayout llChangeName, llChangeContact, llChangePassword;
-    private LinearLayout llPrivacyPolicy, llTermsConditions, llAboutApp;
+    private LinearLayout llPrivacyPolicy, llTermsConditions, llAboutApp, llShareApp, llLanguage;
     private Button btnLogout, btnDeleteAccount;
 
     @Override
@@ -53,6 +56,20 @@ public class SettingsActivity extends AppCompatActivity {
         loadSettings();
         setupListeners();
         setupBottomNavigation();
+
+        ImageButton btnSpeaker = findViewById(R.id.btnSpeaker);
+        VoiceGuide.setupSpeakerButton(btnSpeaker, this,
+                "یہ سیٹنگز کی سکرین ہے۔ یہاں سے آپ اپنا نام، واٹس ایپ نمبر، پاس ورڈ اور ایپ کا ڈارک موڈ تبدیل کر سکتی ہیں۔"
+        );
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ImageButton btnSpeaker = findViewById(R.id.btnSpeaker);
+        if (btnSpeaker != null) {
+            VoiceGuide.updateSpeakerIcon(btnSpeaker, VoiceGuide.isMuted(this));
+        }
     }
 
     private void initializeViews() {
@@ -67,6 +84,9 @@ public class SettingsActivity extends AppCompatActivity {
         llPrivacyPolicy = findViewById(R.id.llPrivacyPolicy);
         llTermsConditions = findViewById(R.id.llTermsConditions);
         llAboutApp = findViewById(R.id.llAboutApp);
+        llShareApp = findViewById(R.id.llShareApp);
+        llLanguage = findViewById(R.id.llLanguage);
+        tvCurrentLanguage = findViewById(R.id.tvCurrentLanguage);
         btnLogout = findViewById(R.id.btnLogout);
         btnDeleteAccount = findViewById(R.id.btnDeleteAccount);
     }
@@ -123,6 +143,9 @@ public class SettingsActivity extends AppCompatActivity {
     private void loadSettings() {
         switchNotifications.setChecked(preferencesManager.areNotificationsEnabled());
         switchDarkTheme.setChecked(preferencesManager.isDarkThemeEnabled());
+        if (tvCurrentLanguage != null) {
+            tvCurrentLanguage.setText(LanguageHelper.getLanguageDisplayName(preferencesManager.getAppLanguage()));
+        }
     }
 
     private void setupListeners() {
@@ -147,11 +170,36 @@ public class SettingsActivity extends AppCompatActivity {
             finish();
         });
 
+        if (llLanguage != null) {
+            llLanguage.setOnClickListener(v -> LanguageHelper.showLanguageSelectionDialog(this, langMode -> {
+                if (tvCurrentLanguage != null) {
+                    tvCurrentLanguage.setText(LanguageHelper.getLanguageDisplayName(langMode));
+                }
+                Toast.makeText(this, "زبان تبدیل ہو گئی / Language Updated! ✅", Toast.LENGTH_SHORT).show();
+                Intent restartIntent = new Intent(SettingsActivity.this, MainActivity.class);
+                restartIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(restartIntent);
+                finish();
+            }));
+        }
+
         llPrivacyPolicy.setOnClickListener(v -> showPrivacyPolicy());
         llTermsConditions.setOnClickListener(v -> showTermsConditions());
         llAboutApp.setOnClickListener(v -> showAboutDialog());
+        if (llShareApp != null) llShareApp.setOnClickListener(v -> shareApp());
         btnLogout.setOnClickListener(v -> showLogoutConfirmation());
         btnDeleteAccount.setOnClickListener(v -> showDeleteAccountConfirmation());
+    }
+
+    private void shareApp() {
+        Intent sendIntent = new Intent(Intent.ACTION_SEND);
+        sendIntent.setType("text/plain");
+        String shareBody = "السلام علیکم! شی ایمپاور ایپ ڈاؤن لوڈ کریں اور خواتین کے ہنر، اشیاء اور خدمات سے فائدہ اٹھائیں:\n\n" +
+                "✨ She Empower App — Empowering Women, One Sale at a Time\n" +
+                "https://play.google.com/store/apps/details?id=" + getPackageName();
+        sendIntent.putExtra(Intent.EXTRA_SUBJECT, "She Empower App");
+        sendIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
+        startActivity(Intent.createChooser(sendIntent, "ایپ شیئر کریں / Share App via"));
     }
 
     private void showChangeNameDialog() {

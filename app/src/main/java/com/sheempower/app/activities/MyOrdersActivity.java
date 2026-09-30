@@ -2,6 +2,8 @@ package com.sheempower.app.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -38,8 +40,10 @@ public class MyOrdersActivity extends AppCompatActivity {
         rvOrders = findViewById(R.id.rvOrders);
         tvEmpty  = findViewById(R.id.tvEmpty);
 
-        VoiceGuide.announceScreen(this,
-                "یہ آپ کے تمام آرڈرز کی فہرست ہے۔ ہر آرڈر کے ساتھ اس کی موجودہ حالت لکھی ہے، جیسے کام شروع نہیں ہوا، کام جاری ہے، یا مکمل ہو گیا۔");
+        ImageButton btnSpeaker = findViewById(R.id.btnSpeaker);
+        VoiceGuide.setupSpeakerButton(btnSpeaker, this,
+                "یہ آپ کے تمام آرڈرز کی فہرست ہے۔ ہر آرڈر کے ساتھ اس کی موجودہ حالت لکھی ہے، جیسے کام شروع نہیں ہوا، کام جاری ہے، یا مکمل ہو گیا۔"
+        );
 
         rvOrders.setLayoutManager(new LinearLayoutManager(this));
         adapter = new OrderAdapter(orderList, false);
@@ -57,7 +61,15 @@ public class MyOrdersActivity extends AppCompatActivity {
         loadOrders();
     }
 
-    @Override protected void onResume() { super.onResume(); loadOrders(); }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ImageButton btnSpeaker = findViewById(R.id.btnSpeaker);
+        if (btnSpeaker != null) {
+            VoiceGuide.updateSpeakerIcon(btnSpeaker, VoiceGuide.isMuted(this));
+        }
+        loadOrders();
+    }
 
     private void loadOrders() {
         FirebaseDatabase.getInstance().getReference().child(Constants.NODE_ORDERS)
@@ -70,10 +82,10 @@ public class MyOrdersActivity extends AppCompatActivity {
                             if (o != null) orderList.add(o);
                         }
                         adapter.notifyDataSetChanged();
-                        tvEmpty.setVisibility(orderList.isEmpty() ? android.view.View.VISIBLE : android.view.View.GONE);
+                        tvEmpty.setVisibility(orderList.isEmpty() ? View.VISIBLE : View.GONE);
                     }
                     @Override public void onCancelled(DatabaseError error) {
-                        tvEmpty.setVisibility(android.view.View.VISIBLE);
+                        tvEmpty.setVisibility(View.VISIBLE);
                         tvEmpty.setText("خرابی: " + error.getMessage());
                     }
                 });

@@ -20,6 +20,7 @@ import com.sheempower.app.adapters.ProductAdapter;
 import com.sheempower.app.adapters.SellerAdapter;
 import com.sheempower.app.models.Product;
 import com.sheempower.app.models.Seller;
+import com.sheempower.app.utils.BottomNavHelper;
 import com.sheempower.app.utils.Constants;
 import com.sheempower.app.utils.PreferencesManager;
 import com.sheempower.app.utils.SessionManager;
@@ -65,6 +66,7 @@ public class SellerListActivity extends AppCompatActivity {
         }
 
         initializeViews();
+        BottomNavHelper.setupBackButton(this);
         setupSellerRecyclerView();
         setupProductRecyclerView();
         updateCategoryHeader();
@@ -79,13 +81,9 @@ public class SellerListActivity extends AppCompatActivity {
         rvProducts      = findViewById(R.id.rvProducts);
 
         ImageButton btnSpeaker = findViewById(R.id.btnSpeaker);
-        if (btnSpeaker != null) {
-            btnSpeaker.setOnClickListener(v -> VoiceGuide.announceScreen(
-                    this,
-                    Constants.getUrduLabel(selectedCategory)
-                            + " کی بیچنے والیاں اور اشیاء دیکھیں۔ "
-            ));
-        }
+        VoiceGuide.setupSpeakerButton(btnSpeaker, this,
+                Constants.getUrduLabel(selectedCategory) + " کی بیچنے والیاں اور اشیاء دیکھیں۔"
+        );
 
         if (tvCategoryTitle != null) {
             tvCategoryTitle.setText(
@@ -179,6 +177,24 @@ public class SellerListActivity extends AppCompatActivity {
                             }
 
                             if (sellerProvidesCategory(seller, selectedCategory)) {
+                                String directImg = child.child("imageUrl").getValue(String.class);
+                                if (directImg != null && !directImg.trim().isEmpty()) {
+                                    seller.setImageUrl(directImg.trim());
+                                }
+
+                                String uid = seller.getUid();
+                                if ((seller.getImageUrl() == null || seller.getImageUrl().trim().isEmpty()) && uid != null) {
+                                    FirebaseDatabase.getInstance().getReference().child(Constants.NODE_USERS)
+                                            .child(uid.trim()).child("imageUrl").get()
+                                            .addOnSuccessListener(imgSnap -> {
+                                                String userImg = imgSnap.getValue(String.class);
+                                                if (userImg != null && !userImg.trim().isEmpty()) {
+                                                    seller.setImageUrl(userImg.trim());
+                                                    if (sellerAdapter != null) sellerAdapter.notifyDataSetChanged();
+                                                }
+                                            });
+                                }
+
                                 sellerList.add(seller);
                             }
                         }

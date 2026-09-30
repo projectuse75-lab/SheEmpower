@@ -13,35 +13,56 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:gravity="center"
         android:paddingStart="24dp"
         android:paddingEnd="24dp"
         android:paddingTop="22dp"
         android:paddingBottom="18dp"
-        android:background="@color/primary_pink">
+        android:background="@color/primary">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="⚙️"
-            android:textSize="34sp"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Settings"
-            android:textColor="@android:color/white"
-            android:textSize="26sp"
-            android:textStyle="bold"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:orientation="vertical"
+                android:gravity="center">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="سیٹنگز"
-            android:textColor="@android:color/white"
-            android:textSize="15sp"
-            android:layout_marginTop="2dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="⚙️"
+                    android:textSize="34sp"/>
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Settings"
+                    android:textColor="@android:color/white"
+                    android:textSize="26sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="سیٹنگز"
+                    android:textColor="@android:color/white"
+                    android:textSize="15sp"
+                    android:layout_marginTop="2dp"/>
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/btnSpeaker"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_speaker"
+                android:contentDescription="Speaker" />
+        </RelativeLayout>
     </LinearLayout>
 
     <ScrollView
@@ -301,6 +322,42 @@
 
             </LinearLayout>
 
+            <!-- LANGUAGE SELECTION -->
+
+            <LinearLayout
+                android:id="@+id/llLanguage"
+                style="@style/SettingsCardStyle"
+                android:background="@drawable/settings_item_background"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    style="@style/SettingsIconStyle"
+                    android:text="🌐"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/SettingsTitleStyle"
+                        android:text="App Language / زبان"/>
+
+                    <TextView
+                        android:id="@+id/tvCurrentLanguage"
+                        style="@style/SettingsSubtitleStyle"
+                        android:text="🇵🇰🇬🇧 اردو + English (Mix)"/>
+
+                </LinearLayout>
+
+                <TextView
+                    style="@style/SettingsArrowStyle"
+                    android:text="›"/>
+
+            </LinearLayout>
+
             <!-- INFORMATION -->
 
             <TextView
@@ -409,6 +466,41 @@
                     <TextView
                         style="@style/SettingsSubtitleStyle"
                         android:text="Version 1.0"/>
+
+                </LinearLayout>
+
+                <TextView
+                    style="@style/SettingsArrowStyle"
+                    android:text="›"/>
+
+            </LinearLayout>
+
+            <!-- SHARE / INVITE CONTACT -->
+
+            <LinearLayout
+                android:id="@+id/llShareApp"
+                style="@style/SettingsCardStyle"
+                android:background="@drawable/settings_item_background"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    style="@style/SettingsIconStyle"
+                    android:text="📲"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/SettingsTitleStyle"
+                        android:text="Invite / Share App"/>
+
+                    <TextView
+                        style="@style/SettingsSubtitleStyle"
+                        android:text="دوستوں کو ایپ بھیجیں / Share with friends"/>
 
                 </LinearLayout>
 

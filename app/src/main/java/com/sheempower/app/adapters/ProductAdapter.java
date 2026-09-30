@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,6 +29,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
         this.onChat = onChat;
     }
 
+    public ProductAdapter(List<Product> products, OnProductClick onOpen) {
+        this.products = products;
+        this.onOpen = onOpen;
+        this.onOrder = null;
+        this.onChat = null;
+    }
+
     public void updateList(List<Product> newList) {
         this.products = new ArrayList<>(newList);
         notifyDataSetChanged();
@@ -49,25 +57,57 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
         } else {
             holder.ivImage.setImageResource(R.drawable.placeholder_product);
         }
-        holder.itemView.setOnClickListener(v -> onOpen.onClick(p));
-        holder.btnOrder.setOnClickListener(v -> onOrder.onClick(p));
-        holder.btnChat.setOnClickListener(v -> onChat.onClick(p));
+
+        if (onOpen != null) {
+            holder.itemView.setOnClickListener(v -> onOpen.onClick(p));
+        }
+
+        if (onOrder == null && onChat == null) {
+            if (holder.layoutActionButtons != null) {
+                holder.layoutActionButtons.setVisibility(View.GONE);
+            } else {
+                if (holder.btnOrder != null) holder.btnOrder.setVisibility(View.GONE);
+                if (holder.btnChat != null) holder.btnChat.setVisibility(View.GONE);
+            }
+        } else {
+            if (holder.layoutActionButtons != null) {
+                holder.layoutActionButtons.setVisibility(View.VISIBLE);
+            }
+            if (holder.btnOrder != null) {
+                if (onOrder != null) {
+                    holder.btnOrder.setVisibility(View.VISIBLE);
+                    holder.btnOrder.setOnClickListener(v -> onOrder.onClick(p));
+                } else {
+                    holder.btnOrder.setVisibility(View.GONE);
+                }
+            }
+            if (holder.btnChat != null) {
+                if (onChat != null) {
+                    holder.btnChat.setVisibility(View.VISIBLE);
+                    holder.btnChat.setOnClickListener(v -> onChat.onClick(p));
+                } else {
+                    holder.btnChat.setVisibility(View.GONE);
+                }
+            }
+        }
     }
 
     @Override public int getItemCount() { return products.size(); }
 
     static class VH extends RecyclerView.ViewHolder {
-        android.widget.ImageView ivImage;
+        ImageView ivImage;
         TextView tvName, tvPrice;
         Button btnOrder, btnChat;
+        View layoutActionButtons;
 
         VH(@NonNull View itemView) {
             super(itemView);
-            ivImage  = itemView.findViewById(R.id.ivProductImage);
-            tvName   = itemView.findViewById(R.id.tvProductName);
-            tvPrice  = itemView.findViewById(R.id.tvProductPrice);
+            ivImage = itemView.findViewById(R.id.ivProductImage);
+            tvName = itemView.findViewById(R.id.tvProductName);
+            tvPrice = itemView.findViewById(R.id.tvProductPrice);
             btnOrder = itemView.findViewById(R.id.btnOrder);
-            btnChat  = itemView.findViewById(R.id.btnChat);
+            btnChat = itemView.findViewById(R.id.btnChat);
+            layoutActionButtons = itemView.findViewById(R.id.layoutActionButtons);
         }
     }
 }

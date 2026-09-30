@@ -1,6 +1,7 @@
 package com.sheempower.app.activities;
 
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
@@ -11,7 +12,11 @@ import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.sheempower.app.R;
 import com.sheempower.app.models.User;
 import com.sheempower.app.utils.Constants;
@@ -46,6 +51,8 @@ public class BuyerRegisterActivity extends AppCompatActivity {
 
         // ============ Initialize Views ============
         initializeViews();
+
+        BottomNavHelper.setupBackButton(this);
 
         // ============ Setup Password Visibility Toggle ============
         setupPasswordVisibilityToggle();
@@ -204,7 +211,7 @@ public class BuyerRegisterActivity extends AppCompatActivity {
         // Update Color
         int color = getStrengthColor(strength);
         passwordStrengthBar.setProgressDrawable(
-                new android.graphics.drawable.ColorDrawable(color));
+                new ColorDrawable(color));
 
         // Update Label Text
         passwordStrengthText.setText(getStrengthLabel(strength));

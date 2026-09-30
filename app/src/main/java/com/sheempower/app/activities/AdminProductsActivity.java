@@ -2,6 +2,7 @@ package com.sheempower.app.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,7 +31,8 @@ public class AdminProductsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_products);
 
-        VoiceGuide.announceScreen(this, "یہ نظام کی تمام اشیاء کی فہرست ہے۔");
+        ImageButton btnSpeaker = findViewById(R.id.btnSpeaker);
+        VoiceGuide.setupSpeakerButton(btnSpeaker, this, "یہ نظام کی تمام اشیاء کی فہرست ہے۔");
 
         rvProducts = findViewById(R.id.rvProducts);
         tvEmpty    = findViewById(R.id.tvEmpty);

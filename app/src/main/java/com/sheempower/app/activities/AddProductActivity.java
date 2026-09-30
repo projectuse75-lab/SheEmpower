@@ -13,6 +13,7 @@ import com.google.firebase.database.*;
 import com.sheempower.app.R;
 import com.sheempower.app.models.Product;
 import com.sheempower.app.models.Seller;
+import com.sheempower.app.utils.BottomNavHelper;
 import com.sheempower.app.utils.CloudinaryHelper;
 import com.sheempower.app.utils.Constants;
 import com.sheempower.app.utils.SessionManager;
@@ -25,6 +26,8 @@ import java.util.List;
 
 public class AddProductActivity extends AppCompatActivity {
 
+    public static final String EXTRA_PRODUCT_ID = "productId";
+
     private Spinner spinnerCategory;
     private TextInputEditText etProductName, etDescription, etPrice;
     private Button btnPickImage, btnSubmit;
@@ -33,13 +36,20 @@ public class AddProductActivity extends AppCompatActivity {
     private SessionManager session;
     private final List<String> availableSellerCategories = new ArrayList<>();
 
+    private String editProductId = null;
+    private Product editingProduct = null;
+
     private final ActivityResultLauncher<String> imagePicker =
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
                 if (uri != null) {
                     tvImageStatus.setText("✅ اپلوڈ ہو رہی ہے...");
                     CloudinaryHelper.upload(this, uri, "products", (url, error) -> {
-                        if (url != null) { imageUrl = url; tvImageStatus.setText("✅ تصویر اپلوڈ ہو گئی"); }
-                        else tvImageStatus.setText("❌ اپلوڈ ناکام: " + error);
+                        if (url != null) {
+                            imageUrl = url;
+                            tvImageStatus.setText("✅ تصویر اپلوڈ ہو گئی");
+                        } else {
+                            tvImageStatus.setText("❌ اپلوڈ ناکام: " + error);
+                        }
                     });
                 }
             });
@@ -52,8 +62,15 @@ public class AddProductActivity extends AppCompatActivity {
 
         session = new SessionManager(this);
 
+        if (getIntent() != null && getIntent().hasExtra(EXTRA_PRODUCT_ID)) {
+            editProductId = getIntent().getStringExtra(EXTRA_PRODUCT_ID);
+        }
+
         VoiceGuide.announceScreen(this,
-                "یہاں اپنی نئی چیز شامل کریں۔ پہلے زمرہ منتخب کریں، پھر چیز کا نام لکھیں، تفصیل، اور حتمی قیمت درج کریں۔");
+                editProductId != null
+                        ? "یہاں اپنی چیز کی معلومات تبدیل کریں۔ ترمیم مکمل کر کے محفوظ کریں۔"
+                        : "یہاں اپنی نئی چیز شامل کریں۔ پہلے زمرہ منتخب کریں، پھر چیز کا نام لکھیں، تفصیل، اور حتمی قیمت درج کریں۔"
+        );
 
         spinnerCategory = findViewById(R.id.spinnerCategory);
         etProductName   = findViewById(R.id.etProductName);
@@ -63,16 +80,64 @@ public class AddProductActivity extends AppCompatActivity {
         btnSubmit       = findViewById(R.id.btnSubmit);
         tvImageStatus   = findViewById(R.id.tvImageStatus);
 
+        BottomNavHelper.setupBackButton(this);
+
+        if (editProductId != null) {
+            btnSubmit.setText("💾 تبدیلی محفوظ کریں / Save Changes");
+        }
+
         ImageButton btnSpeaker = findViewById(R.id.btnSpeaker);
         if (btnSpeaker != null) {
             btnSpeaker.setOnClickListener(v -> VoiceGuide.announceScreen(this,
-                    "یہاں اپنی نئی چیز شامل کریں۔ پہلے زمرہ منتخب کریں، پھر چیز کا نام لکھیں، تفصیل، اور حتمی قیمت درج کریں۔"));
+                    editProductId != null
+                            ? "یہاں اپنی چیز کی معلومات تبدیل کریں۔ ترمیم مکمل کر کے محفوظ کریں۔"
+                            : "یہاں اپنی نئی چیز شامل کریں۔ پہلے زمرہ منتخب کریں، پھر چیز کا نام لکھیں، تفصیل، اور حتمی قیمت درج کریں۔"
+            ));
         }
 
         setupCategorySpinner();
 
+        if (editProductId != null) {
+            loadExistingProduct(editProductId);
+        }
+
         btnPickImage.setOnClickListener(v -> imagePicker.launch("image/*"));
         btnSubmit.setOnClickListener(v -> submitProduct());
+    }
+
+    private void loadExistingProduct(String pid) {
+        FirebaseDatabase.getInstance().getReference().child(Constants.NODE_PRODUCTS).child(pid)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        editingProduct = snapshot.getValue(Product.class);
+                        if (editingProduct == null) return;
+
+                        if (etProductName != null) etProductName.setText(editingProduct.getName());
+                        if (etDescription != null) etDescription.setText(editingProduct.getDescription());
+                        if (etPrice != null) etPrice.setText(String.valueOf((long) editingProduct.getPrice()));
+
+                        if (editingProduct.getImageUrl() != null && !editingProduct.getImageUrl().isEmpty()) {
+                            imageUrl = editingProduct.getImageUrl();
+                            if (tvImageStatus != null) tvImageStatus.setText("✅ تصویر موجود ہے");
+                        }
+
+                        selectCategoryInSpinner(editingProduct.getCategory());
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {}
+                });
+    }
+
+    private void selectCategoryInSpinner(String category) {
+        if (category == null || category.trim().isEmpty() || availableSellerCategories.isEmpty()) return;
+        for (int i = 0; i < availableSellerCategories.size(); i++) {
+            if (availableSellerCategories.get(i).equalsIgnoreCase(category.trim())) {
+                if (spinnerCategory != null) spinnerCategory.setSelection(i);
+                break;
+            }
+        }
     }
 
     private void setupCategorySpinner() {
@@ -87,12 +152,25 @@ public class AddProductActivity extends AppCompatActivity {
                     Seller seller = snapshot.getValue(Seller.class);
                     availableSellerCategories.clear();
 
-                    if (seller != null && seller.getCategories() != null && !seller.getCategories().isEmpty()) {
-                        availableSellerCategories.addAll(seller.getCategories());
-                    } else if (seller != null && seller.getCategory() != null && !seller.getCategory().isEmpty()) {
-                        availableSellerCategories.add(seller.getCategory());
-                    } else {
-                        availableSellerCategories.addAll(Arrays.asList(Constants.CATEGORIES));
+                    if (snapshot.hasChild("categories")) {
+                        for (DataSnapshot catSnap : snapshot.child("categories").getChildren()) {
+                            String cat = catSnap.getValue(String.class);
+                            if (cat != null && !cat.trim().isEmpty() && !availableSellerCategories.contains(cat.trim())) {
+                                availableSellerCategories.add(cat.trim());
+                            }
+                        }
+                    }
+
+                    if (availableSellerCategories.isEmpty() && seller != null && seller.getCategories() != null && !seller.getCategories().isEmpty()) {
+                        for (String cat : seller.getCategories()) {
+                            if (cat != null && !cat.trim().isEmpty() && !availableSellerCategories.contains(cat.trim())) {
+                                availableSellerCategories.add(cat.trim());
+                            }
+                        }
+                    }
+
+                    if (availableSellerCategories.isEmpty() && seller != null && seller.getCategory() != null && !seller.getCategory().trim().isEmpty()) {
+                        availableSellerCategories.add(seller.getCategory().trim());
                     }
 
                     populateCategorySpinner();
@@ -120,6 +198,10 @@ public class AddProductActivity extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categoryDisplayNames);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         if (spinnerCategory != null) spinnerCategory.setAdapter(adapter);
+
+        if (editingProduct != null) {
+            selectCategoryInSpinner(editingProduct.getCategory());
+        }
     }
 
     private void submitProduct() {
@@ -127,11 +209,43 @@ public class AddProductActivity extends AppCompatActivity {
         String desc  = etDescription.getText().toString().trim();
         String priceStr = etPrice.getText().toString().trim();
 
-        if (TextUtils.isEmpty(name)) { etProductName.setError("ضروری ہے"); return; }
-        if (TextUtils.isEmpty(priceStr)) { etPrice.setError("ضروری ہے"); return; }
+        // ✅ ALL 4 FIELDS ARE STRICTLY MANDATORY
+        if (TextUtils.isEmpty(name)) {
+            etProductName.setError("نام درج کرنا ضروری ہے");
+            etProductName.requestFocus();
+            return;
+        }
+
+        if (TextUtils.isEmpty(desc)) {
+            etDescription.setError("تفصیل درج کرنا ضروری ہے");
+            etDescription.requestFocus();
+            return;
+        }
+
+        if (TextUtils.isEmpty(priceStr)) {
+            etPrice.setError("قیمت درج کرنا ضروری ہے");
+            etPrice.requestFocus();
+            return;
+        }
 
         double price;
-        try { price = Double.parseDouble(priceStr); } catch (Exception e) { etPrice.setError("غلط قیمت"); return; }
+        try {
+            price = Double.parseDouble(priceStr);
+            if (price <= 0) {
+                etPrice.setError("درست قیمت درج کریں");
+                etPrice.requestFocus();
+                return;
+            }
+        } catch (Exception e) {
+            etPrice.setError("غلط قیمت");
+            etPrice.requestFocus();
+            return;
+        }
+
+        if (TextUtils.isEmpty(imageUrl)) {
+            Toast.makeText(this, "براہ کرم پروڈکٹ کی تصویر اپلوڈ کریں (تصویر لازمی ہے)", Toast.LENGTH_LONG).show();
+            return;
+        }
 
         int selectedIndex = spinnerCategory != null ? spinnerCategory.getSelectedItemPosition() : 0;
         String category = (selectedIndex >= 0 && selectedIndex < availableSellerCategories.size())
@@ -139,20 +253,33 @@ public class AddProductActivity extends AppCompatActivity {
                 : "Cooking";
 
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
-        String productId = dbRef.child(Constants.NODE_PRODUCTS).push().getKey();
-        if (productId == null) return;
+        String targetProductId = (editProductId != null) ? editProductId : dbRef.child(Constants.NODE_PRODUCTS).push().getKey();
+        if (targetProductId == null) return;
 
-        Product product = new Product(productId, session.getUid(), name, desc, price, imageUrl);
-        product.setCategory(category);
+        String uid = session.getUid();
+        if (uid == null || uid.trim().isEmpty()) {
+            Toast.makeText(this, "سیشن ختم ہو گیا، دوبارہ لاگ ان کریں", Toast.LENGTH_LONG).show();
+            return;
+        }
 
-        dbRef.child(Constants.NODE_PRODUCTS).child(productId).setValue(product)
+        Product product = new Product(targetProductId, uid.trim(), name, desc, price, imageUrl);
+        product.setCategory(category.trim());
+
+        btnSubmit.setEnabled(false);
+
+        dbRef.child(Constants.NODE_PRODUCTS).child(targetProductId).setValue(product)
                 .addOnSuccessListener(v -> {
-                    Toast.makeText(this, "چیز شامل ہو گئی! یہ قیمت خریدار تبدیل نہیں کر سکے گا۔", Toast.LENGTH_LONG).show();
-                    VoiceGuide.explain(this, "نئی چیز کامیابی سے شامل ہو گئی ہے");
+                    String msg = editProductId != null ? "تبدیلی محفوظ ہو گئی! ✅" : "چیز شامل ہو گئی! ✅";
+                    Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+                    VoiceGuide.explain(this, msg);
                     finish();
                 })
-                .addOnFailureListener(e -> Toast.makeText(this, "خرابی: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                .addOnFailureListener(e -> {
+                    btnSubmit.setEnabled(true);
+                    Toast.makeText(this, "خرابی: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
     }
+
     private void applyTheme() {
         PreferencesManager prefs = new PreferencesManager(this);
         if (prefs.isDarkThemeEnabled()) {

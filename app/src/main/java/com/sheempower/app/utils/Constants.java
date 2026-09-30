@@ -1,5 +1,7 @@
 package com.sheempower.app.utils;
 
+import android.content.Context;
+
 import com.sheempower.app.R;
 import java.util.Arrays;
 import java.util.List;
@@ -74,6 +76,11 @@ public class Constants {
     public static String getUrduLabel(String categoryKey) {
         for (int i = 0; i < CATEGORIES.length; i++) if (CATEGORIES[i].equals(categoryKey)) return CATEGORY_LABELS_UR[i];
         return categoryKey;
+    }
+
+    public static String getCategoryDisplayLabel(Context ctx, String categoryKey) {
+        String urdu = getUrduLabel(categoryKey);
+        return LanguageHelper.getFormattedText(ctx, urdu, categoryKey);
     }
 
     public static final int DEMO_SEED_VERSION = 5;

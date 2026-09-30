@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +30,7 @@ import com.sheempower.app.models.Product;
 import com.sheempower.app.models.Seller;
 import com.sheempower.app.utils.BottomNavHelper;
 import com.sheempower.app.utils.Constants;
+import com.sheempower.app.utils.LanguageHelper;
 import com.sheempower.app.utils.PreferencesManager;
 import com.sheempower.app.utils.SessionManager;
 import com.sheempower.app.utils.VoiceGuide;
@@ -39,6 +41,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -87,6 +91,11 @@ public class MainActivity extends AppCompatActivity {
 
         session = new SessionManager(this);
 
+        PreferencesManager prefs = new PreferencesManager(this);
+        if (!prefs.hasSelectedLanguage()) {
+            LanguageHelper.showLanguageSelectionDialog(this, langMode -> recreate());
+        }
+
         etSearch = findViewById(R.id.etSearch);
         btnLogin = findViewById(R.id.btnLogin);
         btnJoin = findViewById(R.id.btnJoin);
@@ -110,6 +119,13 @@ public class MainActivity extends AppCompatActivity {
         setupRecyclerViews();
         setupSearchAndFilters();
 
+        ImageButton btnSpeaker = findViewById(R.id.btnSpeaker);
+        VoiceGuide.setupSpeakerButton(btnSpeaker, this,
+                session.isLoggedIn()
+                        ? "شی ایمپاور میں خوش آمدید۔ یہاں سے کسی زمرے کو منتخب کر کے بیچنے والیاں اور اشیاء دیکھیں، اور آرڈر دیں۔"
+                        : "شی ایمپاور میں خوش آمدید۔ خریداری کے لیے لاگ ان کریں، یا اپنا کام شروع کرنے کے لیے رجسٹر کریں۔"
+        );
+
         loadSellersThenProducts();
 
         BottomNavHelper.setupForBuyerOrVisitor(
@@ -126,10 +142,13 @@ public class MainActivity extends AppCompatActivity {
         setupTopButtons();
         loadSellersThenProducts();
 
+        ImageButton btnSpeaker = findViewById(R.id.btnSpeaker);
+        if (btnSpeaker != null) {
+            VoiceGuide.updateSpeakerIcon(btnSpeaker, VoiceGuide.isMuted(this));
+        }
+
         if (!voiceAnnounced) {
-
             voiceAnnounced = true;
-
             VoiceGuide.announceScreen(
                     this,
                     session.isLoggedIn()
@@ -619,7 +638,7 @@ public class MainActivity extends AppCompatActivity {
                             false
                     );
 
-            de.hdodenhof.circleimageview.CircleImageView iv =
+            CircleImageView iv =
                     card.findViewById(
                             R.id.ivCategoryImage
                     );
@@ -634,8 +653,20 @@ public class MainActivity extends AppCompatActivity {
                             R.id.tvCategoryNameEn
                     );
 
-            tvName.setText(urduLabel);
-            tvNameEn.setText(cat);
+            PreferencesManager prefsManager = new PreferencesManager(this);
+            String langMode = prefsManager.getAppLanguage();
+
+            if (PreferencesManager.LANG_URDU.equals(langMode)) {
+                tvName.setText(urduLabel);
+                tvNameEn.setVisibility(View.GONE);
+            } else if (PreferencesManager.LANG_ENGLISH.equals(langMode)) {
+                tvName.setText(cat);
+                tvNameEn.setVisibility(View.GONE);
+            } else {
+                tvName.setText(urduLabel);
+                tvNameEn.setText(cat);
+                tvNameEn.setVisibility(View.VISIBLE);
+            }
 
             iv.setImageResource(
                     Constants.CATEGORY_IMAGE_RES[i]
@@ -778,6 +809,11 @@ public class MainActivity extends AppCompatActivity {
                                     if (uid == null) continue;
 
                                     s.setUid(uid.trim());
+
+                                    String directImg = child.child("imageUrl").getValue(String.class);
+                                    if (directImg != null && !directImg.trim().isEmpty()) {
+                                        s.setImageUrl(directImg.trim());
+                                    }
 
                                     if (s.getImageUrl() == null || s.getImageUrl().trim().isEmpty()) {
                                         FirebaseDatabase.getInstance().getReference().child(Constants.NODE_USERS)

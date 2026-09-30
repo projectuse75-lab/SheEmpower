@@ -80,6 +80,14 @@ public class TTSHelper {
         }
     }
 
+    public void stop() {
+        if (ready && tts != null) {
+            try {
+                tts.stop();
+            } catch (Throwable ignored) {}
+        }
+    }
+
     public void shutdown() {
 
         ready = false;

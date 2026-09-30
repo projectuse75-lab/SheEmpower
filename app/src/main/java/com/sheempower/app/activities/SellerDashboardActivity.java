@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,6 +31,7 @@ public class SellerDashboardActivity extends AppCompatActivity {
     private TextView tvNoProducts;
     private ProductAdapter myProductAdapter;
     private final List<Product> myProductList = new ArrayList<>();
+    private Seller currentSeller;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,9 +41,6 @@ public class SellerDashboardActivity extends AppCompatActivity {
         setContentView(R.layout.activity_seller_dashboard);
 
         session = new SessionManager(this);
-
-        VoiceGuide.announceScreen(this,
-                "یہ آپ کی دکان کا ڈیش بورڈ ہے۔ یہاں آپ اپنی کل کمائی اور آرڈرز کی تعداد دیکھ سکتی ہیں۔ نیچے آپ کی شامل کردہ تمام اشیاء بھی نظر آئیں گی۔ نئی چیز شامل کرنے کے لیے بٹن دبائیں۔");
 
         // ============ Initialize Views ============
         tvCategory        = findViewById(R.id.tvCategory);
@@ -54,7 +54,14 @@ public class SellerDashboardActivity extends AppCompatActivity {
         rvMyProducts      = findViewById(R.id.rvMyProducts);
         tvNoProducts      = findViewById(R.id.tvNoProducts);
 
+        ImageButton btnSpeaker = findViewById(R.id.btnSpeaker);
+        VoiceGuide.setupSpeakerButton(btnSpeaker, this,
+                "یہ آپ کی دکان کا ڈیش بورڈ ہے۔ یہاں آپ اپنی کل کمائی اور آرڈرز کی تعداد دیکھ سکتی ہیں۔ نیچے آپ کی شامل کردہ تمام اشیاء بھی نظر آئیں گی۔ نئی چیز شامل کرنے کے لیے بٹن دبائیں۔"
+        );
+
         tvWelcome.setText("👋 " + session.getName());
+
+        BottomNavHelper.setupBackButton(this);
 
         btnAddProduct.setOnClickListener(v -> startActivity(new Intent(this, AddProductActivity.class)));
 
@@ -81,16 +88,48 @@ public class SellerDashboardActivity extends AppCompatActivity {
         rvMyProducts.setLayoutManager(new GridLayoutManager(this, 2));
         myProductAdapter = new ProductAdapter(
                 myProductList,
-                product -> {
-                    Intent i = new Intent(this, ProductDetailActivity.class);
-                    i.putExtra(ProductDetailActivity.EXTRA_PRODUCT_ID, product.getId());
-                    startActivity(i);
-                },
-                // Apni khud ki cheez par order/chat dabana kuch nahi karta — sirf batata hai
-                product -> Toast.makeText(this, "یہ آپ کی اپنی چیز ہے", Toast.LENGTH_SHORT).show(),
-                product -> Toast.makeText(this, "یہ آپ کی اپنی چیز ہے", Toast.LENGTH_SHORT).show()
+                this::showProductOptionsDialog
         );
         rvMyProducts.setAdapter(myProductAdapter);
+    }
+
+    private void showProductOptionsDialog(Product product) {
+        if (product == null) return;
+        String[] options = {"✏️ ترمیم کریں / Edit Product", "🗑️ ختم کریں / Delete Product", "👁️ تفصیلات دیکھیں / View Details"};
+        new AlertDialog.Builder(this)
+                .setTitle(product.getName())
+                .setItems(options, (dialog, which) -> {
+                    if (which == 0) {
+                        Intent intent = new Intent(this, AddProductActivity.class);
+                        intent.putExtra(AddProductActivity.EXTRA_PRODUCT_ID, product.getId());
+                        startActivity(intent);
+                    } else if (which == 1) {
+                        confirmDeleteProduct(product);
+                    } else if (which == 2) {
+                        Intent i = new Intent(this, ProductDetailActivity.class);
+                        i.putExtra(ProductDetailActivity.EXTRA_PRODUCT_ID, product.getId());
+                        i.putExtra(ProductDetailActivity.EXTRA_IS_SELLER_VIEW, true);
+                        startActivity(i);
+                    }
+                })
+                .show();
+    }
+
+    private void confirmDeleteProduct(Product product) {
+        new AlertDialog.Builder(this)
+                .setTitle("حذف کی تصدیق")
+                .setMessage("کیا آپ واقعی \"" + product.getName() + "\" کو حذف کرنا چاہتی ہیں؟")
+                .setPositiveButton("ہاں، ختم کریں", (dialog, which) -> {
+                    FirebaseDatabase.getInstance().getReference().child(Constants.NODE_PRODUCTS)
+                            .child(product.getId()).removeValue()
+                            .addOnSuccessListener(v -> {
+                                Toast.makeText(this, "پروڈکٹ حذف ہو گئی! ✅", Toast.LENGTH_SHORT).show();
+                                loadMyProducts();
+                            })
+                            .addOnFailureListener(e -> Toast.makeText(this, "خرابی: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                })
+                .setNegativeButton("منسوخ کریں", null)
+                .show();
     }
 
     // ============ LOAD SELLER'S OWN PRODUCTS ============
@@ -98,23 +137,30 @@ public class SellerDashboardActivity extends AppCompatActivity {
         String uid = session.getUid();
         if (uid == null || uid.trim().isEmpty()) return;
 
-        FirebaseDatabase.getInstance().getReference()
-                .child(Constants.NODE_PRODUCTS)
-                .orderByChild("sellerId")
-                .equalTo(uid.trim())
+        final String targetUid = uid.trim();
+
+        FirebaseDatabase.getInstance().getReference().child(Constants.NODE_PRODUCTS)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
                         myProductList.clear();
                         for (DataSnapshot child : snapshot.getChildren()) {
                             Product p = child.getValue(Product.class);
-                            if (p != null) myProductList.add(p);
+                            if (p != null) {
+                                String pid = child.getKey();
+                                if (pid != null) p.setId(pid.trim());
+                                if (p.getSellerId() != null && targetUid.equalsIgnoreCase(p.getSellerId().trim())) {
+                                    myProductList.add(p);
+                                }
+                            }
                         }
-                        myProductAdapter.notifyDataSetChanged();
+                        if (myProductAdapter != null) myProductAdapter.notifyDataSetChanged();
                         tvNoProducts.setVisibility(myProductList.isEmpty() ? View.VISIBLE : View.GONE);
                         rvMyProducts.setVisibility(myProductList.isEmpty() ? View.GONE : View.VISIBLE);
                     }
-                    @Override public void onCancelled(DatabaseError error) {}
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {}
                 });
     }
 

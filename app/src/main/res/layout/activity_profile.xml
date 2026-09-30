@@ -35,6 +35,17 @@
                     android:padding="18dp"
                     android:background="@color/primary">
 
+                    <ImageButton
+                        android:id="@+id/btnBack"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@drawable/ic_arrow_back"
+                        app:tint="#FFFFFF"
+                        android:contentDescription="Back" />
+
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -116,7 +127,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Seller Name"
-                        android:textColor="#222222"
+                        android:textColor="@color/text_primary"
                         android:textSize="26sp"
                         android:textStyle="bold"/>
 
@@ -136,7 +147,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:text="email@gmail.com"
-                    android:textColor="#888888"
+                    android:textColor="@color/text_secondary"
                     android:textSize="16sp"/>
 
                 <TextView
@@ -184,7 +195,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="👤  Personal Information"
-                    android:textColor="@color/primary"
+                    android:textColor="@color/text_primary"
                     android:textSize="21sp"
                     android:textStyle="bold"
                     android:paddingBottom="10dp"/>
@@ -200,8 +211,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:padding="16dp"
-                    android:background="#F4F4F4"
-                    android:textColor="#333333"
+                    android:background="@drawable/bg_skeu_input"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:text="Full Name"/>
 
@@ -211,8 +222,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:padding="16dp"
-                    android:background="#F4F4F4"
-                    android:textColor="#333333"
+                    android:background="@drawable/bg_skeu_input"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:text="Email"/>
 
@@ -222,8 +233,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:padding="16dp"
-                    android:background="#F4F4F4"
-                    android:textColor="#333333"
+                    android:background="@drawable/bg_skeu_input"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:text="WhatsApp"/>
 
@@ -235,7 +246,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="25dp"
                     android:text="🏪  Business Information"
-                    android:textColor="@color/primary"
+                    android:textColor="@color/text_primary"
                     android:textSize="21sp"
                     android:textStyle="bold"
                     android:paddingBottom="10dp"/>
@@ -251,8 +262,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:padding="16dp"
-                    android:background="#F4F4F4"
-                    android:textColor="#333333"
+                    android:background="@drawable/bg_skeu_input"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:text="Shop Name"/>
 
@@ -262,8 +273,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:padding="16dp"
-                    android:background="#F4F4F4"
-                    android:textColor="#333333"
+                    android:background="@drawable/bg_skeu_input"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:text="Category"/>
 
@@ -273,8 +284,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:padding="16dp"
-                    android:background="#F4F4F4"
-                    android:textColor="#333333"
+                    android:background="@drawable/bg_skeu_input"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:text="Bio / Description"/>
 
@@ -286,7 +297,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="25dp"
                     android:text="📍  Location &amp; Delivery"
-                    android:textColor="@color/primary"
+                    android:textColor="@color/text_primary"
                     android:textSize="21sp"
                     android:textStyle="bold"
                     android:paddingBottom="10dp"/>
@@ -302,8 +313,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:padding="16dp"
-                    android:background="#F4F4F4"
-                    android:textColor="#333333"
+                    android:background="@drawable/bg_skeu_input"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:text="City"/>
 
@@ -313,8 +324,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:padding="16dp"
-                    android:background="#F4F4F4"
-                    android:textColor="#333333"
+                    android:background="@drawable/bg_skeu_input"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:text="Shop Address"/>
 
@@ -324,8 +335,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:padding="16dp"
-                    android:background="#F4F4F4"
-                    android:textColor="#333333"
+                    android:background="@drawable/bg_skeu_input"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:text="Can Deliver"/>
 
@@ -335,8 +346,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:padding="16dp"
-                    android:background="#F4F4F4"
-                    android:textColor="#333333"
+                    android:background="@drawable/bg_skeu_input"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:text="Capacity"/>
 
@@ -348,7 +359,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="25dp"
                     android:text="🛡️  Verification &amp; Rating"
-                    android:textColor="@color/primary"
+                    android:textColor="@color/text_primary"
                     android:textSize="21sp"
                     android:textStyle="bold"
                     android:paddingBottom="10dp"/>
@@ -364,8 +375,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:padding="16dp"
-                    android:background="#F4F4F4"
-                    android:textColor="#333333"
+                    android:background="@drawable/bg_skeu_input"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:text="CNIC Verification"/>
 
@@ -375,8 +386,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:padding="16dp"
-                    android:background="#F4F4F4"
-                    android:textColor="#333333"
+                    android:background="@drawable/bg_skeu_input"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:text="Voice Verification"/>
 
@@ -386,8 +397,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:padding="16dp"
-                    android:background="#F4F4F4"
-                    android:textColor="#333333"
+                    android:background="@drawable/bg_skeu_input"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:text="Rating"/>
 
@@ -397,8 +408,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:padding="16dp"
-                    android:background="#F4F4F4"
-                    android:textColor="#333333"
+                    android:background="@drawable/bg_skeu_input"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:text="Rating Count"/>
 
@@ -408,8 +419,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:padding="16dp"
-                    android:background="#F4F4F4"
-                    android:textColor="#333333"
+                    android:background="@drawable/bg_skeu_input"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:text="Top Rated"/>
 
@@ -429,31 +440,56 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="✏️  Edit Profile"
-                    android:textColor="@color/primary"
-                    android:textSize="24sp"
-                    android:textStyle="bold"
-                    android:paddingBottom="18dp"/>
+                    android:text="✏️  پروفائل تبدیل کریں / Edit Profile"
+                    android:textColor="@color/text_primary"
+                    android:textSize="22sp"
+                    android:fontFamily="sans-serif-black"
+                    android:paddingBottom="16dp"/>
+
+                <!-- Full Name Label & Input -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="👤 اپنا مکمل نام / Full Name"
+                    android:textColor="@color/text_primary"
+                    android:fontFamily="sans-serif-bold"
+                    android:textSize="13sp"
+                    android:layout_marginBottom="4dp"/>
 
                 <EditText
                     android:id="@+id/etFullName"
                     android:layout_width="match_parent"
                     android:layout_height="55dp"
-                    android:hint="Full Name"
+                    android:hint="نام درج کریں / Enter Full Name"
                     android:padding="14dp"
-                    android:background="#F4F4F4"
-                    android:textSize="16sp"/>
+                    android:background="@drawable/bg_skeu_input"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_secondary"
+                    android:textSize="15sp"
+                    android:layout_marginBottom="12dp"/>
+
+                <!-- Phone Label & Input -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="📞 فون نمبر / Phone Number"
+                    android:textColor="@color/text_primary"
+                    android:fontFamily="sans-serif-bold"
+                    android:textSize="13sp"
+                    android:layout_marginBottom="4dp"/>
 
                 <EditText
                     android:id="@+id/etPhone"
                     android:layout_width="match_parent"
                     android:layout_height="55dp"
-                    android:layout_marginTop="12dp"
-                    android:hint="WhatsApp / Phone"
+                    android:hint="فون نمبر درج کریں / Enter Phone Number"
                     android:inputType="phone"
                     android:padding="14dp"
-                    android:background="#F4F4F4"
-                    android:textSize="16sp"/>
+                    android:background="@drawable/bg_skeu_input"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_secondary"
+                    android:textSize="15sp"
+                    android:layout_marginBottom="12dp"/>
 
 
                 <!-- Seller Fields -->
@@ -464,87 +500,180 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
+                    <!-- Business Name Label & Input -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="🏪 دکان یا کاروبار کا نام / Business or Shop Name"
+                        android:textColor="@color/text_primary"
+                        android:fontFamily="sans-serif-bold"
+                        android:textSize="13sp"
+                        android:layout_marginBottom="4dp"/>
+
                     <EditText
                         android:id="@+id/etBusinessName"
                         android:layout_width="match_parent"
                         android:layout_height="55dp"
-                        android:layout_marginTop="12dp"
-                        android:hint="Business / Shop Name"
+                        android:hint="کاروبار کا نام / Business Name"
                         android:padding="14dp"
-                        android:background="#F4F4F4"
-                        android:textSize="16sp"/>
+                        android:background="@drawable/bg_skeu_input"
+                        android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_secondary"
+                        android:textSize="15sp"
+                        android:layout_marginBottom="12dp"/>
+
+                    <!-- Bio Label & Input -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="📝 اپنے کام کی تفصیل / Bio or Description"
+                        android:textColor="@color/text_primary"
+                        android:fontFamily="sans-serif-bold"
+                        android:textSize="13sp"
+                        android:layout_marginBottom="4dp"/>
 
                     <EditText
                         android:id="@+id/etBio"
                         android:layout_width="match_parent"
-                        android:layout_height="110dp"
-                        android:layout_marginTop="12dp"
-                        android:hint="Bio / Description"
+                        android:layout_height="100dp"
+                        android:hint="کام کی تفصیل لکھیں / Bio &amp; Description"
                         android:gravity="top"
                         android:padding="14dp"
-                        android:background="#F4F4F4"
-                        android:textSize="16sp"/>
+                        android:background="@drawable/bg_skeu_input"
+                        android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_secondary"
+                        android:textSize="15sp"
+                        android:layout_marginBottom="12dp"/>
+
+                    <!-- City Label & Input -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="📍 شہر / City"
+                        android:textColor="@color/text_primary"
+                        android:fontFamily="sans-serif-bold"
+                        android:textSize="13sp"
+                        android:layout_marginBottom="4dp"/>
 
                     <EditText
                         android:id="@+id/etCity"
                         android:layout_width="match_parent"
                         android:layout_height="55dp"
-                        android:layout_marginTop="12dp"
-                        android:hint="City"
+                        android:hint="شہر کا نام / City Name"
                         android:padding="14dp"
-                        android:background="#F4F4F4"
-                        android:textSize="16sp"/>
+                        android:background="@drawable/bg_skeu_input"
+                        android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_secondary"
+                        android:textSize="15sp"
+                        android:layout_marginBottom="12dp"/>
+
+                    <!-- Categories Label & Selection -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="🎨 زمرے / Categories"
+                        android:textColor="@color/text_primary"
+                        android:fontFamily="sans-serif-bold"
+                        android:textSize="13sp"
+                        android:layout_marginBottom="4dp"/>
 
                     <TextView
                         android:id="@+id/tvCategoryProfile"
                         android:layout_width="match_parent"
                         android:layout_height="55dp"
-                        android:layout_marginTop="12dp"
-                        android:background="#F4F4F4"
+                        android:background="@drawable/bg_skeu_input"
                         android:gravity="center_vertical"
                         android:padding="14dp"
                         android:text="زمرے منتخب کریں / Select Categories"
-                        android:textColor="#222222"
-                        android:textSize="16sp" />
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp"
+                        android:layout_marginBottom="12dp" />
+
+                    <!-- WhatsApp Label & Input -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="💬 واٹس ایپ نمبر / WhatsApp Number"
+                        android:textColor="@color/text_primary"
+                        android:fontFamily="sans-serif-bold"
+                        android:textSize="13sp"
+                        android:layout_marginBottom="4dp"/>
 
                     <EditText
                         android:id="@+id/etWhatsApp"
                         android:layout_width="match_parent"
                         android:layout_height="55dp"
-                        android:layout_marginTop="12dp"
-                        android:hint="WhatsApp Number"
+                        android:hint="واٹس ایپ نمبر / WhatsApp Number"
                         android:inputType="phone"
                         android:padding="14dp"
-                        android:background="#F4F4F4"
-                        android:textSize="16sp"/>
+                        android:background="@drawable/bg_skeu_input"
+                        android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_secondary"
+                        android:textSize="15sp"
+                        android:layout_marginBottom="12dp"/>
+
+                    <!-- Capacity Label & Input -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="💼 روزانہ کام کی گنجائش / Capacity or Daily Work"
+                        android:textColor="@color/text_primary"
+                        android:fontFamily="sans-serif-bold"
+                        android:textSize="13sp"
+                        android:layout_marginBottom="4dp"/>
 
                     <EditText
                         android:id="@+id/etCapacity"
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
-                        android:layout_marginTop="12dp"
-                        android:hint="Capacity / Daily Work"
+                        android:hint="گنجائش لکھیں / Daily Capacity"
                         android:gravity="top"
                         android:padding="14dp"
-                        android:background="#F4F4F4"
-                        android:textSize="16sp"/>
+                        android:background="@drawable/bg_skeu_input"
+                        android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_secondary"
+                        android:textSize="15sp"
+                        android:layout_marginBottom="12dp"/>
+
+                    <!-- Shop Address Label & Input -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="🏠 گھر یا دکان کا پتہ / Shop or Home Address"
+                        android:textColor="@color/text_primary"
+                        android:fontFamily="sans-serif-bold"
+                        android:textSize="13sp"
+                        android:layout_marginBottom="4dp"/>
 
                     <EditText
                         android:id="@+id/etShopAddress"
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
-                        android:layout_marginTop="12dp"
-                        android:hint="Shop Address"
+                        android:hint="مکمل پتہ لکھیں / Full Address"
                         android:gravity="top"
                         android:padding="14dp"
-                        android:background="#F4F4F4"
-                        android:textSize="16sp"/>
+                        android:background="@drawable/bg_skeu_input"
+                        android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_secondary"
+                        android:textSize="15sp"
+                        android:layout_marginBottom="12dp"/>
+
+                    <!-- Can Deliver Label & Spinner -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="🚚 کیا آپ ڈیلیوری کر سکتی ہیں؟ / Can You Deliver?"
+                        android:textColor="@color/text_primary"
+                        android:fontFamily="sans-serif-bold"
+                        android:textSize="13sp"
+                        android:layout_marginBottom="4dp"/>
 
                     <Spinner
                         android:id="@+id/spinnerCanDeliverProfile"
                         android:layout_width="match_parent"
                         android:layout_height="55dp"
-                        android:layout_marginTop="12dp"/>
+                        android:background="@drawable/bg_skeu_input"
+                        android:layout_marginBottom="12dp"/>
 
                 </LinearLayout>
 

@@ -144,6 +144,8 @@ public class SellerRegistrationActivity extends AppCompatActivity {
 
         initializeViews();
 
+        BottomNavHelper.setupBackButton(this);
+
         setupPasswordVisibilityToggle();
 
         setupPasswordStrengthListener();
@@ -162,11 +164,8 @@ public class SellerRegistrationActivity extends AppCompatActivity {
 
         setupExistingAccountMode();
 
-        btnSpeaker.setOnClickListener(v ->
-                VoiceGuide.announceScreen(
-                        this,
-                        "یہ رجسٹریشن کی سکرین ہے۔ اپنا نام، کاروبار اور واٹس ایپ نمبر لکھیں۔"
-                )
+        VoiceGuide.setupSpeakerButton(btnSpeaker, this,
+                "یہ رجسٹریشن کی سکرین ہے۔ اپنا نام، کاروبار اور واٹس ایپ نمبر لکھیں۔"
         );
 
         btnPickCnic.setOnClickListener(v ->

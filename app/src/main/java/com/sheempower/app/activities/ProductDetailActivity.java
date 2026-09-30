@@ -2,6 +2,7 @@ package com.sheempower.app.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
@@ -15,6 +16,7 @@ import com.sheempower.app.utils.PreferencesManager;
 public class ProductDetailActivity extends AppCompatActivity {
 
     public static final String EXTRA_PRODUCT_ID = "productId";
+    public static final String EXTRA_IS_SELLER_VIEW = "isSellerView";
 
     private ImageView ivProduct;
     private TextView tvName, tvPrice, tvSellerName, tvSellerMeta, tvSellerRating, tvDescription;
@@ -35,8 +37,10 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         if (productId == null) { Toast.makeText(this, "چیز نہیں ملی", Toast.LENGTH_LONG).show(); finish(); return; }
 
-        VoiceGuide.announceScreen(this,
-                "یہ چیز کی مکمل تفصیل ہے۔ اس کی قیمت پہلے سے مقرر ہے۔ آرڈر دینے کے لیے نیچے بٹن دبائیں، یا واٹس ایپ پر بات کرنے کے لیے سبز بٹن دبائیں۔");
+        ImageButton btnSpeaker = findViewById(R.id.btnSpeaker);
+        VoiceGuide.setupSpeakerButton(btnSpeaker, this,
+                "یہ چیز کی مکمل تفصیل ہے۔ اس کی قیمت پہلے سے مقرر ہے۔ آرڈر دینے کے لیے نیچے بٹن دبائیں، یا واٹس ایپ پر بات کرنے کے لیے سبز بٹن دبائیں۔"
+        );
 
         ivProduct      = findViewById(R.id.ivProduct);
         tvName         = findViewById(R.id.tvProductName);
@@ -48,6 +52,15 @@ public class ProductDetailActivity extends AppCompatActivity {
         btnViewSeller  = findViewById(R.id.btnViewSeller);
         btnPlaceOrder  = findViewById(R.id.btnPlaceOrder);
         btnWhatsApp    = findViewById(R.id.btnWhatsApp);
+
+        BottomNavHelper.setupBackButton(this);
+
+        boolean isSellerView = getIntent().getBooleanExtra(EXTRA_IS_SELLER_VIEW, false);
+        if (isSellerView) {
+            if (btnPlaceOrder != null) btnPlaceOrder.setVisibility(View.GONE);
+            if (btnWhatsApp != null) btnWhatsApp.setVisibility(View.GONE);
+            if (btnViewSeller != null) btnViewSeller.setVisibility(View.GONE);
+        }
 
         loadProduct(productId);
 
@@ -112,6 +125,17 @@ public class ProductDetailActivity extends AppCompatActivity {
         tvDescription.setText(currentProduct.getDescription());
         if (currentProduct.getImageUrl() != null && !currentProduct.getImageUrl().isEmpty())
             Glide.with(ProductDetailActivity.this).load(currentProduct.getImageUrl()).into(ivProduct);
+
+        boolean isSellerView = getIntent().getBooleanExtra(EXTRA_IS_SELLER_VIEW, false);
+        boolean isOwnProduct = session.isLoggedIn() && session.getUid() != null && currentProduct.getSellerId() != null
+                && session.getUid().trim().equalsIgnoreCase(currentProduct.getSellerId().trim());
+
+        if (isSellerView || isOwnProduct) {
+            if (btnPlaceOrder != null) btnPlaceOrder.setVisibility(View.GONE);
+            if (btnWhatsApp != null) btnWhatsApp.setVisibility(View.GONE);
+            if (btnViewSeller != null) btnViewSeller.setVisibility(View.GONE);
+        }
+
         if (currentProduct.getSellerId() != null && !currentProduct.getSellerId().trim().isEmpty()) {
             loadSeller(currentProduct.getSellerId().trim());
         }

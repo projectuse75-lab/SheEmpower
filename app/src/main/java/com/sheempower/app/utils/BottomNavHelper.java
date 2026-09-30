@@ -351,4 +351,12 @@ public class BottomNavHelper {
                     .overridePendingTransition(0, 0);
         }
     }
+
+    public static void setupBackButton(Activity activity) {
+        if (activity == null) return;
+        View btnBack = activity.findViewById(R.id.btnBack);
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> activity.onBackPressed());
+        }
+    }
 }

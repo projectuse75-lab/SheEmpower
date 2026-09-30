@@ -1,6 +1,7 @@
 package com.sheempower.app.activities;
 
 import android.os.Bundle;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -29,7 +30,8 @@ public class AdminOrdersActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_orders);
 
-        VoiceGuide.announceScreen(this, "یہ نظام کے تمام آرڈرز کی فہرست ہے۔");
+        ImageButton btnSpeaker = findViewById(R.id.btnSpeaker);
+        VoiceGuide.setupSpeakerButton(btnSpeaker, this, "یہ نظام کے تمام آرڈرز کی فہرست ہے۔");
 
         rvOrders = findViewById(R.id.rvOrders);
         tvEmpty  = findViewById(R.id.tvEmpty);

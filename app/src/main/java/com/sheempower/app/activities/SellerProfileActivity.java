@@ -40,6 +40,7 @@ public class SellerProfileActivity extends AppCompatActivity {
     private MediaPlayer mediaPlayer;
 
     private String sellerId;
+    private String selectedCategoryFilter;
     private Seller currentSeller;
     private SessionManager session;
 
@@ -50,6 +51,10 @@ public class SellerProfileActivity extends AppCompatActivity {
 
         session  = new SessionManager(this);
         sellerId = getIntent().getStringExtra(EXTRA_SELLER_ID);
+        selectedCategoryFilter = getIntent().getStringExtra(EXTRA_SELECTED_CATEGORY);
+        if (selectedCategoryFilter != null) {
+            selectedCategoryFilter = selectedCategoryFilter.trim();
+        }
 
         if (sellerId == null || sellerId.isEmpty()) {
             Toast.makeText(this, "بیچنے والی کی شناخت نہیں ملی", Toast.LENGTH_LONG).show();
@@ -77,8 +82,12 @@ public class SellerProfileActivity extends AppCompatActivity {
         btnAdminApprove = findViewById(R.id.btnAdminApprove);
         btnAdminReject  = findViewById(R.id.btnAdminReject);
 
-        VoiceGuide.announceScreen(this,
-                "یہ بیچنے والی کی پروفائل ہے۔ نیچے اس کی تمام اشیاء نظر آئیں گی۔");
+        BottomNavHelper.setupBackButton(this);
+
+        ImageButton btnSpeaker = findViewById(R.id.btnSpeaker);
+        VoiceGuide.setupSpeakerButton(btnSpeaker, this,
+                "یہ بیچنے والی کی پروفائل ہے۔ نیچے اس کی تمام اشیاء نظر آئیں گی۔"
+        );
 
         rvProducts.setLayoutManager(new GridLayoutManager(this, 2));
         productAdapter = new ProductAdapter(productList,
@@ -108,6 +117,11 @@ public class SellerProfileActivity extends AppCompatActivity {
                 btnPlaceOrder.setOnClickListener(v -> requireBuyerLogin(() -> {
                     Intent i = new Intent(this, PlaceOrderActivity.class);
                     i.putExtra(PlaceOrderActivity.EXTRA_SELLER_ID, sellerId);
+                    if (selectedCategoryFilter != null && !selectedCategoryFilter.trim().isEmpty()) {
+                        i.putExtra(PlaceOrderActivity.EXTRA_PRODUCT_CATEGORY, selectedCategoryFilter.trim());
+                    } else if (currentSeller != null && currentSeller.getCategory() != null && !currentSeller.getCategory().trim().isEmpty()) {
+                        i.putExtra(PlaceOrderActivity.EXTRA_PRODUCT_CATEGORY, currentSeller.getCategory().trim());
+                    }
                     startActivity(i);
                 }));
             }
@@ -269,20 +283,49 @@ public class SellerProfileActivity extends AppCompatActivity {
     }
 
     private void loadSellerProducts() {
+        if (sellerId == null || sellerId.trim().isEmpty()) return;
+        final String targetSellerId = sellerId.trim();
+        final String activeCatFilter = selectedCategoryFilter;
+
         FirebaseDatabase.getInstance().getReference().child(Constants.NODE_PRODUCTS)
-                .orderByChild("sellerId").equalTo(sellerId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override public void onDataChange(DataSnapshot snapshot) {
                         productList.clear();
                         for (DataSnapshot child : snapshot.getChildren()) {
                             Product p = child.getValue(Product.class);
                             if (p != null) {
-                                // ✅ YEH LINE ADD KI — Firebase key se ID set karo
-                                p.setId(child.getKey());
-                                productList.add(p);
+                                String pid = child.getKey();
+                                if (pid != null) p.setId(pid.trim());
+
+                                if (p.getSellerId() != null) {
+                                    String pSellerId = p.getSellerId().trim();
+                                    boolean isMatch = targetSellerId.equalsIgnoreCase(pSellerId);
+
+                                    if (!isMatch && currentSeller != null) {
+                                        if (currentSeller.getUid() != null && currentSeller.getUid().trim().equalsIgnoreCase(pSellerId)) {
+                                            isMatch = true;
+                                        } else if (currentSeller.getEmail() != null && currentSeller.getEmail().trim().equalsIgnoreCase(pSellerId)) {
+                                            isMatch = true;
+                                        } else if (currentSeller.getPhone() != null && currentSeller.getPhone().trim().equalsIgnoreCase(pSellerId)) {
+                                            isMatch = true;
+                                        } else if (currentSeller.getWhatsappNumber() != null && currentSeller.getWhatsappNumber().trim().equalsIgnoreCase(pSellerId)) {
+                                            isMatch = true;
+                                        }
+                                    }
+
+                                    if (isMatch) {
+                                        if (activeCatFilter != null && !activeCatFilter.isEmpty()) {
+                                            if (p.getCategory() != null && activeCatFilter.equalsIgnoreCase(p.getCategory().trim())) {
+                                                productList.add(p);
+                                            }
+                                        } else {
+                                            productList.add(p);
+                                        }
+                                    }
+                                }
                             }
                         }
-                        productAdapter.notifyDataSetChanged();
+                        if (productAdapter != null) productAdapter.notifyDataSetChanged();
                     }
                     @Override public void onCancelled(DatabaseError error) {}
                 });

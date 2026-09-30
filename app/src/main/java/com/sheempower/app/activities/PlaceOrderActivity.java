@@ -19,6 +19,7 @@ import com.sheempower.app.models.Seller;
 import com.sheempower.app.utils.PreferencesManager;
 import com.sheempower.app.utils.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -53,7 +54,9 @@ public class PlaceOrderActivity extends AppCompatActivity {
     private final Map<String, Spinner> dynamicSpinners = new HashMap<>();
     private final Map<String, List<CheckBox>> dynamicCheckboxGroups = new HashMap<>();
 
-    /** Seller Profile se order karte waqt — seller ki saari products checklist yahan track hoti hai */
+    /** Seller Profile se order karte waqt — seller ki saari products categories ke mutabiq group hoti hain */
+    private final Map<String, List<Product>> sellerCategoryProductsMap = new LinkedHashMap<>();
+    private final List<String> availableOrderCategories = new ArrayList<>();
     private final Map<CheckBox, Product> checklistMap = new LinkedHashMap<>();
 
     @Override
@@ -101,16 +104,21 @@ public class PlaceOrderActivity extends AppCompatActivity {
         }
         if (sellerId == null) { Toast.makeText(this, "بیچنے والی نہیں ملی", Toast.LENGTH_LONG).show(); finish(); return; }
 
-        setupOrderCategorySpinner();
+        BottomNavHelper.setupBackButton(this);
 
         // ہمیشہ قیمت کا خانہ بند رکھتے ہیں — خریدار کبھی خود قیمت تبدیل نہیں کر سکے گا
         etAmount.setEnabled(false);
         etAmount.setFocusable(false);
         tvAmountLockedNote.setVisibility(View.VISIBLE);
 
+        ImageButton btnSpeaker = findViewById(R.id.btnSpeaker);
+        VoiceGuide.setupSpeakerButton(btnSpeaker, this,
+                singleProductMode
+                        ? "یہ آرڈر کی سکرین ہے۔ آپ نے ایک مخصوص چیز منتخب کی ہے، اس کی قیمت بیچنے والی نے پہلے سے مقرر کی ہے اور اسے تبدیل نہیں کیا جا سکتا۔ نیچے تفصیلات بھر کر آرڈر جمع کریں۔"
+                        : "یہ آرڈر کی سکرین ہے۔ نیچے دی گئی فہرست میں سے وہ چیزیں منتخب کریں جو آپ منگوانا چاہتی ہیں، ہر چیز کے آگے اس کی قیمت لکھی ہے۔"
+        );
+
         if (singleProductMode) {
-            VoiceGuide.announceScreen(this,
-                    "یہ آرڈر کی سکرین ہے۔ آپ نے ایک مخصوص چیز منتخب کی ہے، اس کی قیمت بیچنے والی نے پہلے سے مقرر کی ہے اور اسے تبدیل نہیں کیا جا سکتا۔ نیچے تفصیلات بھر کر آرڈر جمع کریں۔");
             tvSelectedItem.setText("منتخب کردہ چیز:\n" + productName);
             etAmount.setText(String.valueOf((long) productPrice));
             tvAmountLockedNote.setText("🔒 یہ قیمت بیچنے والی نے مقرر کی ہے");
@@ -130,60 +138,54 @@ public class PlaceOrderActivity extends AppCompatActivity {
         btnSubmitOrder.setOnClickListener(v -> submitOrder());
     }
 
-    private void setupOrderCategorySpinner() {
-        if (spinnerOrderCategory == null) return;
-        String[] categoryDisplayNames = new String[Constants.CATEGORIES.length];
-        for (int i = 0; i < Constants.CATEGORIES.length; i++) {
-            categoryDisplayNames[i] = Constants.CATEGORY_LABELS_UR[i] + " / " + Constants.CATEGORIES[i];
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categoryDisplayNames);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerOrderCategory.setAdapter(adapter);
-
-        spinnerOrderCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (isUpdatingCategorySpinner) return;
-                if (position >= 0 && position < Constants.CATEGORIES.length) {
-                    String selectedCat = Constants.CATEGORIES[position];
-                    tvCategoryHeader.setText("📋 " + Constants.getUrduLabel(selectedCat) + " کی تفصیلات");
-                    buildDynamicForm(selectedCat);
-                }
-            }
-            @Override public void onNothingSelected(AdapterView<?> parent) {}
-        });
-    }
-
-    private void applyActiveCategory() {
-        String category = (productCategory != null && !productCategory.trim().isEmpty())
-                ? productCategory.trim()
-                : (currentSeller != null ? currentSeller.getCategory() : "Cooking");
-
-        if (category == null || category.isEmpty()) category = "Cooking";
-
-        int selectionIndex = 0;
-        for (int i = 0; i < Constants.CATEGORIES.length; i++) {
-            if (Constants.CATEGORIES[i].equalsIgnoreCase(category)) {
-                selectionIndex = i;
-                break;
-            }
-        }
-
-        isUpdatingCategorySpinner = true;
-        if (spinnerOrderCategory != null) spinnerOrderCategory.setSelection(selectionIndex);
-        isUpdatingCategorySpinner = false;
-
-        String selectedCat = Constants.CATEGORIES[selectionIndex];
-        tvCategoryHeader.setText("📋 " + Constants.getUrduLabel(selectedCat) + " کی تفصیلات");
-        buildDynamicForm(selectedCat);
-    }
-
     private void loadSellerAndBuildForm() {
         if (sellerId == null || sellerId.isEmpty()) {
             Toast.makeText(this, "بیچنے والی نہیں ملی", Toast.LENGTH_LONG).show();
             finish();
             return;
         }
+
+        final String targetSellerId = sellerId.trim();
+
+        // 1. Pehle seller ki tamam products ko category-wise fetch karke group karte hain
+        FirebaseDatabase.getInstance().getReference().child(Constants.NODE_PRODUCTS)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot prodSnapshot) {
+                        sellerCategoryProductsMap.clear();
+
+                        for (DataSnapshot child : prodSnapshot.getChildren()) {
+                            Product p = child.getValue(Product.class);
+                            if (p != null) {
+                                String pKey = child.getKey();
+                                if (pKey != null) p.setId(pKey.trim());
+
+                                if (p.getSellerId() != null && targetSellerId.equalsIgnoreCase(p.getSellerId().trim())) {
+                                    String cat = (p.getCategory() != null && !p.getCategory().trim().isEmpty())
+                                            ? p.getCategory().trim()
+                                            : "Cooking";
+
+                                    List<Product> catList = sellerCategoryProductsMap.get(cat);
+                                    if (catList == null) {
+                                        catList = new ArrayList<>();
+                                        sellerCategoryProductsMap.put(cat, catList);
+                                    }
+                                    catList.add(p);
+                                }
+                            }
+                        }
+
+                        loadSellerInfoAndCategorySetup();
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+                        loadSellerInfoAndCategorySetup();
+                    }
+                });
+    }
+
+    private void loadSellerInfoAndCategorySetup() {
         FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS).child(sellerId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override public void onDataChange(DataSnapshot snapshot) {
@@ -198,7 +200,38 @@ public class PlaceOrderActivity extends AppCompatActivity {
                         tvSellerVerified.setText("✓ تصدیق شدہ");
 
                         buildDeliveryBlock(currentSeller);
-                        if (!singleProductMode) buildProductChecklist(sellerId);
+
+                        // Filter products to keep ONLY active categories selected by seller
+                        Map<String, List<Product>> filteredMap = new LinkedHashMap<>();
+                        for (Map.Entry<String, List<Product>> entry : sellerCategoryProductsMap.entrySet()) {
+                            if (isCategoryActiveForSeller(entry.getKey())) {
+                                filteredMap.put(entry.getKey(), entry.getValue());
+                            }
+                        }
+                        sellerCategoryProductsMap.clear();
+                        sellerCategoryProductsMap.putAll(filteredMap);
+
+                        // Agar seller ki registered categories mein koi products na bhi hon tab bhi option dikھayein
+                        if (currentSeller.getCategories() != null) {
+                            for (String cat : currentSeller.getCategories()) {
+                                if (cat != null && !cat.trim().isEmpty() && !sellerCategoryProductsMap.containsKey(cat.trim())) {
+                                    sellerCategoryProductsMap.put(cat.trim(), new ArrayList<>());
+                                }
+                            }
+                        } else if (currentSeller.getCategory() != null && !currentSeller.getCategory().trim().isEmpty()) {
+                            String primaryCat = currentSeller.getCategory().trim();
+                            if (!sellerCategoryProductsMap.containsKey(primaryCat)) {
+                                sellerCategoryProductsMap.put(primaryCat, new ArrayList<>());
+                            }
+                        }
+
+                        if (sellerCategoryProductsMap.isEmpty()) {
+                            for (String cat : Constants.CATEGORIES) {
+                                sellerCategoryProductsMap.put(cat, new ArrayList<>());
+                            }
+                        }
+
+                        setupOrderCategorySpinner();
 
                         if (singleProductMode && productId != null && (productCategory == null || productCategory.trim().isEmpty())) {
                             FirebaseDatabase.getInstance().getReference().child(Constants.NODE_PRODUCTS).child(productId)
@@ -207,7 +240,7 @@ public class PlaceOrderActivity extends AppCompatActivity {
                                         public void onDataChange(DataSnapshot prodSnap) {
                                             Product prod = prodSnap.getValue(Product.class);
                                             if (prod != null && prod.getCategory() != null && !prod.getCategory().trim().isEmpty()) {
-                                                productCategory = prod.getCategory();
+                                                productCategory = prod.getCategory().trim();
                                             }
                                             applyActiveCategory();
                                         }
@@ -223,63 +256,152 @@ public class PlaceOrderActivity extends AppCompatActivity {
                 });
     }
 
-    /** YEH ASAL FEATURE HAI — seller ki saari products, har ek ki apni fixed price ke sath.
-     *  Buyer jo bhi tick karta hai, uski total qeemat khud-ba-khud jud kar etAmount mein aa jati hai */
-    private void buildProductChecklist(String sellerId) {
-        FirebaseDatabase.getInstance().getReference().child(Constants.NODE_PRODUCTS)
-                .orderByChild("sellerId").equalTo(sellerId)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override public void onDataChange(DataSnapshot snapshot) {
-                        layoutProductChecklist.removeAllViews();
-                        checklistMap.clear();
+    private boolean isCategoryActiveForSeller(String productCategory) {
+        if (productCategory == null || productCategory.trim().isEmpty()) return true;
+        if (currentSeller == null) return true;
 
-                        List<Product> products = new ArrayList<>();
-                        for (DataSnapshot child : snapshot.getChildren()) {
-                            Product p = child.getValue(Product.class);
-                            if (p != null) products.add(p);
-                        }
+        String pCat = productCategory.trim();
+        List<String> categories = currentSeller.getCategories();
+        if (categories != null && !categories.isEmpty()) {
+            for (String c : categories) {
+                if (c != null && pCat.equalsIgnoreCase(c.trim())) return true;
+            }
+            return false;
+        }
 
-                        if (products.isEmpty()) {
-                            tvChecklistEmpty.setVisibility(View.VISIBLE);
-                            return;
-                        }
-                        tvChecklistEmpty.setVisibility(View.GONE);
+        String primaryCat = currentSeller.getCategory();
+        if (primaryCat != null && !primaryCat.trim().isEmpty()) {
+            return pCat.equalsIgnoreCase(primaryCat.trim());
+        }
 
-                        for (Product p : products) {
-                            LinearLayout row = new LinearLayout(PlaceOrderActivity.this);
-                            row.setOrientation(LinearLayout.HORIZONTAL);
-                            row.setGravity(Gravity.CENTER_VERTICAL);
-                            row.setPadding(0, 12, 0, 12);
+        return true;
+    }
 
-                            CheckBox cb = new CheckBox(PlaceOrderActivity.this);
-                            cb.setText(p.getName());
-                            cb.setTextSize(14);
-                            LinearLayout.LayoutParams cbParams = new LinearLayout.LayoutParams(
-                                    0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
-                            cb.setLayoutParams(cbParams);
+    private void setupOrderCategorySpinner() {
+        if (spinnerOrderCategory == null) return;
 
-                            TextView tvPrice = new TextView(PlaceOrderActivity.this);
-                            tvPrice.setText("PKR " + (long) p.getPrice());
-                            tvPrice.setTextColor(0xFF192A56);
-                            tvPrice.setTypeface(null, Typeface.BOLD);
+        availableOrderCategories.clear();
+        availableOrderCategories.addAll(sellerCategoryProductsMap.keySet());
 
-                            cb.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                                recalcTotal();
-                                if (isChecked && p.getCategory() != null && !p.getCategory().trim().isEmpty()) {
-                                    productCategory = p.getCategory();
-                                    applyActiveCategory();
-                                }
-                            });
+        if (availableOrderCategories.isEmpty()) {
+            availableOrderCategories.addAll(Arrays.asList(Constants.CATEGORIES));
+        }
 
-                            row.addView(cb);
-                            row.addView(tvPrice);
-                            layoutProductChecklist.addView(row);
+        String[] categoryDisplayNames = new String[availableOrderCategories.size()];
+        for (int i = 0; i < availableOrderCategories.size(); i++) {
+            String cat = availableOrderCategories.get(i);
+            List<Product> prods = sellerCategoryProductsMap.get(cat);
+            int count = prods != null ? prods.size() : 0;
+            categoryDisplayNames[i] = Constants.getUrduLabel(cat) + " / " + cat + " (" + count + " " + (count == 1 ? "product" : "products") + ")";
+        }
 
-                            checklistMap.put(cb, p);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categoryDisplayNames);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerOrderCategory.setAdapter(adapter);
+
+        spinnerOrderCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (isUpdatingCategorySpinner) return;
+                if (position >= 0 && position < availableOrderCategories.size()) {
+                    String selectedCat = availableOrderCategories.get(position);
+                    productCategory = selectedCat;
+                    onCategoryChanged(selectedCat);
+                }
+            }
+            @Override public void onNothingSelected(AdapterView<?> parent) {}
+        });
+    }
+
+    private void onCategoryChanged(String selectedCat) {
+        if (selectedCat == null || selectedCat.isEmpty()) return;
+        tvCategoryHeader.setText("📋 " + Constants.getUrduLabel(selectedCat) + " کی تفصیلات");
+        buildDynamicForm(selectedCat);
+        if (!singleProductMode) {
+            buildProductChecklistForCategory(selectedCat);
+        }
+    }
+
+    private void applyActiveCategory() {
+        String category = (productCategory != null && !productCategory.trim().isEmpty())
+                ? productCategory.trim()
+                : (currentSeller != null ? currentSeller.getCategory() : "Cooking");
+
+        if (category == null || category.isEmpty()) category = "Cooking";
+
+        int selectionIndex = 0;
+        for (int i = 0; i < availableOrderCategories.size(); i++) {
+            if (availableOrderCategories.get(i).equalsIgnoreCase(category)) {
+                selectionIndex = i;
+                break;
+            }
+        }
+
+        isUpdatingCategorySpinner = true;
+        if (spinnerOrderCategory != null && selectionIndex < availableOrderCategories.size()) {
+            spinnerOrderCategory.setSelection(selectionIndex);
+        }
+        isUpdatingCategorySpinner = false;
+
+        String selectedCat = (selectionIndex < availableOrderCategories.size())
+                ? availableOrderCategories.get(selectionIndex)
+                : category;
+
+        onCategoryChanged(selectedCat);
+    }
+
+    /** Har Selected Category ke mutabiq uski Apni Products ki list dikhati hai (e.g. Cooking (3), Stitching (2)) */
+    private void buildProductChecklistForCategory(String selectedCat) {
+        layoutProductChecklist.removeAllViews();
+        checklistMap.clear();
+
+        List<Product> products = sellerCategoryProductsMap.get(selectedCat);
+
+        if (products == null || products.isEmpty()) {
+            tvChecklistEmpty.setVisibility(View.VISIBLE);
+            tvChecklistEmpty.setText("اس زمرے (" + Constants.getUrduLabel(selectedCat) + ") میں فی الحال کوئی چیز موجود نہیں");
+            recalcTotal();
+            return;
+        }
+        tvChecklistEmpty.setVisibility(View.GONE);
+
+        for (Product p : products) {
+            LinearLayout row = new LinearLayout(PlaceOrderActivity.this);
+            row.setOrientation(LinearLayout.HORIZONTAL);
+            row.setGravity(Gravity.CENTER_VERTICAL);
+            row.setPadding(0, 12, 0, 12);
+
+            CheckBox cb = new CheckBox(PlaceOrderActivity.this);
+            cb.setText(p.getName());
+            cb.setTextSize(14);
+            LinearLayout.LayoutParams cbParams = new LinearLayout.LayoutParams(
+                    0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+            cb.setLayoutParams(cbParams);
+
+            TextView tvPrice = new TextView(PlaceOrderActivity.this);
+            tvPrice.setText("PKR " + (long) p.getPrice());
+            tvPrice.setTextColor(0xFF192A56);
+            tvPrice.setTypeface(null, Typeface.BOLD);
+
+            cb.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked) {
+                    for (CheckBox otherCb : checklistMap.keySet()) {
+                        if (otherCb != cb && otherCb.isChecked()) {
+                            otherCb.setChecked(false);
                         }
                     }
-                    @Override public void onCancelled(DatabaseError error) {}
-                });
+                }
+                recalcTotal();
+            });
+
+            row.addView(cb);
+            row.addView(tvPrice);
+            layoutProductChecklist.addView(row);
+
+            checklistMap.put(cb, p);
+        }
+
+        recalcTotal();
     }
 
     private void recalcTotal() {

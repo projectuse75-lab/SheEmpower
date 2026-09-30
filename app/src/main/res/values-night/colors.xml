@@ -1,22 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Main App Colors for Dark Mode (Luxury & Elegant theme) -->
-    <color name="primary_pink">#EDA6A3</color> <!-- Dusty Rose -->
-    <color name="light_pink">#162548</color> <!-- Deep Navy Surface -->
-    <color name="lighter_pink">#0E1830</color> <!-- Deep Midnight Navy -->
-    <color name="text_gray">#FCFBFB</color> <!-- Pearl White -->
-    <color name="white">#FFFFFF</color>
-    <color name="black">#000000</color>
-    <color name="gray">#63708D</color>
-    <color name="light_gray">#162548</color>
-    <color name="settings_card_background">#162548</color>
-    <color name="settings_card_text">#FCFBFB</color>
-    <color name="screen_background">#0E1830</color>
-    <color name="screen_surface">#162548</color>
-    <color name="screen_text">#FCFBFB</color>
-    <color name="screen_secondary_text">#EDA6A3</color>
-    <color name="settings_background">#0E1830</color>
-    <color name="settings_card">#162548</color>
-    <color name="bg_dark">#0E1830</color>
-    <color name="text_dark">#FCFBFB</color>
+    <!-- Dark Theme Colors -->
+    <!-- Primary Blue for Buttons, Cards & Fields -->
+    <color name="primary">#192A56</color>
+    <color name="primary_dark">#000000</color>
+    <color name="primary_light">#2A3F75</color>
+    <color name="midnight_navy">#192A56</color>
+
+    <color name="accent">#F7D794</color>
+    <color name="accent_gold">#F7D794</color>
+    <color name="star_gold">#F7D794</color>
+
+    <!-- Screen / Activity Backgrounds — PURE BLACK -->
+    <color name="background">#000000</color>
+    <color name="bg_light">#000000</color>
+    <color name="pearl_white">#192A56</color>
+    <color name="bg_cream">#000000</color>
+    <color name="screen_background">#000000</color>
+    <color name="settings_background">#000000</color>
+    <color name="bg_dark">#000000</color>
+    <color name="dark_background">#000000</color>
+    <color name="lighter_pink">#000000</color>
+
+    <!-- Cards, Buttons & Fields Backgrounds — BLUE -->
+    <color name="white">#192A56</color>
+    <color name="card_bg">#192A56</color>
+    <color name="input_bg">#192A56</color>
+    <color name="gray_light">#192A56</color>
+    <color name="screen_surface">#192A56</color>
+    <color name="settings_card">#192A56</color>
+    <color name="settings_card_background">#192A56</color>
+    <color name="dark_surface">#192A56</color>
+    <color name="placeholder_bg">#192A56</color>
+    <color name="light_pink">#192A56</color>
+    <color name="skeu_cream_dark">#192A56</color>
+    <color name="skeu_pink_light">#192A56</color>
+
+    <!-- Font / Text Colors — PURE WHITE -->
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#FFFFFF</color>
+    <color name="text_light">#FFFFFF</color>
+    <color name="text_gray">#FFFFFF</color>
+    <color name="text_dark">#FFFFFF</color>
+    <color name="settings_card_text">#FFFFFF</color>
+    <color name="screen_text">#FFFFFF</color>
+    <color name="screen_secondary_text">#FFFFFF</color>
+    <color name="lavender_text">#FFFFFF</color>
+    <color name="dark_text">#FFFFFF</color>
+    <color name="dark_text_secondary">#FFFFFF</color>
+
+    <!-- Borders & Dividers -->
+    <color name="divider">#2A3F75</color>
+    <color name="card_border">#2A3F75</color>
+    <color name="skeu_cream_border">#2A3F75</color>
+
+    <color name="black">#FFFFFF</color>
+    <color name="primary_pink">#192A56</color>
+    <color name="gray">#FFFFFF</color>
 </resources>
