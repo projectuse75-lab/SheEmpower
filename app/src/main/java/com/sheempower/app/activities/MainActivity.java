@@ -139,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        LanguageHelper.processViewHierarchy(findViewById(android.R.id.content), this);
         setupTopButtons();
         loadSellersThenProducts();
 

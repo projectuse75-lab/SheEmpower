@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -66,6 +67,7 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        LanguageHelper.processViewHierarchy(findViewById(android.R.id.content), this);
         ImageButton btnSpeaker = findViewById(R.id.btnSpeaker);
         if (btnSpeaker != null) {
             VoiceGuide.updateSpeakerIcon(btnSpeaker, VoiceGuide.isMuted(this));
@@ -161,6 +163,7 @@ public class SettingsActivity extends AppCompatActivity {
         // ✅ DARK THEME - APP RESTART FIX
         switchDarkTheme.setOnCheckedChangeListener((buttonView, isChecked) -> {
             preferencesManager.setDarkThemeEnabled(isChecked);
+            AppCompatDelegate.setDefaultNightMode(isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
             Toast.makeText(this, isChecked ? "🌙 Dark Theme ON" : "☀️ Light Theme ON", Toast.LENGTH_SHORT).show();
 
             // APP RESTART

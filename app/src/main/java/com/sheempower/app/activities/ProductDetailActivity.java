@@ -32,6 +32,8 @@ public class ProductDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_detail);
 
+        LanguageHelper.processViewHierarchy(findViewById(android.R.id.content), this);
+
         session = new SessionManager(this);
         String productId = getIntent().getStringExtra(EXTRA_PRODUCT_ID);
 
@@ -172,7 +174,17 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     private void requireBuyerLogin(Runnable action) {
         if (session.isLoggedIn()) action.run();
-        else { Toast.makeText(this, "پہلے لاگ ان کریں", Toast.LENGTH_SHORT).show(); startActivity(new Intent(this, LoginActivity.class)); }
+        else { Toast.makeText(this, LanguageHelper.processDualString(this, "پہلے لاگ ان کریں / Please Login First"), Toast.LENGTH_SHORT).show(); startActivity(new Intent(this, LoginActivity.class)); }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LanguageHelper.processViewHierarchy(findViewById(android.R.id.content), this);
+        ImageButton btnSpeaker = findViewById(R.id.btnSpeaker);
+        if (btnSpeaker != null) {
+            VoiceGuide.updateSpeakerIcon(btnSpeaker, VoiceGuide.isMuted(this));
+        }
     }
 
     // ✅ DARK THEME - ADD AT END OF CLASS

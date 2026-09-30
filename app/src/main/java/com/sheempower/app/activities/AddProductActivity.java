@@ -19,6 +19,7 @@ import com.sheempower.app.utils.Constants;
 import com.sheempower.app.utils.SessionManager;
 import com.sheempower.app.utils.VoiceGuide;
 import com.sheempower.app.utils.PreferencesManager;
+import com.sheempower.app.utils.LanguageHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,13 +43,13 @@ public class AddProductActivity extends AppCompatActivity {
     private final ActivityResultLauncher<String> imagePicker =
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
                 if (uri != null) {
-                    tvImageStatus.setText("✅ اپلوڈ ہو رہی ہے...");
+                    tvImageStatus.setText(LanguageHelper.processDualString(this, "✅ اپلوڈ ہو رہی ہے... / Uploading..."));
                     CloudinaryHelper.upload(this, uri, "products", (url, error) -> {
                         if (url != null) {
                             imageUrl = url;
-                            tvImageStatus.setText("✅ تصویر اپلوڈ ہو گئی");
+                            tvImageStatus.setText(LanguageHelper.processDualString(this, "✅ تصویر اپلوڈ ہو گئی / Image Uploaded"));
                         } else {
-                            tvImageStatus.setText("❌ اپلوڈ ناکام: " + error);
+                            tvImageStatus.setText(LanguageHelper.processDualString(this, "❌ اپلوڈ ناکام: / Upload Failed: ") + error);
                         }
                     });
                 }
@@ -60,17 +61,13 @@ public class AddProductActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_product);
 
+        LanguageHelper.processViewHierarchy(findViewById(android.R.id.content), this);
+
         session = new SessionManager(this);
 
         if (getIntent() != null && getIntent().hasExtra(EXTRA_PRODUCT_ID)) {
             editProductId = getIntent().getStringExtra(EXTRA_PRODUCT_ID);
         }
-
-        VoiceGuide.announceScreen(this,
-                editProductId != null
-                        ? "یہاں اپنی چیز کی معلومات تبدیل کریں۔ ترمیم مکمل کر کے محفوظ کریں۔"
-                        : "یہاں اپنی نئی چیز شامل کریں۔ پہلے زمرہ منتخب کریں، پھر چیز کا نام لکھیں، تفصیل، اور حتمی قیمت درج کریں۔"
-        );
 
         spinnerCategory = findViewById(R.id.spinnerCategory);
         etProductName   = findViewById(R.id.etProductName);
@@ -83,16 +80,16 @@ public class AddProductActivity extends AppCompatActivity {
         BottomNavHelper.setupBackButton(this);
 
         if (editProductId != null) {
-            btnSubmit.setText("💾 تبدیلی محفوظ کریں / Save Changes");
+            btnSubmit.setText(LanguageHelper.processDualString(this, "💾 تبدیلی محفوظ کریں / Save Changes"));
         }
 
         ImageButton btnSpeaker = findViewById(R.id.btnSpeaker);
         if (btnSpeaker != null) {
-            btnSpeaker.setOnClickListener(v -> VoiceGuide.announceScreen(this,
+            VoiceGuide.setupSpeakerButton(btnSpeaker, this,
                     editProductId != null
                             ? "یہاں اپنی چیز کی معلومات تبدیل کریں۔ ترمیم مکمل کر کے محفوظ کریں۔"
                             : "یہاں اپنی نئی چیز شامل کریں۔ پہلے زمرہ منتخب کریں، پھر چیز کا نام لکھیں، تفصیل، اور حتمی قیمت درج کریں۔"
-            ));
+            );
         }
 
         setupCategorySpinner();
@@ -103,6 +100,16 @@ public class AddProductActivity extends AppCompatActivity {
 
         btnPickImage.setOnClickListener(v -> imagePicker.launch("image/*"));
         btnSubmit.setOnClickListener(v -> submitProduct());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LanguageHelper.processViewHierarchy(findViewById(android.R.id.content), this);
+        ImageButton btnSpeaker = findViewById(R.id.btnSpeaker);
+        if (btnSpeaker != null) {
+            VoiceGuide.updateSpeakerIcon(btnSpeaker, VoiceGuide.isMuted(this));
+        }
     }
 
     private void loadExistingProduct(String pid) {

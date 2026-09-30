@@ -26,6 +26,7 @@ import com.sheempower.app.utils.SessionManager;
 import com.sheempower.app.utils.PreferencesManager;
 import com.sheempower.app.utils.VoiceGuide;
 import com.sheempower.app.utils.BottomNavHelper;
+import com.sheempower.app.utils.LanguageHelper;
 public class LoginActivity extends AppCompatActivity {
 
     private TextInputEditText etEmail, etPassword;
@@ -49,13 +50,14 @@ public class LoginActivity extends AppCompatActivity {
         mAuth   = FirebaseAuth.getInstance();
         session = new SessionManager(this);
 
-        ImageButton btnSpeaker = findViewById(R.id.btnSpeaker);
+        // ============ Initialize Views ============
+        initializeViews();
+
+        LanguageHelper.processViewHierarchy(findViewById(android.R.id.content), this);
+
         VoiceGuide.setupSpeakerButton(btnSpeaker, this,
                 "یہ لاگ ان سکرین ہے۔ سب سے پہلے خانے میں اپنا ای میل لکھیں، پھر نیچے والے خانے میں اپنا پاس ورڈ لکھیں، اور آخر میں لاگ ان کے بٹن پر کلک کریں۔"
         );
-
-        // ============ Initialize Views ============
-        initializeViews();
 
         BottomNavHelper.setupBackButton(this);
 
@@ -109,8 +111,6 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        btnSpeaker.setOnClickListener(v -> speakText());
-
         TextView tvContinueVisitor = findViewById(R.id.tvContinueVisitor);
         if (tvContinueVisitor != null) {
             tvContinueVisitor.setOnClickListener(v -> {
@@ -120,6 +120,15 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             });
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LanguageHelper.processViewHierarchy(findViewById(android.R.id.content), this);
+        if (btnSpeaker != null) {
+            VoiceGuide.updateSpeakerIcon(btnSpeaker, VoiceGuide.isMuted(this));
         }
     }
 

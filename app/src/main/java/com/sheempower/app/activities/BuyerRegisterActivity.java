@@ -24,6 +24,7 @@ import com.sheempower.app.utils.SessionManager;
 import com.sheempower.app.utils.PreferencesManager;
 import com.sheempower.app.utils.VoiceGuide;
 import com.sheempower.app.utils.BottomNavHelper;
+import com.sheempower.app.utils.LanguageHelper;
 
 public class BuyerRegisterActivity extends AppCompatActivity {
 
@@ -46,11 +47,14 @@ public class BuyerRegisterActivity extends AppCompatActivity {
         mAuth   = FirebaseAuth.getInstance();
         session = new SessionManager(this);
 
-        VoiceGuide.announceScreen(this,
-                "یہ خریدار اکاؤنٹ بنانے کی سکرین ہے۔ باری باری اپنا نام، ای میل، اور مضبوط پاس ورڈ لکھیں، پھر اکاؤنٹ بنائیں کا بٹن دبائیں۔");
-
         // ============ Initialize Views ============
         initializeViews();
+
+        LanguageHelper.processViewHierarchy(findViewById(android.R.id.content), this);
+
+        VoiceGuide.setupSpeakerButton(btnSpeaker, this,
+                "یہ خریدار اکاؤنٹ بنانے کی سکرین ہے۔ باری باری اپنا نام، ای میل، اور مضبوط پاس ورڈ لکھیں، پھر اکاؤنٹ بنائیں کا بٹن دبائیں۔"
+        );
 
         BottomNavHelper.setupBackButton(this);
 
@@ -62,9 +66,15 @@ public class BuyerRegisterActivity extends AppCompatActivity {
 
         // ============ Setup Register Button ============
         btnRegister.setOnClickListener(v -> attemptRegister());
+    }
 
-        // ============ Setup Speaker Button ============
-        btnSpeaker.setOnClickListener(v -> speakText());
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LanguageHelper.processViewHierarchy(findViewById(android.R.id.content), this);
+        if (btnSpeaker != null) {
+            VoiceGuide.updateSpeakerIcon(btnSpeaker, VoiceGuide.isMuted(this));
+        }
     }
 
     // ============ Initialize All Views ============

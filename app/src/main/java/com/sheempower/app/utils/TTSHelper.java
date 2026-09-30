@@ -11,14 +11,15 @@ public class TTSHelper {
     private static final String TAG = "TTSHelper";
     private static TTSHelper instance;
 
+    private final Context appContext;
     private TextToSpeech tts;
     private boolean ready = false;
+    private String pendingText = null;
 
     private TTSHelper(Context ctx) {
+        this.appContext = ctx != null ? ctx.getApplicationContext() : null;
         try {
-            Context appContext = ctx.getApplicationContext();
-
-            tts = new TextToSpeech(appContext, status -> {
+            tts = new TextToSpeech(this.appContext, status -> {
                 try {
                     if (status != TextToSpeech.SUCCESS || tts == null) {
                         ready = false;
@@ -42,6 +43,10 @@ public class TTSHelper {
                     if (tts != null) {
                         tts.setSpeechRate(0.9f);
                         ready = true;
+                        if (pendingText != null && appContext != null && !VoiceGuide.isMuted(appContext)) {
+                            speakInternal(pendingText);
+                        }
+                        pendingText = null;
                     }
                 } catch (Throwable t) {
                     Log.w(TAG, "Error configuring TextToSpeech engine: " + t.getMessage());
@@ -56,32 +61,51 @@ public class TTSHelper {
     }
 
     public static synchronized TTSHelper getInstance(Context ctx) {
-
         if (instance == null || instance.tts == null) {
             instance = new TTSHelper(ctx);
         }
-
         return instance;
     }
 
     public void speak(String text) {
+        if (appContext != null && VoiceGuide.isMuted(appContext)) {
+            stop();
+            return;
+        }
 
-        if (ready && tts != null && text != null && !text.isEmpty()) {
-            try {
+        if (text == null || text.trim().isEmpty()) {
+            return;
+        }
+
+        if (ready && tts != null) {
+            speakInternal(text);
+        } else {
+            pendingText = text;
+        }
+    }
+
+    private void speakInternal(String text) {
+        if (appContext != null && VoiceGuide.isMuted(appContext)) {
+            return;
+        }
+        try {
+            if (tts != null) {
+                tts.stop();
                 tts.speak(
                         text,
                         TextToSpeech.QUEUE_FLUSH,
                         null,
                         "she_empower_tts"
                 );
-            } catch (Throwable t) {
-                Log.w(TAG, "Failed to speak TTS text: " + t.getMessage());
             }
+        } catch (Throwable t) {
+            Log.w(TAG, "Failed to speak TTS text: " + t.getMessage());
         }
     }
 
     public void stop() {
-        if (ready && tts != null) {
+        pendingText = null;
+        if (tts != null) {
             try {
                 tts.stop();
             } catch (Throwable ignored) {}
@@ -89,8 +113,8 @@ public class TTSHelper {
     }
 
     public void shutdown() {
-
         ready = false;
+        pendingText = null;
 
         if (tts != null) {
             try {

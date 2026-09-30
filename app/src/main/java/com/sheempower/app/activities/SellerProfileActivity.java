@@ -46,8 +46,14 @@ public class SellerProfileActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
+
+        applyTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_seller_profile);
+
+        LanguageHelper.processViewHierarchy(findViewById(android.R.id.content), this);
 
         session  = new SessionManager(this);
         sellerId = getIntent().getStringExtra(EXTRA_SELLER_ID);
@@ -227,6 +233,16 @@ public class SellerProfileActivity extends AppCompatActivity {
                 });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LanguageHelper.processViewHierarchy(findViewById(android.R.id.content), this);
+        ImageButton btnSpeaker = findViewById(R.id.btnSpeaker);
+        if (btnSpeaker != null) {
+            VoiceGuide.updateSpeakerIcon(btnSpeaker, VoiceGuide.isMuted(this));
+        }
+    }
+
     private void bindSellerData() {
         String business = currentSeller.getBusinessName() != null && !currentSeller.getBusinessName().isEmpty()
                 ? currentSeller.getBusinessName()
@@ -239,16 +255,21 @@ public class SellerProfileActivity extends AppCompatActivity {
         tvRating.setText(String.format("⭐ %.1f (%d)", currentSeller.getRating(), currentSeller.getRatingCount()));
 
         boolean approved = Constants.isApproved(currentSeller.getVerificationStatus());
-        tvStatus.setText(approved ? "✅ تصدیق شدہ" : "⏳ " + currentSeller.getVerificationStatus());
+        tvStatus.setText(approved
+                ? LanguageHelper.processDualString(this, "✅ تصدیق شدہ / Verified")
+                : LanguageHelper.processDualString(this, "⏳ " + currentSeller.getVerificationStatus()));
         if (ivSellerVerifiedBadge != null) ivSellerVerifiedBadge.setVisibility(approved ? View.VISIBLE : View.GONE);
 
         boolean travelType = Constants.isTravelType(currentSeller.getCategory());
         if (currentSeller.isCanDeliver()) {
-            tvDeliveryBadge.setText(travelType ? "✅ یہ خود آپ کے پاس آ سکتی ہیں" : "✅ گھر ڈیلیوری دستیاب ہے");
+            tvDeliveryBadge.setText(travelType
+                    ? LanguageHelper.processDualString(this, "✅ یہ خود آپ کے پاس آ سکتی ہیں / Available to visit your location")
+                    : LanguageHelper.processDualString(this, "✅ گھر ڈیلیوری دستیاب ہے / Home Delivery Available"));
             tvDeliveryBadge.setBackgroundResource(R.drawable.bg_rounded_green);
             tvDeliveryBadge.setTextColor(0xFF2E7D32);
         } else {
-            tvDeliveryBadge.setText("⚠️ صرف خود آ کر لینا ہوگا\n📍 " + (currentSeller.getShopAddress() != null ? currentSeller.getShopAddress() : currentSeller.getCity()));
+            String shopAddr = currentSeller.getShopAddress() != null ? currentSeller.getShopAddress() : currentSeller.getCity();
+            tvDeliveryBadge.setText(LanguageHelper.processDualString(this, "⚠️ صرف خود آ کر لینا ہوگا / Self-pickup only") + "\n📍 " + shopAddr);
             tvDeliveryBadge.setBackgroundResource(R.drawable.bg_profile_field);
             tvDeliveryBadge.setTextColor(0xFFB25E00);
         }
@@ -275,11 +296,11 @@ public class SellerProfileActivity extends AppCompatActivity {
             StringBuilder sb = new StringBuilder();
             for (String c : cats) {
                 if (sb.length() > 0) sb.append(" • ");
-                sb.append(Constants.getUrduLabel(c)).append(" (").append(c).append(")");
+                sb.append(Constants.getCategoryDisplayLabel(this, c));
             }
             return sb.toString();
         }
-        return Constants.getUrduLabel(seller.getCategory()) + " (" + seller.getCategory() + ")";
+        return Constants.getCategoryDisplayLabel(this, seller.getCategory());
     }
 
     private void loadSellerProducts() {
@@ -343,7 +364,19 @@ public class SellerProfileActivity extends AppCompatActivity {
 
     private void requireBuyerLogin(Runnable action) {
         if (session.isLoggedIn()) action.run();
-        else { Toast.makeText(this, "پہلے لاگ ان کریں", Toast.LENGTH_SHORT).show(); startActivity(new Intent(this, LoginActivity.class)); }
+        else {
+            Toast.makeText(this, LanguageHelper.processDualString(this, "پہلے لاگ ان کریں / Please Login First"), Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, LoginActivity.class));
+        }
+    }
+
+    private void applyTheme() {
+        PreferencesManager prefs = new PreferencesManager(this);
+        if (prefs.isDarkThemeEnabled()) {
+            setTheme(R.style.Theme_SheEmpower_Dark);
+        } else {
+            setTheme(R.style.Theme_SheEmpower);
+        }
     }
 
     @Override protected void onDestroy() {

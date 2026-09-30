@@ -38,6 +38,7 @@ import com.sheempower.app.utils.SessionManager;
 import com.sheempower.app.utils.VoiceGuide;
 import com.sheempower.app.models.Buyer;
 import com.sheempower.app.utils.PreferencesManager;
+import com.sheempower.app.utils.LanguageHelper;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -125,6 +126,8 @@ public class ProfileActivity extends AppCompatActivity {
 
         initializeViews();
 
+        LanguageHelper.processViewHierarchy(findViewById(android.R.id.content), this);
+
         if (!session.isLoggedIn()) {
             showGuestState();
             View bottomNav = findViewById(R.id.bottomNav);
@@ -160,6 +163,15 @@ public class ProfileActivity extends AppCompatActivity {
             } else {
                 BottomNavHelper.setupForBuyerOrVisitor(this, bottomNav, 3);
             }
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LanguageHelper.processViewHierarchy(findViewById(android.R.id.content), this);
+        if (btnSpeaker != null) {
+            VoiceGuide.updateSpeakerIcon(btnSpeaker, VoiceGuide.isMuted(this));
         }
     }
 
@@ -220,6 +232,11 @@ public class ProfileActivity extends AppCompatActivity {
         ivProfilePic = findViewById(R.id.ivProfilePic);
         btnChangePic = findViewById(R.id.btnChangePic);
         btnSpeaker   = findViewById(R.id.btnSpeaker);
+        if (btnSpeaker != null) {
+            VoiceGuide.setupSpeakerButton(btnSpeaker, this,
+                    "یہ آپ کی پروفائل کی سکرین ہے۔ یہاں آپ اپنی معلومات دیکھ اور تبدیل کر سکتی ہیں۔"
+            );
+        }
         ivVerifiedBadge = findViewById(R.id.ivVerifiedBadge);
 
         tvBusinessHeader = findViewById(R.id.tvBusinessHeader);
