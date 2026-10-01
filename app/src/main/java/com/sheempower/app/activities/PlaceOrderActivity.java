@@ -16,6 +16,7 @@ import com.sheempower.app.models.Order;
 import com.sheempower.app.models.OrderField;
 import com.sheempower.app.models.Product;
 import com.sheempower.app.models.Seller;
+import com.sheempower.app.utils.NotificationHelper;
 import com.sheempower.app.utils.PreferencesManager;
 import com.sheempower.app.utils.*;
 import java.util.ArrayList;
@@ -572,6 +573,9 @@ public class PlaceOrderActivity extends AppCompatActivity {
 
         dbRef.child(Constants.NODE_ORDERS).child(orderId).setValue(order)
                 .addOnSuccessListener(v -> {
+                    // ✅ YEH LINE ADD KI HAI — Seller ko notification bhejne ke liye
+                    NotificationHelper.createAndSendOrderNotification(this, order);
+
                     DemoDataSeeder.clearDemoDataOnFirstRealUse(this);
                     Toast.makeText(this, "آرڈر جمع ہو گیا! ✅", Toast.LENGTH_LONG).show();
                     VoiceGuide.explain(this, "آپ کا آرڈر کامیابی سے جمع ہو گیا ہے۔ بیچنے والی سے واٹس ایپ پر رابطہ ہو رہا ہے۔");

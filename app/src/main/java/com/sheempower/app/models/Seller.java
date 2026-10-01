@@ -8,7 +8,7 @@ public class Seller {
     private String uid, businessName, ownerName, email, phone;
     private String category, bio, city, cnicUrl, voiceUrl;
     private String verificationStatus, whatsappNumber, imageUrl;
-    private String capacityDescription, shopAddress;
+    private String capacityDescription, shopAddress, oneSignalPlayerId;
 
     // Multiple categories support
     private List<String> categories;
@@ -82,7 +82,11 @@ public class Seller {
         return shopAddress;
     }
 
-    public List<String>getCategories() {
+    public String getOneSignalPlayerId() {
+        return oneSignalPlayerId;
+    }
+
+    public List<String> getCategories() {
         if (categories == null) {
             categories = new ArrayList<>();
         }
@@ -163,6 +167,10 @@ public class Seller {
 
     public void setShopAddress(String v) {
         shopAddress = v;
+    }
+
+    public void setOneSignalPlayerId(String v) {
+        this.oneSignalPlayerId = v;
     }
 
     public void setCategories(List<String> v) {

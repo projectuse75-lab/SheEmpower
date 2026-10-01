@@ -22,11 +22,15 @@ import com.google.firebase.database.*;
 import com.sheempower.app.R;
 import com.sheempower.app.models.User;
 import com.sheempower.app.utils.Constants;
+import com.sheempower.app.utils.OneSignalHelper;
+
+
 import com.sheempower.app.utils.SessionManager;
 import com.sheempower.app.utils.PreferencesManager;
 import com.sheempower.app.utils.VoiceGuide;
 import com.sheempower.app.utils.BottomNavHelper;
 import com.sheempower.app.utils.LanguageHelper;
+
 public class LoginActivity extends AppCompatActivity {
 
     private TextInputEditText etEmail, etPassword;
@@ -322,6 +326,12 @@ public class LoginActivity extends AppCompatActivity {
                                     }
                                     session.saveUser(uid, user.getRole(), user.getName());
                                     session.saveEmail(user.getEmail());
+
+                                    // Register OneSignal Player ID for Seller
+                                    if (Constants.ROLE_SELLER.equals(user.getRole())) {
+                                        OneSignalHelper.updateSellerPlayerId(uid);
+                                    }
+
                                     VoiceGuide.explain(LoginActivity.this, "خوش آمدید " + user.getName());
                                     String loginDestination = getIntent().getStringExtra(
                                             BottomNavHelper.EXTRA_LOGIN_DESTINATION

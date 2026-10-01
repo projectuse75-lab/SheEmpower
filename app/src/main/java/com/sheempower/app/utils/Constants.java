@@ -18,6 +18,14 @@ public class Constants {
     public static final String NODE_PRODUCTS = "products";
     public static final String NODE_META     = "meta";
 
+    // ✅ NAYA: Notifications Node
+    public static final String NODE_NOTIFICATIONS = "notifications";
+
+    // ✅ NAYA: OneSignal Configuration
+    public static final String KEY_ONESIGNAL_PLAYER_ID = "oneSignalPlayerId";
+    public static final String ONESIGNAL_APP_ID = "c2bd81e9-0481-4600-8f2d-2d59a75de5cd";
+    public static final String ONESIGNAL_REST_API_KEY = "os_v2_app_yk6yd2ieqfdabdznfvm2oxpfzurxckkrirpegi4o3y655tnxoilnhzglqbo5gftkoajy25njavv3fvom2lfjq56hzc6ldrvsjldxidy";
+
     public static final String CLOUDINARY_CLOUD_NAME    = "lstovyxq";
     public static final String CLOUDINARY_UPLOAD_PRESET = "sheempower_preset";
     public static final String CLOUDINARY_URL =

@@ -2,8 +2,7 @@
 <resources>
 
     <!-- Primary — Midnight Navy -->
-    <color name="primary">#192A56</color>
-kkkkkkkkk    <color name="primary_dark">#0F1B3D</color>
+    <color name="primary">#192A56</color> <color name="primary_dark">#0F1B3D</color>
     <color name="primary_light">#2A3F75</color>
     <color name="midnight_navy">#192A56</color>
 
