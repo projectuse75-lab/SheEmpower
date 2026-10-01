@@ -24,9 +24,6 @@ public class SheEmpowerApplication extends Application {
         applySavedTheme(preferencesManager);
 
         TTSHelper.getInstance(this).initLifecycle(this);
-
-        com.sheempower.app.utils.NotificationHelper.createNotificationChannel(this);
-        com.sheempower.app.utils.OneSignalHelper.init(this);
     }
 
     private void setupUncaughtExceptionHandler() {

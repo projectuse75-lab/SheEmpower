@@ -3,7 +3,6 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name=".SheEmpowerApplication"
@@ -13,11 +12,6 @@
         android:label="She Empower"
         android:theme="@style/Theme.SheEmpower"
         android:usesCleartextTraffic="true">
-
-        <!-- ✅ ONESIGNAL APP ID (YEH 3 LINES NAYI HAIN) -->
-        <meta-data
-            android:name="com.onesignal.APPLICATION_ID"
-            android:value="c2bd81e9-0481-4600-8f2d-2d59a75de5cd" />
 
         <activity android:name=".activities.SplashActivity"
             android:exported="true"
