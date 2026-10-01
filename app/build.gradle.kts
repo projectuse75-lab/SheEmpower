@@ -59,9 +59,6 @@ dependencies {
     // OkHttp for Cloudinary
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
-    // OneSignal Push Notifications
-    implementation("com.onesignal:OneSignal:5.10.2")
-
     // ✅ TESTING DEPENDENCIES — ADDED
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
