@@ -159,25 +159,12 @@ public class AddProductActivity extends AppCompatActivity {
                     Seller seller = snapshot.getValue(Seller.class);
                     availableSellerCategories.clear();
 
-                    if (snapshot.hasChild("categories")) {
-                        for (DataSnapshot catSnap : snapshot.child("categories").getChildren()) {
-                            String cat = catSnap.getValue(String.class);
-                            if (cat != null && !cat.trim().isEmpty() && !availableSellerCategories.contains(cat.trim())) {
-                                availableSellerCategories.add(cat.trim());
-                            }
-                        }
-                    }
-
-                    if (availableSellerCategories.isEmpty() && seller != null && seller.getCategories() != null && !seller.getCategories().isEmpty()) {
-                        for (String cat : seller.getCategories()) {
-                            if (cat != null && !cat.trim().isEmpty() && !availableSellerCategories.contains(cat.trim())) {
-                                availableSellerCategories.add(cat.trim());
-                            }
-                        }
-                    }
-
-                    if (availableSellerCategories.isEmpty() && seller != null && seller.getCategory() != null && !seller.getCategory().trim().isEmpty()) {
-                        availableSellerCategories.add(seller.getCategory().trim());
+                    List<String> activeCats = Constants.getActiveSellerCategories(seller);
+                    if (!activeCats.isEmpty()) {
+                        availableSellerCategories.addAll(activeCats);
+                    } else {
+                        setupFallbackCategorySpinner();
+                        return;
                     }
 
                     populateCategorySpinner();

@@ -9,6 +9,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.*;
 import com.sheempower.app.R;
 import com.sheempower.app.adapters.ProductAdapter;
@@ -78,6 +81,9 @@ public class SellerDashboardActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        VoiceGuide.announceScreen(this,
+                "یہ آپ کی دکان کا ڈیش بورڈ ہے۔ یہاں آپ اپنی کل کمائی اور آرڈرز کی تعداد دیکھ سکتی ہیں۔ نیچے آپ کی شامل کردہ تمام اشیاء بھی نظر آئیں گی۔ نئی چیز شامل کرنے کے لیے بٹن دبائیں۔"
+        );
         loadSellerStatus();
         loadStats();
         loadMyProducts();
@@ -132,6 +138,39 @@ public class SellerDashboardActivity extends AppCompatActivity {
                 .show();
     }
 
+    private boolean isProductOwnedBySeller(Product p, String targetUid) {
+        if (p == null || p.getSellerId() == null) return false;
+        String pSellerId = p.getSellerId().trim();
+        if (pSellerId.isEmpty()) return false;
+
+        if (targetUid.equalsIgnoreCase(pSellerId)) return true;
+
+        FirebaseUser authUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (authUser != null) {
+            if (authUser.getUid() != null && authUser.getUid().trim().equalsIgnoreCase(pSellerId)) return true;
+            if (authUser.getEmail() != null && authUser.getEmail().trim().equalsIgnoreCase(pSellerId)) return true;
+        }
+
+        if (currentSeller != null) {
+            if (currentSeller.getUid() != null && currentSeller.getUid().trim().equalsIgnoreCase(pSellerId)) return true;
+            if (currentSeller.getEmail() != null && currentSeller.getEmail().trim().equalsIgnoreCase(pSellerId)) return true;
+            if (currentSeller.getPhone() != null && currentSeller.getPhone().trim().equalsIgnoreCase(pSellerId)) return true;
+            if (currentSeller.getWhatsappNumber() != null && currentSeller.getWhatsappNumber().trim().equalsIgnoreCase(pSellerId)) return true;
+        }
+
+        return false;
+    }
+
+    private boolean containsProduct(List<Product> list, String id) {
+        if (id == null || list == null) return false;
+        for (Product item : list) {
+            if (item != null && item.getId() != null && id.trim().equalsIgnoreCase(item.getId().trim())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // ============ LOAD SELLER'S OWN PRODUCTS ============
     private void loadMyProducts() {
         String uid = session.getUid();
@@ -139,24 +178,46 @@ public class SellerDashboardActivity extends AppCompatActivity {
 
         final String targetUid = uid.trim();
 
-        FirebaseDatabase.getInstance().getReference().child(Constants.NODE_PRODUCTS)
+        FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS).child(targetUid)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public void onDataChange(DataSnapshot snapshot) {
-                        myProductList.clear();
-                        for (DataSnapshot child : snapshot.getChildren()) {
-                            Product p = child.getValue(Product.class);
-                            if (p != null) {
-                                String pid = child.getKey();
-                                if (pid != null) p.setId(pid.trim());
-                                if (p.getSellerId() != null && targetUid.equalsIgnoreCase(p.getSellerId().trim())) {
-                                    myProductList.add(p);
-                                }
+                    public void onDataChange(DataSnapshot sellerSnap) {
+                        currentSeller = sellerSnap.getValue(Seller.class);
+                        if (currentSeller != null) {
+                            if (currentSeller.getUid() == null || currentSeller.getUid().isEmpty()) {
+                                currentSeller.setUid(targetUid);
                             }
+                            currentSeller.setCategories(Constants.parseCategoriesFromSnapshot(sellerSnap));
                         }
-                        if (myProductAdapter != null) myProductAdapter.notifyDataSetChanged();
-                        tvNoProducts.setVisibility(myProductList.isEmpty() ? View.VISIBLE : View.GONE);
-                        rvMyProducts.setVisibility(myProductList.isEmpty() ? View.GONE : View.VISIBLE);
+
+                        FirebaseDatabase.getInstance().getReference().child(Constants.NODE_PRODUCTS)
+                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot snapshot) {
+                                        myProductList.clear();
+                                        for (DataSnapshot child : snapshot.getChildren()) {
+                                            Product p = child.getValue(Product.class);
+                                            if (p != null) {
+                                                String pid = child.getKey();
+                                                if (pid != null) p.setId(pid.trim());
+
+                                                if (isProductOwnedBySeller(p, targetUid)) {
+                                                    if (!containsProduct(myProductList, p.getId())) {
+                                                        myProductList.add(p);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        if (myProductAdapter != null) myProductAdapter.notifyDataSetChanged();
+                                        tvNoProducts.setVisibility(myProductList.isEmpty() ? View.VISIBLE : View.GONE);
+                                        rvMyProducts.setVisibility(myProductList.isEmpty() ? View.GONE : View.VISIBLE);
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError error) {
+                                        Toast.makeText(SellerDashboardActivity.this, "خرابی: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                     }
 
                     @Override
@@ -178,8 +239,10 @@ public class SellerDashboardActivity extends AppCompatActivity {
                         Seller s = snapshot.getValue(Seller.class);
                         if (s == null) return;
 
-                        List<String> sellerCategories = s.getCategories();
-                        if (sellerCategories != null && !sellerCategories.isEmpty()) {
+                        s.setCategories(Constants.parseCategoriesFromSnapshot(snapshot));
+
+                        List<String> sellerCategories = Constants.getActiveSellerCategories(s);
+                        if (!sellerCategories.isEmpty()) {
                             StringBuilder sb = new StringBuilder();
                             sb.append("🛍️ آپ کے منتخب کردہ زمرے (Categories):\n");
                             for (int i = 0; i < sellerCategories.size(); i++) {

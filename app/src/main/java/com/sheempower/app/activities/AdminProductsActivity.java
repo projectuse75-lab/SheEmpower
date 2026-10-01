@@ -2,6 +2,7 @@ package com.sheempower.app.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,6 +53,13 @@ public class AdminProductsActivity extends AppCompatActivity {
         loadProducts();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        VoiceGuide.announceScreen(this, "یہ نظام کی تمام اشیاء کی فہرست ہے۔");
+        loadProducts();
+    }
+
     private void loadProducts() {
         FirebaseDatabase.getInstance().getReference().child(Constants.NODE_PRODUCTS)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -62,7 +70,7 @@ public class AdminProductsActivity extends AppCompatActivity {
                             if (p != null) productList.add(p);
                         }
                         adapter.notifyDataSetChanged();
-                        tvEmpty.setVisibility(productList.isEmpty() ? android.view.View.VISIBLE : android.view.View.GONE);
+                        tvEmpty.setVisibility(productList.isEmpty() ? View.VISIBLE : View.GONE);
                     }
                     @Override public void onCancelled(DatabaseError error) {}
                 });

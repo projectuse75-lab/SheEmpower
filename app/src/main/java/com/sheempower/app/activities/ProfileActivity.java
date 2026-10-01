@@ -199,12 +199,22 @@ public class ProfileActivity extends AppCompatActivity {
         if (tvRatingCount != null) tvRatingCount.setVisibility(View.GONE);
         if (tvTopRated != null) tvTopRated.setVisibility(View.GONE);
 
-        tvPersonalName.setText("Full Name\nAdmin");
-        tvPersonalEmail.setText("Email\n" + Constants.ADMIN_EMAIL);
+        String adminName = session.getName() != null && !session.getName().isEmpty() ? session.getName() : "Admin";
+        tvPersonalName.setText("Full Name / مکمل نام\n" + adminName);
+        tvPersonalEmail.setText("Email / ای میل\n" + Constants.ADMIN_EMAIL);
         tvWhatsApp.setVisibility(View.GONE);
 
         if (btnSwitchRole != null) btnSwitchRole.setVisibility(View.GONE);
         if (btnMyOrders != null) btnMyOrders.setVisibility(View.GONE); // admin ke apne orders nahi hote
+
+        String uid = session.getUid() != null ? session.getUid().trim() : "admin";
+        FirebaseDatabase.getInstance().getReference().child(Constants.NODE_USERS).child(uid).child("imageUrl")
+                .get().addOnSuccessListener(snapshot -> {
+                    String imgUrl = snapshot.getValue(String.class);
+                    if (imgUrl != null && !imgUrl.trim().isEmpty() && ivProfilePic != null) {
+                        Glide.with(this).load(imgUrl.trim()).into(ivProfilePic);
+                    }
+                });
     }
 
     private void showGuestState() {
@@ -579,8 +589,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void saveChanges() {
-        String uid = session.getUid();
-        if (uid == null) return;
+        String uid = session.getUid() != null ? session.getUid().trim() : "admin";
 
         String name = etFullName.getText().toString().trim();
         String phone = etPhone.getText().toString().trim();
@@ -597,8 +606,12 @@ public class ProfileActivity extends AppCompatActivity {
                     session.saveName(name);
                     if (session.isSeller()) {
                         saveSellerInformation(uid, name, phone);
+                    } else if (session.isAdmin()) {
+                        Toast.makeText(this, "Admin profile updated successfully! ✅", Toast.LENGTH_SHORT).show();
+                        showAdminProfile();
+                        closeEditMode();
                     } else {
-                        Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Profile updated successfully! ✅", Toast.LENGTH_SHORT).show();
                         closeEditMode();
                     }
                 })
@@ -645,19 +658,23 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void uploadProfilePic(Uri uri) {
-        Toast.makeText(this, "تصویر اپلوڈ ہو رہی ہے...", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "تصویر اپلوڈ ہو رہی ہے... / Uploading picture...", Toast.LENGTH_SHORT).show();
         CloudinaryHelper.upload(this, uri, "profile_pictures", (url, error) -> {
             if (url != null) {
-                Glide.with(this).load(url).into(ivProfilePic);
-                String uid = session.getUid();
-                if (uid != null) {
-                    DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-                    rootRef.child(Constants.NODE_USERS).child(uid).child("imageUrl").setValue(url);
-                    if (session.isSeller()) {
-                        rootRef.child(Constants.NODE_SELLERS).child(uid).child("imageUrl").setValue(url);
-                    }
-                    Toast.makeText(this, "تصویر تبدیل ہو گئی", Toast.LENGTH_SHORT).show();
+                if (ivProfilePic != null) {
+                    Glide.with(this).load(url).into(ivProfilePic);
                 }
+                String uid = session.getUid() != null ? session.getUid().trim() : "admin";
+                DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                rootRef.child(Constants.NODE_USERS).child(uid).child("imageUrl").setValue(url);
+
+                if (session.isSeller()) {
+                    rootRef.child(Constants.NODE_SELLERS).child(uid).child("imageUrl").setValue(url);
+                } else if (session.isAdmin()) {
+                    rootRef.child(Constants.NODE_META).child("admin").child("imageUrl").setValue(url);
+                }
+
+                Toast.makeText(this, "تصویر تبدیل اور محفوظ ہو گئی! ✅ / Picture saved!", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(this, "اپلوڈ ناکام: " + error, Toast.LENGTH_LONG).show();
             }

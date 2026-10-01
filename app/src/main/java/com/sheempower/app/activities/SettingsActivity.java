@@ -72,6 +72,9 @@ public class SettingsActivity extends AppCompatActivity {
         if (btnSpeaker != null) {
             VoiceGuide.updateSpeakerIcon(btnSpeaker, VoiceGuide.isMuted(this));
         }
+        VoiceGuide.announceScreen(this,
+                "یہ سیٹنگز کی سکرین ہے۔ یہاں سے آپ اپنا نام، واٹس ایپ نمبر، پاس ورڈ اور ایپ کا ڈارک موڈ تبدیل کر سکتی ہیں۔"
+        );
     }
 
     private void initializeViews() {
@@ -145,9 +148,6 @@ public class SettingsActivity extends AppCompatActivity {
     private void loadSettings() {
         switchNotifications.setChecked(preferencesManager.areNotificationsEnabled());
         switchDarkTheme.setChecked(preferencesManager.isDarkThemeEnabled());
-        if (tvCurrentLanguage != null) {
-            tvCurrentLanguage.setText(LanguageHelper.getLanguageDisplayName(preferencesManager.getAppLanguage()));
-        }
     }
 
     private void setupListeners() {
@@ -174,16 +174,7 @@ public class SettingsActivity extends AppCompatActivity {
         });
 
         if (llLanguage != null) {
-            llLanguage.setOnClickListener(v -> LanguageHelper.showLanguageSelectionDialog(this, langMode -> {
-                if (tvCurrentLanguage != null) {
-                    tvCurrentLanguage.setText(LanguageHelper.getLanguageDisplayName(langMode));
-                }
-                Toast.makeText(this, "زبان تبدیل ہو گئی / Language Updated! ✅", Toast.LENGTH_SHORT).show();
-                Intent restartIntent = new Intent(SettingsActivity.this, MainActivity.class);
-                restartIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(restartIntent);
-                finish();
-            }));
+            llLanguage.setVisibility(View.GONE);
         }
 
         llPrivacyPolicy.setOnClickListener(v -> showPrivacyPolicy());

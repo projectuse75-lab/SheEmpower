@@ -57,6 +57,7 @@ public class MyOrdersActivity extends AppCompatActivity {
         }
 
         BottomNavHelper.setupForBuyerOrVisitor(this, findViewById(R.id.bottomNav), 2);
+        BottomNavHelper.setupBackButton(this);
 
         loadOrders();
     }
@@ -68,6 +69,9 @@ public class MyOrdersActivity extends AppCompatActivity {
         if (btnSpeaker != null) {
             VoiceGuide.updateSpeakerIcon(btnSpeaker, VoiceGuide.isMuted(this));
         }
+        VoiceGuide.announceScreen(this,
+                "یہ آپ کے تمام آرڈرز کی فہرست ہے۔ ہر آرڈر کے ساتھ اس کی موجودہ حالت لکھی ہے، جیسے کام شروع نہیں ہوا، کام جاری ہے، یا مکمل ہو گیا۔"
+        );
         loadOrders();
     }
 

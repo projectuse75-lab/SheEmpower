@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
-import androidx.appcompat.app.AlertDialog;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,34 +55,22 @@ public class LanguageHelper {
     }
 
     public static String getFormattedText(Context ctx, String urdu, String english) {
-        if (ctx == null) return (urdu != null ? urdu : "") + " / " + (english != null ? english : "");
-        PreferencesManager prefs = new PreferencesManager(ctx);
-        String mode = prefs.getAppLanguage();
+        String cleanUrdu = urdu != null ? urdu.trim() : "";
+        String cleanEnglish = english != null ? english.trim() : "";
 
-        if (PreferencesManager.LANG_URDU.equals(mode)) {
-            if (!TextUtils.isEmpty(urdu)) return urdu;
-            return english != null ? english : "";
-        } else if (PreferencesManager.LANG_ENGLISH.equals(mode)) {
-            if (!TextUtils.isEmpty(english)) return english;
-            if (!TextUtils.isEmpty(urdu) && URDU_TO_ENGLISH_MAP.containsKey(urdu.trim())) {
-                return URDU_TO_ENGLISH_MAP.get(urdu.trim());
+        if (!cleanEnglish.isEmpty() && !cleanUrdu.isEmpty()) {
+            if (cleanEnglish.equalsIgnoreCase(cleanUrdu)) return cleanEnglish;
+            return cleanEnglish + " / " + cleanUrdu;
+        } else if (!cleanEnglish.isEmpty()) {
+            return cleanEnglish;
+        } else if (!cleanUrdu.isEmpty()) {
+            String translated = URDU_TO_ENGLISH_MAP.get(cleanUrdu);
+            if (translated != null && !translated.equalsIgnoreCase(cleanUrdu)) {
+                return translated + " / " + cleanUrdu;
             }
-            return urdu != null ? urdu : "";
-        } else {
-            // LANG_MIX
-            if (!TextUtils.isEmpty(urdu) && !TextUtils.isEmpty(english)) {
-                if (urdu.trim().equalsIgnoreCase(english.trim())) return urdu;
-                return urdu + " / " + english;
-            } else if (!TextUtils.isEmpty(urdu)) {
-                String translated = URDU_TO_ENGLISH_MAP.get(urdu.trim());
-                if (translated != null && !translated.equalsIgnoreCase(urdu)) {
-                    return urdu + " / " + translated;
-                }
-                return urdu;
-            } else {
-                return english != null ? english : "";
-            }
+            return cleanUrdu;
         }
+        return "";
     }
 
     public static String processDualString(Context ctx, String combinedText) {
@@ -97,33 +84,31 @@ public class LanguageHelper {
         }
 
         if (delimiter == null) {
-            PreferencesManager prefs = ctx != null ? new PreferencesManager(ctx) : null;
-            String mode = prefs != null ? prefs.getAppLanguage() : PreferencesManager.LANG_MIX;
-
-            if (PreferencesManager.LANG_ENGLISH.equals(mode) && URDU_TO_ENGLISH_MAP.containsKey(combinedText.trim())) {
-                return URDU_TO_ENGLISH_MAP.get(combinedText.trim());
-            }
             return combinedText;
         }
 
         String[] parts = combinedText.split(delimiter, 2);
-        String urdu = parts[0].trim();
-        String english = parts.length > 1 ? parts[1].trim() : "";
+        String part1 = parts[0].trim();
+        String part2 = parts.length > 1 ? parts[1].trim() : "";
 
-        String emojiPrefix = extractLeadingEmoji(urdu);
-        if (!emojiPrefix.isEmpty()) {
-            urdu = urdu.substring(emojiPrefix.length()).trim();
-            if (!english.isEmpty() && !hasLeadingEmoji(english)) {
-                english = emojiPrefix + " " + english;
-            }
-            if (!urdu.isEmpty()) {
-                urdu = emojiPrefix + " " + urdu;
-            } else {
-                urdu = emojiPrefix;
-            }
+        String english = "";
+        String urdu = "";
+
+        if (containsEnglish(part1) && containsUrdu(part2)) {
+            english = part1;
+            urdu = part2;
+        } else if (containsUrdu(part1) && containsEnglish(part2)) {
+            urdu = part1;
+            english = part2;
+        } else {
+            return combinedText;
         }
 
-        return getFormattedText(ctx, urdu, english);
+        if (delimiter.contains("\n")) {
+            return english + "\n" + urdu;
+        } else {
+            return english + " / " + urdu;
+        }
     }
 
     private static boolean isDualLanguageLine(String text) {
@@ -150,27 +135,6 @@ public class LanguageHelper {
             if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) return true;
         }
         return false;
-    }
-
-    private static String extractLeadingEmoji(String str) {
-        if (str == null) return "";
-        StringBuilder sb = new StringBuilder();
-        int i = 0;
-        while (i < str.length()) {
-            int codePoint = str.codePointAt(i);
-            int charCount = Character.charCount(codePoint);
-            if (!Character.isLetterOrDigit(codePoint) && !Character.isWhitespace(codePoint) && codePoint > 127) {
-                sb.append(str, i, i + charCount);
-                i += charCount;
-            } else {
-                break;
-            }
-        }
-        return sb.toString().trim();
-    }
-
-    private static boolean hasLeadingEmoji(String str) {
-        return !extractLeadingEmoji(str).isEmpty();
     }
 
     public static void processViewHierarchy(View view, Context ctx) {
@@ -205,49 +169,5 @@ public class LanguageHelper {
                 processViewHierarchy(vg.getChildAt(i), ctx);
             }
         }
-    }
-
-    public static String getLanguageDisplayName(String mode) {
-        if (PreferencesManager.LANG_URDU.equals(mode)) {
-            return "🇵🇰 اردو (Urdu Only)";
-        } else if (PreferencesManager.LANG_ENGLISH.equals(mode)) {
-            return "🇬🇧 English (English Only)";
-        } else {
-            return "🇵🇰🇬🇧 اردو + English (Mix)";
-        }
-    }
-
-    public static void showLanguageSelectionDialog(Context ctx, OnLanguageSelectedListener listener) {
-        if (ctx == null) return;
-        PreferencesManager prefs = new PreferencesManager(ctx);
-        String currentMode = prefs.getAppLanguage();
-
-        String[] options = {
-                "🇵🇰 اردو (Urdu Only)",
-                "🇬🇧 English (English Only)",
-                "🇵🇰🇬🇧 اردو + English (Mix)"
-        };
-
-        int selectedIndex = 2;
-        if (PreferencesManager.LANG_URDU.equals(currentMode)) selectedIndex = 0;
-        else if (PreferencesManager.LANG_ENGLISH.equals(currentMode)) selectedIndex = 1;
-
-        new AlertDialog.Builder(ctx)
-                .setTitle(processDualString(ctx, "🌐 Select App Language / زبان منتخب کریں"))
-                .setSingleChoiceItems(options, selectedIndex, (dialog, which) -> {
-                    String chosenMode = PreferencesManager.LANG_MIX;
-                    if (which == 0) chosenMode = PreferencesManager.LANG_URDU;
-                    else if (which == 1) chosenMode = PreferencesManager.LANG_ENGLISH;
-
-                    prefs.setAppLanguage(chosenMode);
-                    prefs.setHasSelectedLanguage(true);
-                    dialog.dismiss();
-
-                    if (listener != null) {
-                        listener.onLanguageSelected(chosenMode);
-                    }
-                })
-                .setNegativeButton(processDualString(ctx, "منسوخ کریں / Cancel"), null)
-                .show();
     }
 }

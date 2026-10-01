@@ -48,6 +48,7 @@ public class SellerOrdersActivity extends AppCompatActivity {
         rvOrders.setAdapter(adapter);
 
         BottomNavHelper.setupForSeller(this, findViewById(R.id.bottomNav), 2);
+        BottomNavHelper.setupBackButton(this);
 
         loadOrders();
     }

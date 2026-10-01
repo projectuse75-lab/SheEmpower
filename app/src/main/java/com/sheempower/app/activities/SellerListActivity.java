@@ -70,8 +70,7 @@ public class SellerListActivity extends AppCompatActivity {
         setupSellerRecyclerView();
         setupProductRecyclerView();
         updateCategoryHeader();
-        loadSellers();
-        loadProducts();
+        loadSellersThenProducts();
     }
 
     private void initializeViews() {
@@ -156,7 +155,9 @@ public class SellerListActivity extends AppCompatActivity {
         rvProducts.setAdapter(productAdapter);
     }
 
-    private void loadSellers() {
+    private void loadSellersThenProducts() {
+        if (TextUtils.isEmpty(selectedCategory)) return;
+
         FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -170,13 +171,14 @@ public class SellerListActivity extends AppCompatActivity {
                             if (TextUtils.isEmpty(seller.getUid())) {
                                 seller.setUid(child.getKey());
                             }
+                            seller.setCategories(Constants.parseCategoriesFromSnapshot(child));
 
                             if ("blocked".equalsIgnoreCase(seller.getVerificationStatus()) ||
                                 "rejected".equalsIgnoreCase(seller.getVerificationStatus())) {
                                 continue;
                             }
 
-                            if (sellerProvidesCategory(seller, selectedCategory)) {
+                            if (Constants.sellerProvidesCategory(seller, selectedCategory)) {
                                 String directImg = child.child("imageUrl").getValue(String.class);
                                 if (directImg != null && !directImg.trim().isEmpty()) {
                                     seller.setImageUrl(directImg.trim());
@@ -204,16 +206,20 @@ public class SellerListActivity extends AppCompatActivity {
                         }
 
                         updateSellerCount();
+
+                        // Load products AFTER sellerList is fully populated
+                        loadProductsInternal();
                     }
 
                     @Override
                     public void onCancelled(DatabaseError error) {
                         Toast.makeText(SellerListActivity.this, "خرابی: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                        loadProductsInternal();
                     }
                 });
     }
 
-    private void loadProducts() {
+    private void loadProductsInternal() {
         if (TextUtils.isEmpty(selectedCategory)) return;
 
         FirebaseDatabase.getInstance().getReference().child(Constants.NODE_PRODUCTS)
@@ -228,7 +234,7 @@ public class SellerListActivity extends AppCompatActivity {
                                 String pid = child.getKey();
                                 if (pid != null) p.setId(pid.trim());
 
-                                if (p.getCategory() != null && selectedCategory.equalsIgnoreCase(p.getCategory().trim())) {
+                                if (isProductFromActiveSeller(p)) {
                                     productList.add(p);
                                 }
                             }
@@ -242,6 +248,35 @@ public class SellerListActivity extends AppCompatActivity {
                     @Override
                     public void onCancelled(DatabaseError error) {}
                 });
+    }
+
+    private boolean isProductFromActiveSeller(Product p) {
+        if (p == null || p.getCategory() == null || p.getSellerId() == null || p.getSellerId().trim().isEmpty()) {
+            return false;
+        }
+
+        // 1. Product category must match selected category
+        if (!selectedCategory.equalsIgnoreCase(p.getCategory().trim())) {
+            return false;
+        }
+
+        String pSellerId = p.getSellerId().trim();
+
+        // 2. Must match an active seller in sellerList who provides this category
+        for (Seller s : sellerList) {
+            if (s == null) continue;
+            boolean isOwner = (s.getUid() != null && pSellerId.equalsIgnoreCase(s.getUid().trim()))
+                    || (s.getEmail() != null && pSellerId.equalsIgnoreCase(s.getEmail().trim()))
+                    || (s.getPhone() != null && pSellerId.equalsIgnoreCase(s.getPhone().trim()))
+                    || (s.getWhatsappNumber() != null && pSellerId.equalsIgnoreCase(s.getWhatsappNumber().trim()));
+
+            if (isOwner) {
+                return Constants.sellerProvidesCategory(s, selectedCategory);
+            }
+        }
+
+        // If sellerList is empty or no match, do not display products from unverified/missing sellers
+        return sellerList.isEmpty();
     }
 
     private void goToOrder(Product product) {
@@ -279,24 +314,6 @@ public class SellerListActivity extends AppCompatActivity {
         }
     }
 
-    private boolean sellerProvidesCategory(Seller seller, String category) {
-        if (seller == null || TextUtils.isEmpty(category)) return false;
-
-        if (!TextUtils.isEmpty(seller.getCategory()) && category.equalsIgnoreCase(seller.getCategory().trim())) {
-            return true;
-        }
-
-        List<String> categories = seller.getCategories();
-        if (categories != null) {
-            for (String sellerCategory : categories) {
-                if (TextUtils.isEmpty(sellerCategory)) continue;
-                if (category.equalsIgnoreCase(sellerCategory.trim())) return true;
-            }
-        }
-
-        return false;
-    }
-
     private void updateSellerCount() {
         if (tvSellerCount == null) return;
         tvSellerCount.setText(sellerList.size() + " تصدیق شدہ بیچنے والیاں");
@@ -306,8 +323,7 @@ public class SellerListActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if (selectedCategory != null && !selectedCategory.isEmpty()) {
-            loadSellers();
-            loadProducts();
+            loadSellersThenProducts();
         }
     }
 

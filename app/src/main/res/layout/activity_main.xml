@@ -32,7 +32,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
-                        android:text="✨ شی ایمپاور"
+                        android:text=" شی ایمپاور✨"
                         android:textSize="24sp"
                         android:fontFamily="sans-serif-black"
                         android:textColor="#FFFFFF" />
@@ -51,7 +51,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="SHE EMPOWER"
+                    android:text="SHE EMPOWER✨"
                     android:textSize="11sp"
                     android:gravity="center"
                     android:textColor="@color/accent"

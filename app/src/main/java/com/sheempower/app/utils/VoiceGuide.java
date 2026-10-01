@@ -26,23 +26,17 @@ public class VoiceGuide {
     }
 
     public static void announceScreen(Context ctx, String urduMessage) {
-        if (isMuted(ctx)) return;
+        if (ctx == null || isMuted(ctx)) return;
         try {
-            if (ctx != null) {
-                stop(ctx);
-                TTSHelper.getInstance(ctx).speak(urduMessage);
-            }
+            TTSHelper.getInstance(ctx).speak(ctx, urduMessage);
         } catch (Throwable ignored) {
         }
     }
 
     public static void explain(Context ctx, String urduExplanation) {
-        if (isMuted(ctx)) return;
+        if (ctx == null || isMuted(ctx)) return;
         try {
-            if (ctx != null) {
-                stop(ctx);
-                TTSHelper.getInstance(ctx).speak(urduExplanation);
-            }
+            TTSHelper.getInstance(ctx).speak(ctx, urduExplanation);
         } catch (Throwable ignored) {
         }
     }
@@ -50,7 +44,7 @@ public class VoiceGuide {
     public static void stop(Context ctx) {
         try {
             if (ctx != null) {
-                TTSHelper.getInstance(ctx).stop();
+                TTSHelper.getInstance(ctx).stop(ctx);
             }
         } catch (Throwable ignored) {
         }

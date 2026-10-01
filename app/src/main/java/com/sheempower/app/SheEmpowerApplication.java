@@ -6,6 +6,7 @@ import android.util.Log;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.sheempower.app.utils.PreferencesManager;
+import com.sheempower.app.utils.TTSHelper;
 
 public class SheEmpowerApplication extends Application {
 
@@ -21,6 +22,8 @@ public class SheEmpowerApplication extends Application {
                 new PreferencesManager(this);
 
         applySavedTheme(preferencesManager);
+
+        TTSHelper.getInstance(this).initLifecycle(this);
     }
 
     private void setupUncaughtExceptionHandler() {

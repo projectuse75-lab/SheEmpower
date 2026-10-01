@@ -91,11 +91,6 @@ public class MainActivity extends AppCompatActivity {
 
         session = new SessionManager(this);
 
-        PreferencesManager prefs = new PreferencesManager(this);
-        if (!prefs.hasSelectedLanguage()) {
-            LanguageHelper.showLanguageSelectionDialog(this, langMode -> recreate());
-        }
-
         etSearch = findViewById(R.id.etSearch);
         btnLogin = findViewById(R.id.btnLogin);
         btnJoin = findViewById(R.id.btnJoin);
@@ -810,6 +805,7 @@ public class MainActivity extends AppCompatActivity {
                                     if (uid == null) continue;
 
                                     s.setUid(uid.trim());
+                                    s.setCategories(Constants.parseCategoriesFromSnapshot(child));
 
                                     String directImg = child.child("imageUrl").getValue(String.class);
                                     if (directImg != null && !directImg.trim().isEmpty()) {
@@ -865,6 +861,19 @@ public class MainActivity extends AppCompatActivity {
                 );
     }
 
+    private Seller findSellerForProduct(String sellerId) {
+        if (sellerId == null || sellerId.trim().isEmpty()) return null;
+        String cleanId = sellerId.trim();
+        for (Seller s : allSellers) {
+            if (s == null) continue;
+            if (s.getUid() != null && cleanId.equalsIgnoreCase(s.getUid().trim())) return s;
+            if (s.getEmail() != null && cleanId.equalsIgnoreCase(s.getEmail().trim())) return s;
+            if (s.getPhone() != null && cleanId.equalsIgnoreCase(s.getPhone().trim())) return s;
+            if (s.getWhatsappNumber() != null && cleanId.equalsIgnoreCase(s.getWhatsappNumber().trim())) return s;
+        }
+        return null;
+    }
+
     private void loadProducts() {
         FirebaseDatabase.getInstance().getReference().child(Constants.NODE_PRODUCTS)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -882,7 +891,15 @@ public class MainActivity extends AppCompatActivity {
                                 if (p.getSellerId() != null) {
                                     p.setSellerId(p.getSellerId().trim());
                                 }
-                                allProducts.add(p);
+
+                                Seller s = findSellerForProduct(p.getSellerId());
+                                if (s != null) {
+                                    if (Constants.sellerProvidesCategory(s, p.getCategory())) {
+                                        allProducts.add(p);
+                                    }
+                                } else {
+                                    allProducts.add(p);
+                                }
                             }
                         }
 
@@ -897,12 +914,9 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
 
-                            @Override
-                            public void onCancelled(
-                                    DatabaseError error) {
-                            }
-                        }
-                );
+                    @Override
+                    public void onCancelled(DatabaseError error) {}
+                });
     }
 
     // ---------------------------------------------------------

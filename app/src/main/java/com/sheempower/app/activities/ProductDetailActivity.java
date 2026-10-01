@@ -128,6 +128,8 @@ public class ProductDetailActivity extends AppCompatActivity {
         if (currentProduct.getImageUrl() != null && !currentProduct.getImageUrl().isEmpty())
             Glide.with(ProductDetailActivity.this).load(currentProduct.getImageUrl()).into(ivProduct);
 
+        bindSellerMeta();
+
         boolean isSellerView = getIntent().getBooleanExtra(EXTRA_IS_SELLER_VIEW, false);
         boolean isOwnProduct = session.isLoggedIn() && session.getUid() != null && currentProduct.getSellerId() != null
                 && session.getUid().trim().equalsIgnoreCase(currentProduct.getSellerId().trim());
@@ -143,6 +145,17 @@ public class ProductDetailActivity extends AppCompatActivity {
         }
     }
 
+    private void bindSellerMeta() {
+        String prodCat = (currentProduct != null && currentProduct.getCategory() != null && !currentProduct.getCategory().trim().isEmpty())
+                ? currentProduct.getCategory().trim()
+                : (currentSeller != null && currentSeller.getCategory() != null ? currentSeller.getCategory().trim() : "Cooking");
+
+        String displayCat = Constants.getCategoryDisplayLabel(this, prodCat);
+        String city = (currentSeller != null && currentSeller.getCity() != null) ? currentSeller.getCity() : "";
+
+        tvSellerMeta.setText(displayCat + (city.isEmpty() ? "" : " · " + city));
+    }
+
     private void loadSeller(String sellerId) {
         if (sellerId == null || sellerId.trim().isEmpty()) return;
         FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS).child(sellerId.trim())
@@ -151,13 +164,21 @@ public class ProductDetailActivity extends AppCompatActivity {
                         currentSeller = snapshot.getValue(Seller.class);
                         if (currentSeller == null) return;
 
-                        // ✅ FIX: UID fallback
                         if (currentSeller.getUid() == null || currentSeller.getUid().isEmpty())
                             currentSeller.setUid(snapshot.getKey());
 
+                        currentSeller.setCategories(Constants.parseCategoriesFromSnapshot(snapshot));
+
                         tvSellerName.setText(currentSeller.getBusinessName());
-                        tvSellerMeta.setText(Constants.getUrduLabel(currentSeller.getCategory()) + " · " + currentSeller.getCity());
+                        bindSellerMeta();
                         tvSellerRating.setText("⭐ " + currentSeller.getRating() + (currentSeller.isTopRated() ? "  🏅 بہترین" : ""));
+
+                        // Detect if product category is no longer active for seller
+                        if (currentProduct != null && !Constants.sellerProvidesCategory(currentSeller, currentProduct.getCategory())) {
+                            Toast.makeText(ProductDetailActivity.this, "یہ چیز اب فعال نہیں ہے / Category no longer active", Toast.LENGTH_SHORT).show();
+                            if (btnPlaceOrder != null) btnPlaceOrder.setEnabled(false);
+                        }
+
                         btnViewSeller.setOnClickListener(v -> {
                             if (sellerId.isEmpty()) {
                                 Toast.makeText(ProductDetailActivity.this, "بیچنے والی کی معلومات نہیں ملی", Toast.LENGTH_SHORT).show();
@@ -165,6 +186,9 @@ public class ProductDetailActivity extends AppCompatActivity {
                             }
                             Intent i = new Intent(ProductDetailActivity.this, SellerProfileActivity.class);
                             i.putExtra(SellerProfileActivity.EXTRA_SELLER_ID, sellerId);
+                            if (currentProduct != null && currentProduct.getCategory() != null) {
+                                i.putExtra(SellerProfileActivity.EXTRA_SELECTED_CATEGORY, currentProduct.getCategory().trim());
+                            }
                             startActivity(i);
                         });
                     }
@@ -177,17 +201,6 @@ public class ProductDetailActivity extends AppCompatActivity {
         else { Toast.makeText(this, LanguageHelper.processDualString(this, "پہلے لاگ ان کریں / Please Login First"), Toast.LENGTH_SHORT).show(); startActivity(new Intent(this, LoginActivity.class)); }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        LanguageHelper.processViewHierarchy(findViewById(android.R.id.content), this);
-        ImageButton btnSpeaker = findViewById(R.id.btnSpeaker);
-        if (btnSpeaker != null) {
-            VoiceGuide.updateSpeakerIcon(btnSpeaker, VoiceGuide.isMuted(this));
-        }
-    }
-
-    // ✅ DARK THEME - ADD AT END OF CLASS
     private void applyTheme() {
         PreferencesManager prefs = new PreferencesManager(this);
         if (prefs.isDarkThemeEnabled()) {

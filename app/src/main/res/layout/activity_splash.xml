@@ -18,7 +18,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="She Empower"
+        android:text="She Empower✨"
         android:textSize="30sp"
         android:fontFamily="sans-serif-black"
         android:textColor="@color/primary"
@@ -27,7 +27,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="شی ایمپاور"
+        android:text="شی ایمپاور✨"
         android:textSize="20sp"
         android:fontFamily="sans-serif-bold"
         android:textColor="@color/secondary"
@@ -37,7 +37,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="✨ Empowering Women, One Sale at a Time"
+        android:text="Empowering Women, One Sale at a Time✨"
         android:textSize="13sp"
         android:fontFamily="sans-serif-medium"
         android:textColor="@color/text_secondary"

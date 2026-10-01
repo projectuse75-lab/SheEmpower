@@ -1,6 +1,7 @@
 package com.sheempower.app.activities;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
@@ -41,11 +42,16 @@ public class AdminOrdersActivity extends AppCompatActivity {
         rvOrders.setAdapter(adapter);
 
         BottomNavHelper.setupForAdmin(this, findViewById(R.id.bottomNav), 2);
+        BottomNavHelper.setupBackButton(this);
 
         loadAllOrders();
     }
 
-    @Override protected void onResume() { super.onResume(); loadAllOrders(); }
+    @Override protected void onResume() {
+        super.onResume();
+        VoiceGuide.announceScreen(this, "یہ نظام کے تمام آرڈرز کی فہرست ہے۔");
+        loadAllOrders();
+    }
 
     private void loadAllOrders() {
         FirebaseDatabase.getInstance().getReference().child(Constants.NODE_ORDERS)
@@ -57,10 +63,10 @@ public class AdminOrdersActivity extends AppCompatActivity {
                             if (o != null) orderList.add(o);
                         }
                         adapter.notifyDataSetChanged();
-                        tvEmpty.setVisibility(orderList.isEmpty() ? android.view.View.VISIBLE : android.view.View.GONE);
+                        tvEmpty.setVisibility(orderList.isEmpty() ? View.VISIBLE : View.GONE);
                     }
                     @Override public void onCancelled(DatabaseError error) {
-                        tvEmpty.setVisibility(android.view.View.VISIBLE);
+                        tvEmpty.setVisibility(View.VISIBLE);
                         tvEmpty.setText("خرابی: " + error.getMessage());
                     }
                 });

@@ -2,7 +2,11 @@ package com.sheempower.app.utils;
 
 import android.content.Context;
 
+import com.google.firebase.database.DataSnapshot;
 import com.sheempower.app.R;
+import com.sheempower.app.models.Seller;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -74,13 +78,104 @@ public class Constants {
     public static boolean isTravelType(String category) { return TRAVEL_TYPE_CATEGORIES.contains(category); }
 
     public static String getUrduLabel(String categoryKey) {
-        for (int i = 0; i < CATEGORIES.length; i++) if (CATEGORIES[i].equals(categoryKey)) return CATEGORY_LABELS_UR[i];
+        for (int i = 0; i < CATEGORIES.length; i++) if (CATEGORIES[i].equalsIgnoreCase(categoryKey)) return CATEGORY_LABELS_UR[i];
         return categoryKey;
     }
 
     public static String getCategoryDisplayLabel(Context ctx, String categoryKey) {
         String urdu = getUrduLabel(categoryKey);
         return LanguageHelper.getFormattedText(ctx, urdu, categoryKey);
+    }
+
+    // ============================================================
+    // ✅ CATEGORY MATCHING HELPER (SINGLE SOURCE OF TRUTH)
+    // ============================================================
+    public static boolean sellerProvidesCategory(Seller seller, String category) {
+        if (seller == null) return false;
+        if (category == null || category.trim().isEmpty()) {
+            return true;
+        }
+        String pCat = category.trim();
+
+        List<String> cats = seller.getCategories();
+        if (cats != null && !cats.isEmpty()) {
+            for (String c : cats) {
+                if (c != null && pCat.equalsIgnoreCase(c.trim())) {
+                    return true;
+                }
+            }
+        }
+
+        String primaryCat = seller.getCategory();
+        if (primaryCat != null && !primaryCat.trim().isEmpty()) {
+            return pCat.equalsIgnoreCase(primaryCat.trim());
+        }
+
+        return false;
+    }
+
+    public static List<String> getActiveSellerCategories(Seller seller) {
+        List<String> activeCats = new ArrayList<>();
+        if (seller == null) return activeCats;
+
+        List<String> cats = seller.getCategories();
+        if (cats != null && !cats.isEmpty()) {
+            for (String c : cats) {
+                if (c != null && !c.trim().isEmpty()) {
+                    String clean = c.trim();
+                    if (!containsIgnoreCase(activeCats, clean)) {
+                        activeCats.add(clean);
+                    }
+                }
+            }
+        }
+
+        String primaryCat = seller.getCategory();
+        if (primaryCat != null && !primaryCat.trim().isEmpty()) {
+            String cleanPrimary = primaryCat.trim();
+            if (!containsIgnoreCase(activeCats, cleanPrimary)) {
+                activeCats.add(0, cleanPrimary);
+            }
+        }
+
+        return activeCats;
+    }
+
+    public static List<String> parseCategoriesFromSnapshot(DataSnapshot sellerSnapshot) {
+        List<String> result = new ArrayList<>();
+        if (sellerSnapshot == null) return result;
+
+        if (sellerSnapshot.hasChild("categories")) {
+            DataSnapshot catsSnap = sellerSnapshot.child("categories");
+            for (DataSnapshot child : catsSnap.getChildren()) {
+                Object val = child.getValue();
+                if (val != null) {
+                    String sVal = val.toString().trim();
+                    if (!sVal.isEmpty() && !containsIgnoreCase(result, sVal)) {
+                        result.add(sVal);
+                    }
+                }
+            }
+        }
+
+        if (sellerSnapshot.hasChild("category")) {
+            String primaryCat = sellerSnapshot.child("category").getValue(String.class);
+            if (primaryCat != null && !primaryCat.trim().isEmpty()) {
+                String cleanPrimary = primaryCat.trim();
+                if (!containsIgnoreCase(result, cleanPrimary)) {
+                    result.add(0, cleanPrimary);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private static boolean containsIgnoreCase(List<String> list, String val) {
+        for (String item : list) {
+            if (item != null && item.equalsIgnoreCase(val)) return true;
+        }
+        return false;
     }
 
     public static final int DEMO_SEED_VERSION = 5;

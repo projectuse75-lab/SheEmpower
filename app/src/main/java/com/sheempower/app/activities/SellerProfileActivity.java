@@ -207,6 +207,11 @@ public class SellerProfileActivity extends AppCompatActivity {
                             return;
                         }
 
+                        if (currentSeller.getUid() == null || currentSeller.getUid().isEmpty()) {
+                            currentSeller.setUid(snapshot.getKey());
+                        }
+                        currentSeller.setCategories(Constants.parseCategoriesFromSnapshot(snapshot));
+
                         if (currentSeller.getImageUrl() == null || currentSeller.getImageUrl().trim().isEmpty()) {
                             FirebaseDatabase.getInstance().getReference().child(Constants.NODE_USERS).child(sellerId)
                                     .child("imageUrl").get()
@@ -291,8 +296,8 @@ public class SellerProfileActivity extends AppCompatActivity {
     }
 
     private String getCategoriesText(Seller seller) {
-        List<String> cats = seller.getCategories();
-        if (cats != null && !cats.isEmpty()) {
+        List<String> cats = Constants.getActiveSellerCategories(seller);
+        if (!cats.isEmpty()) {
             StringBuilder sb = new StringBuilder();
             for (String c : cats) {
                 if (sb.length() > 0) sb.append(" • ");
@@ -334,7 +339,7 @@ public class SellerProfileActivity extends AppCompatActivity {
                                         }
                                     }
 
-                                    if (isMatch) {
+                                    if (isMatch && Constants.sellerProvidesCategory(currentSeller, p.getCategory())) {
                                         if (activeCatFilter != null && !activeCatFilter.isEmpty()) {
                                             if (p.getCategory() != null && activeCatFilter.equalsIgnoreCase(p.getCategory().trim())) {
                                                 productList.add(p);

@@ -1,9 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/background">
+
+    <!-- TOP TOOLBAR HEADER WITH NAVY BLUE BACKGROUND -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primary"
+        android:padding="16dp">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="#FFFFFF"
+            android:contentDescription="Back" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="📦 میرے آرڈرز&#10;My Orders"
+            android:textSize="17sp"
+            android:gravity="center"
+            android:fontFamily="sans-serif-black"
+            android:textColor="#FFFFFF" />
+
+        <ImageButton
+            android:id="@+id/btnSpeaker"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_speaker"
+            app:tint="#FFFFFF"
+            android:contentDescription="Speaker" />
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,31 +52,6 @@
         android:layout_weight="1"
         android:orientation="vertical"
         android:padding="16dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="12dp">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="📦 میرے آرڈرز / My Orders"
-                android:textSize="20sp"
-                android:fontFamily="sans-serif-black"
-                android:textColor="@color/text_primary" />
-
-            <ImageButton
-                android:id="@+id/btnSpeaker"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/ic_speaker"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Speaker" />
-        </LinearLayout>
 
         <TextView
             android:id="@+id/tvEmpty"

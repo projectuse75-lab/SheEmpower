@@ -322,14 +322,13 @@
 
             </LinearLayout>
 
-            <!-- LANGUAGE SELECTION -->
+            <!-- LANGUAGE SELECTION (DISABLED) -->
 
             <LinearLayout
                 android:id="@+id/llLanguage"
                 style="@style/SettingsCardStyle"
                 android:background="@drawable/settings_item_background"
-                android:clickable="true"
-                android:focusable="true">
+                android:visibility="gone">
 
                 <TextView
                     style="@style/SettingsIconStyle"

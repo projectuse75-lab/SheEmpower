@@ -9,8 +9,6 @@ public class PreferencesManager {
     private static final String KEY_NOTIFICATIONS = "notifications_enabled";
     private static final String KEY_DARK_THEME = "dark_theme_enabled";
     private static final String KEY_VOICE_MUTED = "voice_muted";
-    private static final String KEY_APP_LANGUAGE = "app_language";
-    private static final String KEY_HAS_SELECTED_LANG = "has_selected_lang";
 
     public static final String LANG_URDU = "ur";
     public static final String LANG_ENGLISH = "en";
@@ -22,21 +20,21 @@ public class PreferencesManager {
         this.sharedPreferences = context.getApplicationContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }
 
-    // ============ LANGUAGE ============
+    // ============ LANGUAGE (PERMANENT BILINGUAL DEFAULT) ============
     public void setAppLanguage(String langMode) {
-        sharedPreferences.edit().putString(KEY_APP_LANGUAGE, langMode).apply();
+        // App is permanently bilingual (English + Urdu)
     }
 
     public String getAppLanguage() {
-        return sharedPreferences.getString(KEY_APP_LANGUAGE, LANG_MIX); // Default: Mix
+        return LANG_MIX; // Always English + Urdu
     }
 
     public boolean hasSelectedLanguage() {
-        return sharedPreferences.getBoolean(KEY_HAS_SELECTED_LANG, false);
+        return true; // Permanently configured
     }
 
     public void setHasSelectedLanguage(boolean selected) {
-        sharedPreferences.edit().putBoolean(KEY_HAS_SELECTED_LANG, selected).apply();
+        // Permanently configured
     }
 
     // ============ NOTIFICATIONS ============
