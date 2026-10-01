@@ -91,8 +91,8 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Logged in as"
-                    android:textColor="@color/skeu_pink_light"
+                    android:text="Logged in as / صارف"
+                    android:textColor="#FFFFFF"
                     android:textSize="13sp"/>
 
                 <TextView
@@ -100,7 +100,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="User"
-                    android:textColor="@color/card_bg"
+                    android:textColor="#FFFFFF"
                     android:textSize="21sp"
                     android:textStyle="bold"
                     android:layout_marginTop="4dp"/>
@@ -110,7 +110,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Email"
-                    android:textColor="@color/card_bg"
+                    android:textColor="#FFFFFF"
                     android:textSize="14sp"
                     android:layout_marginTop="3dp"/>
 
@@ -119,7 +119,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Contact"
-                    android:textColor="@color/accent"
+                    android:textColor="#F7D794"
                     android:textSize="14sp"
                     android:layout_marginTop="2dp"/>
 
@@ -131,7 +131,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="👤  Account"
-                android:textColor="@color/primary_pink"
+                android:textColor="@color/accent"
                 android:textSize="23sp"
                 android:textStyle="bold"
                 android:layout_marginTop="22dp"
@@ -248,7 +248,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="⚙️  App Settings"
-                android:textColor="@color/primary_pink"
+                android:textColor="@color/accent"
                 android:textSize="23sp"
                 android:textStyle="bold"
                 android:layout_marginTop="22dp"
@@ -363,7 +363,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="ℹ️  More Information"
-                android:textColor="@color/primary_pink"
+                android:textColor="@color/accent"
                 android:textSize="23sp"
                 android:textStyle="bold"
                 android:layout_marginTop="22dp"

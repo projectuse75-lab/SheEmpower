@@ -1,5 +1,6 @@
 package com.sheempower.app.activities;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -128,6 +129,14 @@ public class ProductDetailActivity extends AppCompatActivity {
         if (currentProduct.getImageUrl() != null && !currentProduct.getImageUrl().isEmpty())
             Glide.with(ProductDetailActivity.this).load(currentProduct.getImageUrl()).into(ivProduct);
 
+        if (ivProduct != null) {
+            ivProduct.setOnClickListener(v -> {
+                if (currentProduct != null && currentProduct.getImageUrl() != null && !currentProduct.getImageUrl().trim().isEmpty()) {
+                    showFullScreenImageDialog(currentProduct.getImageUrl().trim(), currentProduct.getName());
+                }
+            });
+        }
+
         bindSellerMeta();
 
         boolean isSellerView = getIntent().getBooleanExtra(EXTRA_IS_SELLER_VIEW, false);
@@ -199,6 +208,32 @@ public class ProductDetailActivity extends AppCompatActivity {
     private void requireBuyerLogin(Runnable action) {
         if (session.isLoggedIn()) action.run();
         else { Toast.makeText(this, LanguageHelper.processDualString(this, "پہلے لاگ ان کریں / Please Login First"), Toast.LENGTH_SHORT).show(); startActivity(new Intent(this, LoginActivity.class)); }
+    }
+
+    private void showFullScreenImageDialog(String imageUrl, String title) {
+        if (isFinishing() || isDestroyed()) return;
+
+        Dialog dialog = new Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+        dialog.setContentView(R.layout.dialog_fullscreen_image);
+
+        ImageView ivFull = dialog.findViewById(R.id.ivFullScreenProduct);
+        TextView tvTitle = dialog.findViewById(R.id.tvImageTitle);
+        ImageButton btnClose = dialog.findViewById(R.id.btnCloseImage);
+
+        if (tvTitle != null) tvTitle.setText(title != null ? title : "");
+        if (btnClose != null) btnClose.setOnClickListener(v -> dialog.dismiss());
+
+        if (ivFull != null) {
+            Glide.with(this)
+                    .load(imageUrl)
+                    .placeholder(R.drawable.placeholder_product)
+                    .error(R.drawable.placeholder_product)
+                    .into(ivFull);
+
+            ivFull.setOnClickListener(v -> dialog.dismiss());
+        }
+
+        dialog.show();
     }
 
     private void applyTheme() {

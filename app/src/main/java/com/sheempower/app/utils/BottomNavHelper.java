@@ -156,7 +156,7 @@ public class BottomNavHelper {
         int selectedColor =
                 ContextCompat.getColor(
                         navBar.getContext(),
-                        R.color.primary_pink
+                        R.color.accent
                 );
 
         label1.setTextColor(normalColor);

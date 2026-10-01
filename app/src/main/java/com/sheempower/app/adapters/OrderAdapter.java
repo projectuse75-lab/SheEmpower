@@ -39,6 +39,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.VH> {
         holder.tvProduct.setText(o.getProductName());
         holder.tvAmount.setText("PKR " + (long) o.getAmount());
         holder.tvStatus.setText(Constants.getStatusLabel(o.getStatus(), o.getDeliveryMethod()));
+        holder.tvStatus.setTextColor(0xFFFFFFFF);
         holder.tvDetails.setText(o.getDetails());
 
         String who = isSellerView

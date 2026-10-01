@@ -3,8 +3,10 @@ package com.sheempower.app.activities;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.*;
@@ -118,8 +120,15 @@ public class PlaceOrderActivity extends AppCompatActivity {
                         : "یہ آرڈر کی سکرین ہے۔ نیچے دی گئی فہرست میں سے وہ چیزیں منتخب کریں جو آپ منگوانا چاہتی ہیں، ہر چیز کے آگے اس کی قیمت لکھی ہے۔"
         );
 
+        boolean isDark = isDarkMode();
+        int headerColor = isDark ? 0xFFFFFFFF : 0xFF192A56;
+
+        if (tvCategoryHeader != null) tvCategoryHeader.setTextColor(headerColor);
+        if (tvChecklistHeader != null) tvChecklistHeader.setTextColor(headerColor);
+        if (tvSelectedItem != null) tvSelectedItem.setTextColor(headerColor);
+
         if (singleProductMode) {
-            tvSelectedItem.setText("منتخب کردہ چیز:\n" + productName);
+            tvSelectedItem.setText("منتخب کردہ چیز / Selected Item:\n" + productName);
             etAmount.setText(String.valueOf((long) productPrice));
             tvAmountLockedNote.setText("🔒 یہ قیمت بیچنے والی نے مقرر کی ہے");
             tvSelectedItem.setVisibility(View.VISIBLE);
@@ -195,8 +204,7 @@ public class PlaceOrderActivity extends AppCompatActivity {
                             finish();
                             return;
                         }
-                        tvSellerName.setText(currentSeller.getBusinessName());
-                        tvSellerMeta.setText(currentSeller.getCategory() + " · ⭐ " + currentSeller.getRating());
+                        updateSellerMetaCard(productCategory);
                         tvSellerVerified.setText("✓ تصدیق شدہ");
 
                         buildDeliveryBlock(currentSeller);
@@ -313,9 +321,39 @@ public class PlaceOrderActivity extends AppCompatActivity {
         });
     }
 
+    private void updateSellerMetaCard(String activeCategory) {
+        if (currentSeller == null) return;
+
+        String displayCategory = (activeCategory != null && !activeCategory.trim().isEmpty())
+                ? activeCategory.trim()
+                : ((productCategory != null && !productCategory.trim().isEmpty())
+                        ? productCategory.trim()
+                        : (currentSeller.getCategory() != null ? currentSeller.getCategory() : "Cooking"));
+
+        boolean isDark = isDarkMode();
+        int nameColor = isDark ? 0xFFFFFFFF : 0xFF192A56;
+        int metaColor = isDark ? 0xFFFFFFFF : 0xFF6B7A99;
+
+        String formattedCategoryLabel = Constants.getCategoryDisplayLabel(this, displayCategory);
+        if (tvSellerMeta != null) {
+            tvSellerMeta.setText(formattedCategoryLabel + " · ⭐ " + currentSeller.getRating());
+            tvSellerMeta.setTextColor(metaColor);
+        }
+        if (tvSellerName != null) {
+            tvSellerName.setText(currentSeller.getBusinessName());
+            tvSellerName.setTextColor(nameColor);
+        }
+    }
+
     private void onCategoryChanged(String selectedCat) {
         if (selectedCat == null || selectedCat.isEmpty()) return;
-        tvCategoryHeader.setText("📋 " + Constants.getUrduLabel(selectedCat) + " کی تفصیلات");
+        boolean isDark = isDarkMode();
+        int headerColor = isDark ? 0xFFFFFFFF : 0xFF192A56;
+        if (tvCategoryHeader != null) {
+            tvCategoryHeader.setText("📋 " + Constants.getCategoryDisplayLabel(this, selectedCat) + " Details / کی تفصیلات");
+            tvCategoryHeader.setTextColor(headerColor);
+        }
+        updateSellerMetaCard(selectedCat);
         buildDynamicForm(selectedCat);
         if (!singleProductMode) {
             buildProductChecklistForCategory(selectedCat);
@@ -350,6 +388,11 @@ public class PlaceOrderActivity extends AppCompatActivity {
         onCategoryChanged(selectedCat);
     }
 
+    private boolean isDarkMode() {
+        PreferencesManager prefs = new PreferencesManager(this);
+        return prefs.isDarkThemeEnabled();
+    }
+
     /** Har Selected Category ke mutabiq uski Apni Products ki list dikhati hai (e.g. Cooking (3), Stitching (2)) */
     private void buildProductChecklistForCategory(String selectedCat) {
         layoutProductChecklist.removeAllViews();
@@ -365,14 +408,24 @@ public class PlaceOrderActivity extends AppCompatActivity {
         }
         tvChecklistEmpty.setVisibility(View.GONE);
 
+        boolean isDark = isDarkMode();
+        int textColor = isDark ? 0xFFFFFFFF : 0xFF192A56;
+        int priceColor = isDark ? 0xFFF7D794 : 0xFF192A56;
+
         for (Product p : products) {
             LinearLayout row = new LinearLayout(PlaceOrderActivity.this);
             row.setOrientation(LinearLayout.HORIZONTAL);
             row.setGravity(Gravity.CENTER_VERTICAL);
-            row.setPadding(0, 12, 0, 12);
+            row.setPadding(20, 16, 20, 16);
+            row.setBackgroundResource(R.drawable.bg_skeu_card);
+            LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            rowParams.setMargins(0, 8, 0, 8);
+            row.setLayoutParams(rowParams);
 
             CheckBox cb = new CheckBox(PlaceOrderActivity.this);
             cb.setText(p.getName());
+            cb.setTextColor(textColor);
             cb.setTextSize(14);
             LinearLayout.LayoutParams cbParams = new LinearLayout.LayoutParams(
                     0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
@@ -380,7 +433,7 @@ public class PlaceOrderActivity extends AppCompatActivity {
 
             TextView tvPrice = new TextView(PlaceOrderActivity.this);
             tvPrice.setText("PKR " + (long) p.getPrice());
-            tvPrice.setTextColor(0xFF192A56);
+            tvPrice.setTextColor(priceColor);
             tvPrice.setTypeface(null, Typeface.BOLD);
 
             cb.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -404,12 +457,55 @@ public class PlaceOrderActivity extends AppCompatActivity {
         recalcTotal();
     }
 
-    private void recalcTotal() {
-        double total = 0;
-        for (Map.Entry<CheckBox, Product> entry : checklistMap.entrySet()) {
-            if (entry.getKey().isChecked()) total += entry.getValue().getPrice();
+    private long getQuantityFromNumberInput() {
+        for (Map.Entry<String, EditText> entry : dynamicTextInputs.entrySet()) {
+            if (entry.getKey() == null || entry.getValue() == null) continue;
+            String label = entry.getKey().toLowerCase();
+            if (label.contains("number of people") || label.contains("quantity") || label.contains("people") || label.contains("suits")) {
+                String val = entry.getValue().getText().toString().trim();
+                if (!val.isEmpty()) {
+                    try {
+                        String digits = val.replaceAll("[^0-9]", "");
+                        if (!digits.isEmpty()) {
+                            long q = Long.parseLong(digits);
+                            if (q > 0) return q;
+                        }
+                    } catch (Exception ignored) {}
+                }
+            }
         }
-        etAmount.setText(String.valueOf((long) total));
+        return 1;
+    }
+
+    private void recalcTotal() {
+        double basePrice = 0;
+
+        if (singleProductMode) {
+            basePrice = productPrice;
+        } else {
+            for (Map.Entry<CheckBox, Product> entry : checklistMap.entrySet()) {
+                if (entry.getKey().isChecked()) {
+                    basePrice += entry.getValue().getPrice();
+                }
+            }
+        }
+
+        long quantity = getQuantityFromNumberInput();
+        double total = basePrice * quantity;
+
+        if (etAmount != null) {
+            etAmount.setText(String.valueOf((long) total));
+        }
+
+        if (tvAmountLockedNote != null) {
+            if (quantity > 1) {
+                tvAmountLockedNote.setText("🔒 (PKR " + (long) basePrice + " × " + quantity + " = PKR " + (long) total + ")");
+            } else if (singleProductMode) {
+                tvAmountLockedNote.setText("🔒 یہ قیمت بیچنے والی نے مقرر کی ہے");
+            } else {
+                tvAmountLockedNote.setText("🔒 یہ رقم آپ کی منتخب کردہ چیزوں کے مطابق خود بخود بنتی ہے");
+            }
+        }
     }
 
     private void buildDeliveryBlock(Seller seller) {
@@ -437,20 +533,35 @@ public class PlaceOrderActivity extends AppCompatActivity {
         dynamicCheckboxGroups.clear();
         List<OrderField> fields = CategoryFormConfig.getFieldsForCategory(category);
 
+        boolean isDark = isDarkMode();
+        int labelColor = isDark ? 0xFFFFFFFF : 0xFF192A56;
+        int inputTextColor = isDark ? 0xFFFFFFFF : 0xFF192A56;
+        int hintColor = isDark ? 0xFFB0B8CC : 0xFF888888;
+
         for (OrderField field : fields) {
+            LinearLayout fieldCard = new LinearLayout(this);
+            fieldCard.setOrientation(LinearLayout.VERTICAL);
+            fieldCard.setPadding(24, 18, 24, 18);
+            fieldCard.setBackgroundResource(R.drawable.bg_skeu_card);
+            LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            cardParams.setMargins(0, 14, 0, 0);
+            fieldCard.setLayoutParams(cardParams);
+
             TextView label = new TextView(this);
-            label.setText(field.labelUrdu + " / " + field.labelEnglish);
-            label.setTextColor(0xFF192A56);
+            label.setText(field.labelEnglish + " / " + field.labelUrdu);
+            label.setTextColor(labelColor);
             label.setTextSize(15);
-            label.setPadding(0, 24, 0, 6);
-            layoutDynamicFields.addView(label);
+            label.setTypeface(null, Typeface.BOLD);
+            label.setPadding(0, 0, 0, 8);
+            fieldCard.addView(label);
 
             if ("spinner".equals(field.type)) {
                 Spinner spinner = new Spinner(this);
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, field.options);
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 spinner.setAdapter(adapter);
-                layoutDynamicFields.addView(spinner);
+                fieldCard.addView(spinner);
                 dynamicSpinners.put(field.labelEnglish, spinner);
 
             } else if ("multi".equals(field.type)) {
@@ -460,23 +571,37 @@ public class PlaceOrderActivity extends AppCompatActivity {
                 for (String option : field.options) {
                     CheckBox cb = new CheckBox(this);
                     cb.setText(option);
+                    cb.setTextColor(labelColor);
                     cb.setTextSize(14);
                     checkboxContainer.addView(cb);
                     group.add(cb);
                 }
-                layoutDynamicFields.addView(checkboxContainer);
+                fieldCard.addView(checkboxContainer);
                 dynamicCheckboxGroups.put(field.labelEnglish, group);
 
             } else {
                 EditText input = new EditText(this);
-                input.setHint(field.hintUrdu);
-                input.setTextSize(16);
-                input.setPadding(28, 28, 28, 28);
+                input.setHint(field.labelEnglish + " / " + field.hintUrdu);
+                input.setHintTextColor(hintColor);
+                input.setTextColor(inputTextColor);
+                input.setTextSize(15);
+                input.setPadding(28, 24, 28, 24);
                 input.setBackgroundResource(R.drawable.bg_skeu_input);
-                if ("number".equals(field.type)) input.setInputType(InputType.TYPE_CLASS_NUMBER);
-                layoutDynamicFields.addView(input);
+                if ("number".equals(field.type)) {
+                    input.setInputType(InputType.TYPE_CLASS_NUMBER);
+                    input.addTextChangedListener(new TextWatcher() {
+                        @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                        @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+                        @Override public void afterTextChanged(Editable s) {
+                            recalcTotal();
+                        }
+                    });
+                }
+                fieldCard.addView(input);
                 dynamicTextInputs.put(field.labelEnglish, input);
             }
+
+            layoutDynamicFields.addView(fieldCard);
         }
     }
 

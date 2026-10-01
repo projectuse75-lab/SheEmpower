@@ -1,19 +1,14 @@
 package com.sheempower.app.activities;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
-
+import android.widget.*;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
@@ -23,6 +18,11 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.sheempower.app.utils.TouchCropView;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
@@ -112,9 +112,76 @@ public class ProfileActivity extends AppCompatActivity {
             registerForActivityResult(
                     new ActivityResultContracts.GetContent(),
                     uri -> {
-                        if (uri != null) uploadProfilePic(uri);
+                        if (uri != null) showTouchCropDialog(uri);
                     }
             );
+
+    private void showTouchCropDialog(Uri originalUri) {
+        try {
+            InputStream is = getContentResolver().openInputStream(originalUri);
+            Bitmap bitmap = BitmapFactory.decodeStream(is);
+            if (is != null) is.close();
+
+            if (bitmap == null) {
+                uploadProfilePic(originalUri);
+                return;
+            }
+
+            Dialog dialog = new Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+            dialog.setContentView(R.layout.dialog_touch_crop);
+
+            TouchCropView touchCropView = dialog.findViewById(R.id.touchCropView);
+            ImageButton btnRotate = dialog.findViewById(R.id.btnRotateTouch);
+            Button btnCancel = dialog.findViewById(R.id.btnTouchCancel);
+            Button btnCrop = dialog.findViewById(R.id.btnTouchCrop);
+
+            if (touchCropView != null) {
+                touchCropView.setImageBitmap(bitmap);
+            }
+
+            if (btnRotate != null) {
+                btnRotate.setOnClickListener(v -> {
+                    if (touchCropView != null) touchCropView.rotate90(true);
+                });
+            }
+
+            if (btnCancel != null) {
+                btnCancel.setOnClickListener(v -> dialog.dismiss());
+            }
+
+            if (btnCrop != null) {
+                btnCrop.setOnClickListener(v -> {
+                    dialog.dismiss();
+                    Bitmap croppedBmp = touchCropView != null ? touchCropView.getCroppedBitmap() : null;
+                    Uri processedUri = saveBitmapToTempUri(croppedBmp);
+                    if (processedUri != null) {
+                        uploadProfilePic(processedUri);
+                    } else {
+                        uploadProfilePic(originalUri);
+                    }
+                });
+            }
+
+            dialog.show();
+
+        } catch (Exception e) {
+            uploadProfilePic(originalUri);
+        }
+    }
+
+    private Uri saveBitmapToTempUri(Bitmap bitmap) {
+        if (bitmap == null) return null;
+        try {
+            File tempFile = new File(getCacheDir(), "cropped_profile_" + System.currentTimeMillis() + ".jpg");
+            FileOutputStream fos = new FileOutputStream(tempFile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fos);
+            fos.flush();
+            fos.close();
+            return Uri.fromFile(tempFile);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

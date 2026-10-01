@@ -22,7 +22,7 @@
     <color name="dark_background">#000000</color>
     <color name="lighter_pink">#000000</color>
 
-    <!-- Cards, Buttons & Fields Backgrounds — BLUE -->
+    <!-- Cards, Buttons & Fields Backgrounds — NAVY BLUE -->
     <color name="white">#192A56</color>
     <color name="card_bg">#192A56</color>
     <color name="input_bg">#192A56</color>
@@ -35,6 +35,7 @@
     <color name="light_pink">#192A56</color>
     <color name="skeu_cream_dark">#192A56</color>
     <color name="skeu_pink_light">#192A56</color>
+    <color name="primary_pink">#192A56</color>
 
     <!-- Font / Text Colors — PURE WHITE -->
     <color name="text_primary">#FFFFFF</color>
@@ -55,6 +56,5 @@
     <color name="skeu_cream_border">#2A3F75</color>
 
     <color name="black">#FFFFFF</color>
-    <color name="primary_pink">#192A56</color>
     <color name="gray">#FFFFFF</color>
 </resources>

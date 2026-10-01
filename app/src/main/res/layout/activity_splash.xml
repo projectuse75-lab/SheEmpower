@@ -5,9 +5,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:background="@color/white">
+    android:background="@color/background">
 
-    <!-- Logo on pure white background -->
+    <!-- Logo on white/dark background -->
     <ImageView
         android:layout_width="200dp"
         android:layout_height="200dp"
@@ -21,7 +21,7 @@
         android:text="She Empower✨"
         android:textSize="30sp"
         android:fontFamily="sans-serif-black"
-        android:textColor="@color/primary"
+        android:textColor="@color/text_primary"
         android:layout_marginTop="20dp" />
 
     <TextView
@@ -30,7 +30,7 @@
         android:text="شی ایمپاور✨"
         android:textSize="20sp"
         android:fontFamily="sans-serif-bold"
-        android:textColor="@color/secondary"
+        android:textColor="@color/text_primary"
         android:layout_marginTop="4dp" />
 
     <!-- Tagline -->
