@@ -29,6 +29,7 @@ import com.sheempower.app.adapters.SellerAdapter;
 import com.sheempower.app.models.Product;
 import com.sheempower.app.models.Seller;
 import com.sheempower.app.utils.BottomNavHelper;
+import com.sheempower.app.utils.CartManager;
 import com.sheempower.app.utils.Constants;
 import com.sheempower.app.utils.LanguageHelper;
 import com.sheempower.app.utils.PreferencesManager;
@@ -123,6 +124,11 @@ public class MainActivity extends AppCompatActivity {
 
         loadSellersThenProducts();
 
+        TextView btnCartHeader = findViewById(R.id.btnCartHeader);
+        if (btnCartHeader != null) {
+            btnCartHeader.setOnClickListener(v -> startActivity(new Intent(this, CartActivity.class)));
+        }
+
         BottomNavHelper.setupForBuyerOrVisitor(
                 this,
                 findViewById(R.id.bottomNav),
@@ -138,6 +144,13 @@ public class MainActivity extends AppCompatActivity {
         setupTopButtons();
         loadSellersThenProducts();
 
+        TextView btnCartHeader = findViewById(R.id.btnCartHeader);
+        if (btnCartHeader != null) {
+            int count = CartManager.getInstance(this).getCartCount();
+            btnCartHeader.setText(count > 0 ? "🛒 Cart (" + count + ")" : "🛒 Cart");
+            btnCartHeader.setTextColor(isDarkMode() ? 0xFFFFFFFF : 0xFF192A56);
+        }
+
         ImageButton btnSpeaker = findViewById(R.id.btnSpeaker);
         if (btnSpeaker != null) {
             VoiceGuide.updateSpeakerIcon(btnSpeaker, VoiceGuide.isMuted(this));
@@ -152,6 +165,11 @@ public class MainActivity extends AppCompatActivity {
                             : "شی ایمپاور میں خوش آمدید۔ خریداری کے لیے لاگ ان کریں، یا اپنا کام شروع کرنے کے لیے رجسٹر کریں۔"
             );
         }
+    }
+
+    private boolean isDarkMode() {
+        PreferencesManager prefs = new PreferencesManager(this);
+        return prefs.isDarkThemeEnabled();
     }
 
     // ---------------------------------------------------------
@@ -408,36 +426,36 @@ public class MainActivity extends AppCompatActivity {
         // -------------------------------------------------
 
         for (Product p : allProducts) {
-
             if (p == null) continue;
 
-            String productName = p.getName() == null
-                    ? ""
-                    : p.getName().toLowerCase();
+            String productName = p.getName() == null ? "" : p.getName().toLowerCase();
+            String pCat = p.getCategory() == null ? "" : p.getCategory().toLowerCase();
+            String pDesc = p.getDescription() == null ? "" : p.getDescription().toLowerCase();
 
-            // Search
-            if (!query.isEmpty() &&
-                    !productName.contains(query)) {
-                continue;
+            // Search query filter (matches name, category, or description)
+            if (!query.isEmpty()) {
+                boolean matchesSearch = productName.contains(query) || pCat.contains(query) || pDesc.contains(query);
+                if (!matchesSearch) continue;
+            }
+
+            // Category filter for Products
+            if (!selectedCategory.isEmpty()) {
+                if (p.getCategory() == null || !selectedCategory.equalsIgnoreCase(p.getCategory().trim())) {
+                    continue;
+                }
             }
 
             double price = p.getPrice();
 
             // Price filter
             if (!selectedPrice.isEmpty()) {
-
-                if (selectedPrice.equals("Under Rs. 500")
-                        && price >= 500) {
+                if (selectedPrice.equals("Under Rs. 500") && price >= 500) {
                     continue;
                 }
-
-                if (selectedPrice.equals("Rs. 500 – 1000")
-                        && (price < 500 || price > 1000)) {
+                if (selectedPrice.equals("Rs. 500 – 1000") && (price < 500 || price > 1000)) {
                     continue;
                 }
-
-                if (selectedPrice.equals("Above Rs. 1000")
-                        && price <= 1000) {
+                if (selectedPrice.equals("Above Rs. 1000") && price <= 1000) {
                     continue;
                 }
             }
@@ -447,24 +465,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Price sorting
         if (selectedPrice.equals("Low → High")) {
-
-            Collections.sort(
-                    filteredProducts,
-                    (a, b) -> Double.compare(
-                            a.getPrice(),
-                            b.getPrice()
-                    )
-            );
-
+            Collections.sort(filteredProducts, (a, b) -> Double.compare(a.getPrice(), b.getPrice()));
         } else if (selectedPrice.equals("High → Low")) {
-
-            Collections.sort(
-                    filteredProducts,
-                    (a, b) -> Double.compare(
-                            b.getPrice(),
-                            a.getPrice()
-                    )
-            );
+            Collections.sort(filteredProducts, (a, b) -> Double.compare(b.getPrice(), a.getPrice()));
         }
 
         // -------------------------------------------------
@@ -472,30 +475,23 @@ public class MainActivity extends AppCompatActivity {
         // -------------------------------------------------
 
         for (Seller s : allSellers) {
-
             if (s == null) continue;
 
-            String businessName = s.getBusinessName() == null
-                    ? ""
-                    : s.getBusinessName().toLowerCase();
+            String businessName = s.getBusinessName() == null ? "" : s.getBusinessName().toLowerCase();
+            String ownerName = s.getOwnerName() == null ? "" : s.getOwnerName().toLowerCase();
+            String city = s.getCity() == null ? "" : s.getCity().toLowerCase();
+            String primaryCategory = s.getCategory() == null ? "" : s.getCategory().toLowerCase();
 
-            String primaryCategory = s.getCategory() == null
-                    ? ""
-                    : s.getCategory().toLowerCase();
-
+            // Search query filter for Sellers
             boolean matchesSearch = query.isEmpty()
                     || businessName.contains(query)
+                    || ownerName.contains(query)
+                    || city.contains(query)
                     || primaryCategory.contains(query);
 
-            // Multiple categories support
-            if (!matchesSearch &&
-                    s.getCategories() != null) {
-
+            if (!matchesSearch && s.getCategories() != null) {
                 for (String category : s.getCategories()) {
-
-                    if (category != null &&
-                            category.toLowerCase().contains(query)) {
-
+                    if (category != null && category.toLowerCase().contains(query)) {
                         matchesSearch = true;
                         break;
                     }
@@ -504,39 +500,19 @@ public class MainActivity extends AppCompatActivity {
 
             if (!matchesSearch) continue;
 
-            // Category filter
+            // Category filter for Sellers
             if (!selectedCategory.isEmpty()) {
-
-                boolean categoryMatched =
-                        selectedCategory.equalsIgnoreCase(
-                                s.getCategory()
-                        );
-
-                if (!categoryMatched &&
-                        s.getCategories() != null) {
-
-                    for (String category : s.getCategories()) {
-
-                        if (selectedCategory.equalsIgnoreCase(category)) {
-                            categoryMatched = true;
-                            break;
-                        }
-                    }
+                if (!Constants.sellerProvidesCategory(s, selectedCategory)) {
+                    continue;
                 }
-
-                if (!categoryMatched) continue;
             }
 
             // Rating filter
             double rating = s.getRating();
-
-            if (selectedRating.equals("4★ & Above")
-                    && rating < 4.0) {
+            if (selectedRating.equals("4★ & Above") && rating < 4.0) {
                 continue;
             }
-
-            if (selectedRating.equals("3★ & Above")
-                    && rating < 3.0) {
+            if (selectedRating.equals("3★ & Above") && rating < 3.0) {
                 continue;
             }
 

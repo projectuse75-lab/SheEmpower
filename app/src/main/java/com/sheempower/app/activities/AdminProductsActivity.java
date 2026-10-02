@@ -39,15 +39,12 @@ public class AdminProductsActivity extends AppCompatActivity {
         tvEmpty    = findViewById(R.id.tvEmpty);
 
         rvProducts.setLayoutManager(new GridLayoutManager(this, 2));
-        adapter = new ProductAdapter(productList,
-                product -> {
-                    Intent i = new Intent(this, ProductDetailActivity.class);
-                    i.putExtra(ProductDetailActivity.EXTRA_PRODUCT_ID, product.getId());
-                    startActivity(i);
-                },
-                product -> Toast.makeText(this, "ایڈمن آرڈر نہیں دے سکتا", Toast.LENGTH_SHORT).show(),
-                product -> Toast.makeText(this, "ایڈمن چیٹ نہیں کر سکتا", Toast.LENGTH_SHORT).show()
-        );
+        adapter = new ProductAdapter(productList, product -> {
+            Intent i = new Intent(this, ProductDetailActivity.class);
+            i.putExtra(ProductDetailActivity.EXTRA_PRODUCT_ID, product.getId());
+            i.putExtra(ProductDetailActivity.EXTRA_IS_SELLER_VIEW, true);
+            startActivity(i);
+        });
         rvProducts.setAdapter(adapter);
 
         loadProducts();

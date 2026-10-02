@@ -9,8 +9,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.google.firebase.database.*;
 import com.sheempower.app.R;
+import com.sheempower.app.models.CartItem;
 import com.sheempower.app.models.Product;
 import com.sheempower.app.models.Seller;
+import com.sheempower.app.utils.CartManager;
 import com.sheempower.app.utils.*;
 import com.sheempower.app.utils.PreferencesManager;
 
@@ -21,7 +23,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     private ImageView ivProduct;
     private TextView tvName, tvPrice, tvSellerName, tvSellerMeta, tvSellerRating, tvDescription;
-    private Button btnViewSeller, btnPlaceOrder, btnWhatsApp;
+    private Button btnViewSeller, btnPlaceOrder, btnWhatsApp, btnAddToCart;
 
     private Product currentProduct;
     private Seller currentSeller;
@@ -55,6 +57,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         btnViewSeller  = findViewById(R.id.btnViewSeller);
         btnPlaceOrder  = findViewById(R.id.btnPlaceOrder);
         btnWhatsApp    = findViewById(R.id.btnWhatsApp);
+        btnAddToCart   = findViewById(R.id.btnAddToCart);
 
         BottomNavHelper.setupBackButton(this);
 
@@ -63,6 +66,13 @@ public class ProductDetailActivity extends AppCompatActivity {
             if (btnPlaceOrder != null) btnPlaceOrder.setVisibility(View.GONE);
             if (btnWhatsApp != null) btnWhatsApp.setVisibility(View.GONE);
             if (btnViewSeller != null) btnViewSeller.setVisibility(View.GONE);
+            if (btnAddToCart != null) btnAddToCart.setVisibility(View.GONE);
+        }
+
+        if (btnAddToCart != null) {
+            boolean isDark = isDarkMode();
+            btnAddToCart.setTextColor(isDark ? 0xFFFFFFFF : 0xFF192A56);
+            btnAddToCart.setOnClickListener(v -> requireBuyerLogin(this::addToCart));
         }
 
         loadProduct(productId);
@@ -140,13 +150,15 @@ public class ProductDetailActivity extends AppCompatActivity {
         bindSellerMeta();
 
         boolean isSellerView = getIntent().getBooleanExtra(EXTRA_IS_SELLER_VIEW, false);
+        boolean isSellerOrAdmin = session.isLoggedIn() && (session.isSeller() || session.isAdmin());
         boolean isOwnProduct = session.isLoggedIn() && session.getUid() != null && currentProduct.getSellerId() != null
                 && session.getUid().trim().equalsIgnoreCase(currentProduct.getSellerId().trim());
 
-        if (isSellerView || isOwnProduct) {
+        if (isSellerView || isSellerOrAdmin || isOwnProduct) {
             if (btnPlaceOrder != null) btnPlaceOrder.setVisibility(View.GONE);
+            if (btnAddToCart != null) btnAddToCart.setVisibility(View.GONE);
             if (btnWhatsApp != null) btnWhatsApp.setVisibility(View.GONE);
-            if (btnViewSeller != null) btnViewSeller.setVisibility(View.GONE);
+            if (isSellerView && btnViewSeller != null) btnViewSeller.setVisibility(View.GONE);
         }
 
         if (currentProduct.getSellerId() != null && !currentProduct.getSellerId().trim().isEmpty()) {
@@ -206,8 +218,18 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     private void requireBuyerLogin(Runnable action) {
-        if (session.isLoggedIn()) action.run();
-        else { Toast.makeText(this, LanguageHelper.processDualString(this, "پہلے لاگ ان کریں / Please Login First"), Toast.LENGTH_SHORT).show(); startActivity(new Intent(this, LoginActivity.class)); }
+        if (!session.isLoggedIn()) {
+            Toast.makeText(this, LanguageHelper.processDualString(this, "پہلے لاگ ان کریں / Please Login First"), Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, LoginActivity.class));
+            return;
+        }
+
+        if (session.isSeller() || session.isAdmin()) {
+            Toast.makeText(this, "سیلر اور ایڈمن خرید نہیں سکتے / Sellers & Admins cannot place orders or add to cart", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        action.run();
     }
 
     private void showFullScreenImageDialog(String imageUrl, String title) {
@@ -234,6 +256,22 @@ public class ProductDetailActivity extends AppCompatActivity {
         }
 
         dialog.show();
+    }
+
+    private void addToCart() {
+        if (currentProduct == null || session.getUid() == null) return;
+
+        CartItem item = new CartItem(currentProduct.getId(), currentProduct.getId(), currentProduct.getName(),
+                currentProduct.getImageUrl(), currentProduct.getCategory(), currentProduct.getSellerId(),
+                currentSeller != null ? currentSeller.getBusinessName() : "", currentProduct.getPrice(), 1);
+
+        CartManager.getInstance(this).addToCart(item);
+        Toast.makeText(this, "کارٹ میں شامل ہو گیا! 🛒 / Added to Cart!", Toast.LENGTH_SHORT).show();
+    }
+
+    private boolean isDarkMode() {
+        PreferencesManager prefs = new PreferencesManager(this);
+        return prefs.isDarkThemeEnabled();
     }
 
     private void applyTheme() {

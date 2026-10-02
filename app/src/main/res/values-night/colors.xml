@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Dark Theme Colors -->
-    <!-- Primary Blue for Buttons, Cards & Fields -->
+    <!-- Primary Blue for Buttons, Cards & Navigation Headers -->
     <color name="primary">#192A56</color>
     <color name="primary_dark">#000000</color>
     <color name="primary_light">#2A3F75</color>
@@ -10,6 +10,9 @@
     <color name="accent">#F7D794</color>
     <color name="accent_gold">#F7D794</color>
     <color name="star_gold">#F7D794</color>
+
+    <color name="secondary">#FFFFFF</color>
+    <color name="dusty_rose">#192A56</color>
 
     <!-- Screen / Activity Backgrounds — PURE BLACK -->
     <color name="background">#000000</color>

@@ -40,6 +40,10 @@
         <activity android:name=".activities.AdminOrdersActivity" android:exported="false" />
         <activity android:name=".activities.AdminProductsActivity" android:exported="false" />
         <activity android:name=".activities.SettingsActivity" android:exported="false" />
+        <activity android:name=".activities.CartActivity" android:exported="false" />
+        <activity android:name=".activities.CheckoutActivity" android:exported="false" />
+        <activity android:name=".activities.AddReviewActivity" android:exported="false" />
+        <activity android:name=".activities.ProductReviewsActivity" android:exported="false" />
 
     </application>
 </manifest>

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="64dp"
     android:orientation="horizontal"
-    android:background="@drawable/bg_skeu_nav"
+    android:background="#192A56"
     android:elevation="12dp">
 
     <!-- HOME / BROWSE -->

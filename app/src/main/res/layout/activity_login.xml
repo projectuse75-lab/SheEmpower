@@ -12,12 +12,12 @@
         android:orientation="vertical"
         android:paddingBottom="24dp">
 
-        <!-- LOGO & BRAND HEADER (WHITE BACKGROUND TO MATCH LOGO) -->
+        <!-- LOGO & BRAND HEADER -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@color/white"
+            android:background="@color/background"
             android:paddingTop="28dp"
             android:paddingBottom="20dp"
             android:paddingStart="20dp"
@@ -36,7 +36,7 @@
                     android:layout_alignParentTop="true"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@drawable/ic_arrow_back"
-                    app:tint="@color/primary"
+                    app:tint="@color/text_primary"
                     android:contentDescription="Back"
                     android:scaleType="centerInside" />
 
@@ -67,7 +67,7 @@
                 android:text="SHE EMPOWER"
                 android:textSize="20sp"
                 android:fontFamily="sans-serif-black"
-                android:textColor="@color/primary"
+                android:textColor="@color/text_primary"
                 android:layout_marginTop="8dp" />
 
             <TextView
@@ -76,7 +76,7 @@
                 android:text="شی ایمپاور"
                 android:textSize="14sp"
                 android:fontFamily="sans-serif-bold"
-                android:textColor="@color/secondary"
+                android:textColor="@color/text_secondary"
                 android:layout_marginTop="2dp" />
 
         </LinearLayout>
@@ -194,7 +194,7 @@
                     android:text="کمزور ❌"
                     android:textSize="11sp"
                     android:fontFamily="sans-serif-medium"
-                    android:textColor="@color/primary" />
+                    android:textColor="@color/accent" />
 
             </LinearLayout>
 
@@ -219,7 +219,7 @@
                 android:layout_height="wrap_content"
                 android:text="❓ پاس ورڈ بھول گئے؟ / Forgot Password?"
                 android:textSize="12sp"
-                android:textColor="@color/primary"
+                android:textColor="@color/accent"
                 android:fontFamily="sans-serif-medium"
                 android:gravity="center"
                 android:padding="10dp"
