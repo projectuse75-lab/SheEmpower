@@ -575,6 +575,7 @@ public class PlaceOrderActivity extends AppCompatActivity {
                     DemoDataSeeder.clearDemoDataOnFirstRealUse(this);
                     Toast.makeText(this, "آرڈر جمع ہو گیا! ✅", Toast.LENGTH_LONG).show();
                     VoiceGuide.explain(this, "آپ کا آرڈر کامیابی سے جمع ہو گیا ہے۔ بیچنے والی سے واٹس ایپ پر رابطہ ہو رہا ہے۔");
+                    com.sheempower.app.utils.NotificationHelper.createAndSendOrderNotification(this, order);
                     String msg = "السلام علیکم! میں نے شی ایمپاور ایپ سے آرڈر دیا ہے:\n"
                             + order.getProductName() + " — PKR " + (long) amount + "\n" + details;
                     WhatsAppHelper.openChat(this, currentSeller.getWhatsappNumber(), msg);

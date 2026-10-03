@@ -321,6 +321,12 @@ public class LoginActivity extends AppCompatActivity {
                                         return;
                                     }
                                     session.saveUser(uid, user.getRole(), user.getName());
+
+                                    // ✅ ADDED: Seller ke liye OneSignal Player ID update
+                                    if (Constants.ROLE_SELLER.equals(user.getRole())) {
+                                        com.sheempower.app.utils.OneSignalHelper.updateSellerPlayerId(uid);
+                                    }
+
                                     session.saveEmail(user.getEmail());
                                     VoiceGuide.explain(LoginActivity.this, "خوش آمدید " + user.getName());
                                     String loginDestination = getIntent().getStringExtra(
