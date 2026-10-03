@@ -58,9 +58,9 @@
         android:id="@+id/tvOrderStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_skeu_button_cream"
+        android:background="@drawable/bg_skeu_button_primary"
         android:padding="8dp"
-        android:textColor="@color/primary"
+        android:textColor="#FFFFFF"
         android:fontFamily="sans-serif-medium"
         android:textSize="12sp"
         android:layout_marginTop="8dp" />

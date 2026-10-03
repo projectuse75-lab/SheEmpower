@@ -95,18 +95,30 @@ public class SellerProfileActivity extends AppCompatActivity {
                 "یہ بیچنے والی کی پروفائل ہے۔ نیچے اس کی تمام اشیاء نظر آئیں گی۔"
         );
 
+        boolean isBuyer = !session.isSeller() && !session.isAdmin();
+
         rvProducts.setLayoutManager(new GridLayoutManager(this, 2));
-        productAdapter = new ProductAdapter(productList,
-                product -> {
-                    Intent i = new Intent(this, ProductDetailActivity.class);
-                    i.putExtra(ProductDetailActivity.EXTRA_PRODUCT_ID, product.getId());
-                    startActivity(i);
-                },
-                product -> requireBuyerLogin(() -> goToSingleProductOrder(product)),
-                product -> WhatsAppHelper.openChat(this,
-                        currentSeller != null ? currentSeller.getWhatsappNumber() : null,
-                        "السلام علیکم! مجھے " + product.getName() + " کے بارے میں پوچھنا تھا۔")
-        );
+        if (isBuyer) {
+            productAdapter = new ProductAdapter(productList,
+                    product -> {
+                        Intent i = new Intent(this, ProductDetailActivity.class);
+                        i.putExtra(ProductDetailActivity.EXTRA_PRODUCT_ID, product.getId());
+                        startActivity(i);
+                    },
+                    product -> requireBuyerLogin(() -> goToSingleProductOrder(product)),
+                    product -> WhatsAppHelper.openChat(this,
+                            currentSeller != null ? currentSeller.getWhatsappNumber() : null,
+                            "السلام علیکم! مجھے " + product.getName() + " کے بارے میں پوچھنا تھا۔")
+            );
+        } else {
+            // Admin or Seller view: NO Order or Chat buttons!
+            productAdapter = new ProductAdapter(productList, product -> {
+                Intent i = new Intent(this, ProductDetailActivity.class);
+                i.putExtra(ProductDetailActivity.EXTRA_PRODUCT_ID, product.getId());
+                i.putExtra(ProductDetailActivity.EXTRA_IS_SELLER_VIEW, true);
+                startActivity(i);
+            });
+        }
         rvProducts.setAdapter(productAdapter);
 
         loadSellerData();
@@ -185,6 +197,47 @@ public class SellerProfileActivity extends AppCompatActivity {
 
         if (btnAdminApprove != null) btnAdminApprove.setOnClickListener(v -> updateVerification("verified"));
         if (btnAdminReject != null) btnAdminReject.setOnClickListener(v -> updateVerification("rejected"));
+
+        Button btnAdminDeleteSeller = findViewById(R.id.btnAdminDeleteSeller);
+        if (btnAdminDeleteSeller != null) {
+            btnAdminDeleteSeller.setOnClickListener(v -> confirmAndDeleteSeller());
+        }
+    }
+
+    private void confirmAndDeleteSeller() {
+        if (sellerId == null || sellerId.trim().isEmpty()) {
+            Toast.makeText(this, "سیلر نہیں ملا / Seller ID not found", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String sellerName = (currentSeller != null && currentSeller.getBusinessName() != null && !currentSeller.getBusinessName().isEmpty())
+                ? currentSeller.getBusinessName()
+                : "Seller";
+
+        new AlertDialog.Builder(this)
+                .setTitle("سیلر ختم کریں / Delete Seller")
+                .setMessage("کیا آپ واقعی اس سیلر \"" + sellerName + "\" کو ڈیٹا بیس سے مکمل طور پر ختم کرنا چاہتے ہیں؟\n\nAre you sure you want to delete seller \"" + sellerName + "\"?")
+                .setPositiveButton("ہاں، ختم کریں / Yes, Delete", (dialog, which) -> deleteSellerFromFirebase())
+                .setNegativeButton("منسوخ / Cancel", null)
+                .show();
+    }
+
+    private void deleteSellerFromFirebase() {
+        if (sellerId == null || sellerId.trim().isEmpty()) return;
+        final String targetUid = sellerId.trim();
+
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
+
+        // 1. Remove from sellers node
+        dbRef.child(Constants.NODE_SELLERS).child(targetUid).removeValue();
+
+        // 2. Remove from users node
+        dbRef.child(Constants.NODE_USERS).child(targetUid).removeValue();
+
+        Toast.makeText(this, "سیلر کامیابی سے ختم کر دیا گیا! ✅ / Seller deleted!", Toast.LENGTH_LONG).show();
+        VoiceGuide.explain(this, "سیلر کامیابی سے ختم کر دیا گیا ہے۔");
+
+        finish();
     }
 
     private void updateVerification(String status) {

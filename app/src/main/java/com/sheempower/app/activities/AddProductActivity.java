@@ -1,6 +1,10 @@
 package com.sheempower.app.activities;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -19,8 +23,12 @@ import com.sheempower.app.utils.Constants;
 import com.sheempower.app.utils.SessionManager;
 import com.sheempower.app.utils.VoiceGuide;
 import com.sheempower.app.utils.PreferencesManager;
+import com.sheempower.app.utils.TouchCropView;
 import com.sheempower.app.utils.LanguageHelper;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -40,18 +48,13 @@ public class AddProductActivity extends AppCompatActivity {
     private String editProductId = null;
     private Product editingProduct = null;
 
+    private Bitmap originalBitmap = null;
+    private Bitmap currentCropBitmap = null;
+
     private final ActivityResultLauncher<String> imagePicker =
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
                 if (uri != null) {
-                    tvImageStatus.setText(LanguageHelper.processDualString(this, "✅ اپلوڈ ہو رہی ہے... / Uploading..."));
-                    CloudinaryHelper.upload(this, uri, "products", (url, error) -> {
-                        if (url != null) {
-                            imageUrl = url;
-                            tvImageStatus.setText(LanguageHelper.processDualString(this, "✅ تصویر اپلوڈ ہو گئی / Image Uploaded"));
-                        } else {
-                            tvImageStatus.setText(LanguageHelper.processDualString(this, "❌ اپلوڈ ناکام: / Upload Failed: ") + error);
-                        }
-                    });
+                    showCropDialog(uri);
                 }
             });
 
@@ -272,6 +275,98 @@ public class AddProductActivity extends AppCompatActivity {
                     btnSubmit.setEnabled(true);
                     Toast.makeText(this, "خرابی: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
+    }
+
+    private void showCropDialog(Uri originalUri) {
+        try {
+            InputStream is = getContentResolver().openInputStream(originalUri);
+            Bitmap bitmap = BitmapFactory.decodeStream(is);
+            if (is != null) is.close();
+
+            if (bitmap == null) {
+                uploadImageToCloudinary(originalUri);
+                return;
+            }
+
+            Dialog dialog = new Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+            dialog.setContentView(R.layout.dialog_touch_crop);
+
+            TouchCropView touchCropView = dialog.findViewById(R.id.touchCropView);
+            ImageButton btnRotate = dialog.findViewById(R.id.btnRotateTouch);
+            Button btnCancel = dialog.findViewById(R.id.btnTouchCancel);
+            Button btnCrop = dialog.findViewById(R.id.btnTouchCrop);
+
+            if (touchCropView != null) {
+                touchCropView.setImageBitmap(bitmap);
+            }
+
+            if (btnRotate != null) {
+                btnRotate.setOnClickListener(v -> {
+                    if (touchCropView != null) touchCropView.rotate90(true);
+                });
+            }
+
+            if (btnCancel != null) {
+                btnCancel.setOnClickListener(v -> dialog.dismiss());
+            }
+
+            if (btnCrop != null) {
+                btnCrop.setOnClickListener(v -> {
+                    dialog.dismiss();
+                    Bitmap croppedBmp = touchCropView != null ? touchCropView.getCroppedBitmap() : null;
+                    Uri processedUri = saveBitmapToTempUri(croppedBmp);
+                    if (processedUri != null) {
+                        uploadImageToCloudinary(processedUri);
+                    } else {
+                        uploadImageToCloudinary(originalUri);
+                    }
+                });
+            }
+
+            dialog.show();
+
+        } catch (Exception e) {
+            uploadImageToCloudinary(originalUri);
+        }
+    }
+
+    private Bitmap rotateBitmap(Bitmap source, float angle) {
+        if (source == null) return source;
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+    }
+
+    private Uri saveBitmapToTempUri(Bitmap bitmap) {
+        if (bitmap == null) return null;
+        try {
+            File tempFile = new File(getCacheDir(), "cropped_product_" + System.currentTimeMillis() + ".jpg");
+            FileOutputStream fos = new FileOutputStream(tempFile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fos);
+            fos.flush();
+            fos.close();
+            return Uri.fromFile(tempFile);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private void uploadImageToCloudinary(Uri uri) {
+        if (tvImageStatus != null) {
+            tvImageStatus.setText(LanguageHelper.processDualString(this, "✅ اپلوڈ ہو رہی ہے... / Uploading..."));
+        }
+        CloudinaryHelper.upload(this, uri, "products", (url, error) -> {
+            if (url != null) {
+                imageUrl = url;
+                if (tvImageStatus != null) {
+                    tvImageStatus.setText(LanguageHelper.processDualString(this, "✅ تصویر اپلوڈ ہو گئی / Image Uploaded"));
+                }
+            } else {
+                if (tvImageStatus != null) {
+                    tvImageStatus.setText(LanguageHelper.processDualString(this, "❌ اپلوڈ ناکام: / Upload Failed: ") + error);
+                }
+            }
+        });
     }
 
     private void applyTheme() {

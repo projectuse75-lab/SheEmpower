@@ -115,11 +115,7 @@ public class BottomNavHelper {
         icon4.setText("⚙️");
         label4.setText("سیٹنگز");
 
-        int normalColor =
-                ContextCompat.getColor(
-                        navBar.getContext(),
-                        R.color.screen_text
-                );
+        int normalColor = 0xFFFFFFFF;
 
         label1.setTextColor(normalColor);
         label2.setTextColor(normalColor);
@@ -147,17 +143,8 @@ public class BottomNavHelper {
         TextView label3 = navBar.findViewById(R.id.navLabel3);
         TextView label4 = navBar.findViewById(R.id.navLabel4);
 
-        int normalColor =
-                ContextCompat.getColor(
-                        navBar.getContext(),
-                        R.color.screen_text
-                );
-
-        int selectedColor =
-                ContextCompat.getColor(
-                        navBar.getContext(),
-                        R.color.primary_pink
-                );
+        int normalColor = 0xFFFFFFFF;
+        int selectedColor = 0xFFF7D794;
 
         label1.setTextColor(normalColor);
         label2.setTextColor(normalColor);

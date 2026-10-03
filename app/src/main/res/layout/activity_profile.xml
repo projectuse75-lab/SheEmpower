@@ -175,10 +175,10 @@
                 android:layout_height="55dp"
                 android:gravity="center"
                 android:text="👤  SELLER  ▼"
-                android:textColor="@color/primary"
+                android:textColor="@color/accent"
                 android:textSize="17sp"
-                android:textStyle="bold"
-                android:background="@color/gray_light"/>
+                android:fontFamily="sans-serif-black"
+                android:background="@drawable/bg_skeu_card"/>
 
             <!-- ================= VIEW MODE ================= -->
 

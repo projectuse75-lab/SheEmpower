@@ -1,10 +1,14 @@
 package com.sheempower.app.activities;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.*;
@@ -18,9 +22,12 @@ import com.sheempower.app.models.Product;
 import com.sheempower.app.models.Seller;
 import com.sheempower.app.utils.PreferencesManager;
 import com.sheempower.app.utils.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +60,14 @@ public class PlaceOrderActivity extends AppCompatActivity {
     private final Map<String, EditText> dynamicTextInputs = new HashMap<>();
     private final Map<String, Spinner> dynamicSpinners = new HashMap<>();
     private final Map<String, List<CheckBox>> dynamicCheckboxGroups = new HashMap<>();
+    private final Map<String, String> categoryFilledFormsMap = new HashMap<>();
+    private String currentActiveCategory = "";
+
+    private TextView tvProductFormTabHeader;
+    private LinearLayout layoutProductFormTabs;
+    private final Map<String, String> productFormDetailsMap = new HashMap<>();
+    private Product currentlyActiveFormProduct = null;
+    private Product currentProduct = null;
 
     /** Seller Profile se order karte waqt — seller ki saari products categories ke mutabiq group hoti hain */
     private final Map<String, List<Product>> sellerCategoryProductsMap = new LinkedHashMap<>();
@@ -84,6 +99,8 @@ public class PlaceOrderActivity extends AppCompatActivity {
         tvSelectedItem      = findViewById(R.id.tvSelectedItem);
         tvDeliveryInfo      = findViewById(R.id.tvDeliveryInfo);
         tvCategoryHeader    = findViewById(R.id.tvCategoryHeader);
+        tvProductFormTabHeader = findViewById(R.id.tvProductFormTabHeader);
+        layoutProductFormTabs  = findViewById(R.id.layoutProductFormTabs);
         spinnerOrderCategory = findViewById(R.id.spinnerOrderCategory);
         tvAmountLockedNote  = findViewById(R.id.tvAmountLockedNote);
         tvChecklistHeader   = findViewById(R.id.tvChecklistHeader);
@@ -118,8 +135,15 @@ public class PlaceOrderActivity extends AppCompatActivity {
                         : "یہ آرڈر کی سکرین ہے۔ نیچے دی گئی فہرست میں سے وہ چیزیں منتخب کریں جو آپ منگوانا چاہتی ہیں، ہر چیز کے آگے اس کی قیمت لکھی ہے۔"
         );
 
+        boolean isDark = isDarkMode();
+        int headerColor = isDark ? 0xFFFFFFFF : 0xFF192A56;
+
+        if (tvCategoryHeader != null) tvCategoryHeader.setTextColor(headerColor);
+        if (tvChecklistHeader != null) tvChecklistHeader.setTextColor(headerColor);
+        if (tvSelectedItem != null) tvSelectedItem.setTextColor(headerColor);
+
         if (singleProductMode) {
-            tvSelectedItem.setText("منتخب کردہ چیز:\n" + productName);
+            tvSelectedItem.setText("منتخب کردہ چیز / Selected Item:\n" + productName);
             etAmount.setText(String.valueOf((long) productPrice));
             tvAmountLockedNote.setText("🔒 یہ قیمت بیچنے والی نے مقرر کی ہے");
             tvSelectedItem.setVisibility(View.VISIBLE);
@@ -195,8 +219,7 @@ public class PlaceOrderActivity extends AppCompatActivity {
                             finish();
                             return;
                         }
-                        tvSellerName.setText(currentSeller.getBusinessName());
-                        tvSellerMeta.setText(currentSeller.getCategory() + " · ⭐ " + currentSeller.getRating());
+                        updateSellerMetaCard(productCategory);
                         tvSellerVerified.setText("✓ تصدیق شدہ");
 
                         buildDeliveryBlock(currentSeller);
@@ -313,9 +336,76 @@ public class PlaceOrderActivity extends AppCompatActivity {
         });
     }
 
+    private void updateSellerMetaCard(String activeCategory) {
+        if (currentSeller == null) return;
+
+        String displayCategory = (activeCategory != null && !activeCategory.trim().isEmpty())
+                ? activeCategory.trim()
+                : ((productCategory != null && !productCategory.trim().isEmpty())
+                        ? productCategory.trim()
+                        : (currentSeller.getCategory() != null ? currentSeller.getCategory() : "Cooking"));
+
+        boolean isDark = isDarkMode();
+        int nameColor = isDark ? 0xFFFFFFFF : 0xFF192A56;
+        int metaColor = isDark ? 0xFFFFFFFF : 0xFF6B7A99;
+
+        String formattedCategoryLabel = Constants.getCategoryDisplayLabel(this, displayCategory);
+        if (tvSellerMeta != null) {
+            tvSellerMeta.setText(formattedCategoryLabel + " · ⭐ " + currentSeller.getRating());
+            tvSellerMeta.setTextColor(metaColor);
+        }
+        if (tvSellerName != null) {
+            tvSellerName.setText(currentSeller.getBusinessName());
+            tvSellerName.setTextColor(nameColor);
+        }
+    }
+
+    private void saveCurrentFormState() {
+        if (currentActiveCategory == null || currentActiveCategory.trim().isEmpty()) return;
+
+        StringBuilder sb = new StringBuilder();
+        boolean hasContent = false;
+
+        for (Map.Entry<String, EditText> entry : dynamicTextInputs.entrySet()) {
+            String val = entry.getValue().getText().toString().trim();
+            if (!val.isEmpty()) {
+                hasContent = true;
+                sb.append(entry.getKey()).append(": ").append(val).append("\n");
+            }
+        }
+        for (Map.Entry<String, Spinner> entry : dynamicSpinners.entrySet()) {
+            Object sel = entry.getValue().getSelectedItem();
+            if (sel != null) {
+                sb.append(entry.getKey()).append(": ").append(sel).append("\n");
+            }
+        }
+        for (Map.Entry<String, List<CheckBox>> entry : dynamicCheckboxGroups.entrySet()) {
+            List<String> chosen = new ArrayList<>();
+            for (CheckBox cb : entry.getValue()) {
+                if (cb.isChecked()) chosen.add(cb.getText().toString());
+            }
+            if (!chosen.isEmpty()) {
+                sb.append(entry.getKey()).append(": ").append(String.join(", ", chosen)).append("\n");
+            }
+        }
+
+        if (hasContent) {
+            categoryFilledFormsMap.put(currentActiveCategory.trim(), sb.toString().trim());
+        }
+    }
+
     private void onCategoryChanged(String selectedCat) {
         if (selectedCat == null || selectedCat.isEmpty()) return;
-        tvCategoryHeader.setText("📋 " + Constants.getUrduLabel(selectedCat) + " کی تفصیلات");
+        saveCurrentFormState();
+        currentActiveCategory = selectedCat.trim();
+
+        boolean isDark = isDarkMode();
+        int headerColor = isDark ? 0xFFFFFFFF : 0xFF192A56;
+        if (tvCategoryHeader != null) {
+            tvCategoryHeader.setText("📋 " + selectedCat + " Details\n" + Constants.getUrduLabel(selectedCat) + " کی تفصیلات");
+            tvCategoryHeader.setTextColor(headerColor);
+        }
+        updateSellerMetaCard(selectedCat);
         buildDynamicForm(selectedCat);
         if (!singleProductMode) {
             buildProductChecklistForCategory(selectedCat);
@@ -350,6 +440,11 @@ public class PlaceOrderActivity extends AppCompatActivity {
         onCategoryChanged(selectedCat);
     }
 
+    private boolean isDarkMode() {
+        PreferencesManager prefs = new PreferencesManager(this);
+        return prefs.isDarkThemeEnabled();
+    }
+
     /** Har Selected Category ke mutabiq uski Apni Products ki list dikhati hai (e.g. Cooking (3), Stitching (2)) */
     private void buildProductChecklistForCategory(String selectedCat) {
         layoutProductChecklist.removeAllViews();
@@ -365,14 +460,24 @@ public class PlaceOrderActivity extends AppCompatActivity {
         }
         tvChecklistEmpty.setVisibility(View.GONE);
 
+        boolean isDark = isDarkMode();
+        int textColor = isDark ? 0xFFFFFFFF : 0xFF192A56;
+        int priceColor = isDark ? 0xFFF7D794 : 0xFF192A56;
+
         for (Product p : products) {
             LinearLayout row = new LinearLayout(PlaceOrderActivity.this);
             row.setOrientation(LinearLayout.HORIZONTAL);
             row.setGravity(Gravity.CENTER_VERTICAL);
-            row.setPadding(0, 12, 0, 12);
+            row.setPadding(20, 16, 20, 16);
+            row.setBackgroundResource(R.drawable.bg_skeu_card);
+            LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            rowParams.setMargins(0, 8, 0, 8);
+            row.setLayoutParams(rowParams);
 
             CheckBox cb = new CheckBox(PlaceOrderActivity.this);
             cb.setText(p.getName());
+            cb.setTextColor(textColor);
             cb.setTextSize(14);
             LinearLayout.LayoutParams cbParams = new LinearLayout.LayoutParams(
                     0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
@@ -380,17 +485,14 @@ public class PlaceOrderActivity extends AppCompatActivity {
 
             TextView tvPrice = new TextView(PlaceOrderActivity.this);
             tvPrice.setText("PKR " + (long) p.getPrice());
-            tvPrice.setTextColor(0xFF192A56);
+            tvPrice.setTextColor(priceColor);
             tvPrice.setTypeface(null, Typeface.BOLD);
 
             cb.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 if (isChecked) {
-                    for (CheckBox otherCb : checklistMap.keySet()) {
-                        if (otherCb != cb && otherCb.isChecked()) {
-                            otherCb.setChecked(false);
-                        }
-                    }
+                    currentlyActiveFormProduct = p;
                 }
+                updateProductFormTabs();
                 recalcTotal();
             });
 
@@ -402,14 +504,160 @@ public class PlaceOrderActivity extends AppCompatActivity {
         }
 
         recalcTotal();
+        updateProductFormTabs();
+    }
+
+    private void saveCurrentProductFormDetails() {
+        if (currentlyActiveFormProduct == null || currentlyActiveFormProduct.getId() == null) return;
+
+        StringBuilder sb = new StringBuilder();
+        boolean hasInputs = false;
+
+        for (Map.Entry<String, EditText> entry : dynamicTextInputs.entrySet()) {
+            String val = entry.getValue().getText().toString().trim();
+            if (!val.isEmpty()) {
+                hasInputs = true;
+                sb.append(entry.getKey()).append(": ").append(val).append("\n");
+            }
+        }
+        for (Map.Entry<String, Spinner> entry : dynamicSpinners.entrySet()) {
+            Object sel = entry.getValue().getSelectedItem();
+            if (sel != null) {
+                sb.append(entry.getKey()).append(": ").append(sel).append("\n");
+            }
+        }
+        for (Map.Entry<String, List<CheckBox>> entry : dynamicCheckboxGroups.entrySet()) {
+            List<String> chosen = new ArrayList<>();
+            for (CheckBox cb : entry.getValue()) {
+                if (cb.isChecked()) chosen.add(cb.getText().toString());
+            }
+            if (!chosen.isEmpty()) {
+                sb.append(entry.getKey()).append(": ").append(String.join(", ", chosen)).append("\n");
+            }
+        }
+
+        if (hasInputs) {
+            String pId = currentlyActiveFormProduct.getId().trim();
+            productFormDetailsMap.put(pId, sb.toString().trim());
+        }
+    }
+
+    private void updateProductFormTabs() {
+        if (layoutProductFormTabs == null) return;
+        layoutProductFormTabs.removeAllViews();
+
+        List<Product> checkedProducts = new ArrayList<>();
+        if (singleProductMode && currentProduct != null) {
+            checkedProducts.add(currentProduct);
+        } else {
+            for (Map.Entry<CheckBox, Product> entry : checklistMap.entrySet()) {
+                if (entry.getKey().isChecked() && entry.getValue() != null) {
+                    checkedProducts.add(entry.getValue());
+                }
+            }
+        }
+
+        if (checkedProducts.isEmpty()) {
+            if (tvProductFormTabHeader != null) tvProductFormTabHeader.setVisibility(View.GONE);
+            layoutProductFormTabs.setVisibility(View.GONE);
+            return;
+        }
+
+        if (tvProductFormTabHeader != null) tvProductFormTabHeader.setVisibility(View.VISIBLE);
+        layoutProductFormTabs.setVisibility(View.VISIBLE);
+
+        for (Product p : checkedProducts) {
+            if (p == null || p.getId() == null) continue;
+            final String pid = p.getId().trim();
+            boolean isCompleted = productFormDetailsMap.containsKey(pid) && !productFormDetailsMap.get(pid).isEmpty();
+            boolean isActive = currentlyActiveFormProduct != null && pid.equals(currentlyActiveFormProduct.getId().trim());
+
+            LinearLayout tabRow = new LinearLayout(this);
+            tabRow.setOrientation(LinearLayout.HORIZONTAL);
+            tabRow.setPadding(20, 16, 20, 16);
+            tabRow.setBackgroundResource(isActive ? R.drawable.bg_skeu_button_primary : R.drawable.bg_skeu_card);
+            LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            rowParams.setMargins(0, 8, 0, 8);
+            tabRow.setLayoutParams(rowParams);
+
+            TextView tvName = new TextView(this);
+            tvName.setText("📌 " + p.getName() + " (" + Constants.getCategoryDisplayLabel(this, p.getCategory()) + ")");
+            tvName.setTextColor(isActive ? 0xFFFFFFFF : (isDarkMode() ? 0xFFFFFFFF : 0xFF192A56));
+            tvName.setTextSize(14);
+            tvName.setTypeface(null, Typeface.BOLD);
+            LinearLayout.LayoutParams nameParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+            tvName.setLayoutParams(nameParams);
+
+            TextView tvStatus = new TextView(this);
+            tvStatus.setText(isCompleted ? "✅ Form Completed" : "⏳ Form Pending");
+            tvStatus.setTextColor(isCompleted ? 0xFF2ECC71 : (isActive ? 0xFFF7D794 : 0xFFFF6F00));
+            tvStatus.setTextSize(12);
+            tvStatus.setTypeface(null, Typeface.BOLD);
+
+            tabRow.addView(tvName);
+            tabRow.addView(tvStatus);
+
+            tabRow.setOnClickListener(v -> {
+                saveCurrentProductFormDetails();
+                currentlyActiveFormProduct = p;
+                updateProductFormTabs();
+                buildDynamicForm(p.getCategory());
+            });
+
+            layoutProductFormTabs.addView(tabRow);
+        }
+    }
+
+    private long getQuantityFromNumberInput() {
+        for (Map.Entry<String, EditText> entry : dynamicTextInputs.entrySet()) {
+            if (entry.getKey() == null || entry.getValue() == null) continue;
+            String label = entry.getKey().toLowerCase();
+            if (label.contains("number of people") || label.contains("quantity") || label.contains("people") || label.contains("suits")) {
+                String val = entry.getValue().getText().toString().trim();
+                if (!val.isEmpty()) {
+                    try {
+                        String digits = val.replaceAll("[^0-9]", "");
+                        if (!digits.isEmpty()) {
+                            long q = Long.parseLong(digits);
+                            if (q > 0) return q;
+                        }
+                    } catch (Exception ignored) {}
+                }
+            }
+        }
+        return 1;
     }
 
     private void recalcTotal() {
-        double total = 0;
-        for (Map.Entry<CheckBox, Product> entry : checklistMap.entrySet()) {
-            if (entry.getKey().isChecked()) total += entry.getValue().getPrice();
+        double basePrice = 0;
+
+        if (singleProductMode) {
+            basePrice = productPrice;
+        } else {
+            for (Map.Entry<CheckBox, Product> entry : checklistMap.entrySet()) {
+                if (entry.getKey().isChecked()) {
+                    basePrice += entry.getValue().getPrice();
+                }
+            }
         }
-        etAmount.setText(String.valueOf((long) total));
+
+        long quantity = getQuantityFromNumberInput();
+        double total = basePrice * quantity;
+
+        if (etAmount != null) {
+            etAmount.setText(String.valueOf((long) total));
+        }
+
+        if (tvAmountLockedNote != null) {
+            if (quantity > 1) {
+                tvAmountLockedNote.setText("🔒 (PKR " + (long) basePrice + " × " + quantity + " = PKR " + (long) total + ")");
+            } else if (singleProductMode) {
+                tvAmountLockedNote.setText("🔒 یہ قیمت بیچنے والی نے مقرر کی ہے");
+            } else {
+                tvAmountLockedNote.setText("🔒 یہ رقم آپ کی منتخب کردہ چیزوں کے مطابق خود بخود بنتی ہے");
+            }
+        }
     }
 
     private void buildDeliveryBlock(Seller seller) {
@@ -435,22 +683,42 @@ public class PlaceOrderActivity extends AppCompatActivity {
         dynamicTextInputs.clear();
         dynamicSpinners.clear();
         dynamicCheckboxGroups.clear();
-        List<OrderField> fields = CategoryFormConfig.getFieldsForCategory(category);
+
+        if (category == null || category.trim().isEmpty()) return;
+        String catName = category.trim();
+
+        List<OrderField> fields = CategoryFormConfig.getFieldsForCategory(catName);
+        if (fields.isEmpty()) return;
+
+        boolean isDark = isDarkMode();
+        int labelColor = isDark ? 0xFFFFFFFF : 0xFF192A56;
+        int inputTextColor = isDark ? 0xFFFFFFFF : 0xFF192A56;
+        int hintColor = isDark ? 0xFFB0B8CC : 0xFF888888;
 
         for (OrderField field : fields) {
+            LinearLayout fieldCard = new LinearLayout(this);
+            fieldCard.setOrientation(LinearLayout.VERTICAL);
+            fieldCard.setPadding(24, 18, 24, 18);
+            fieldCard.setBackgroundResource(R.drawable.bg_skeu_card);
+            LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            cardParams.setMargins(0, 14, 0, 0);
+            fieldCard.setLayoutParams(cardParams);
+
             TextView label = new TextView(this);
-            label.setText(field.labelUrdu + " / " + field.labelEnglish);
-            label.setTextColor(0xFF192A56);
+            label.setText(field.labelEnglish + " / " + field.labelUrdu);
+            label.setTextColor(labelColor);
             label.setTextSize(15);
-            label.setPadding(0, 24, 0, 6);
-            layoutDynamicFields.addView(label);
+            label.setTypeface(null, Typeface.BOLD);
+            label.setPadding(0, 0, 0, 8);
+            fieldCard.addView(label);
 
             if ("spinner".equals(field.type)) {
                 Spinner spinner = new Spinner(this);
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, field.options);
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 spinner.setAdapter(adapter);
-                layoutDynamicFields.addView(spinner);
+                fieldCard.addView(spinner);
                 dynamicSpinners.put(field.labelEnglish, spinner);
 
             } else if ("multi".equals(field.type)) {
@@ -460,43 +728,117 @@ public class PlaceOrderActivity extends AppCompatActivity {
                 for (String option : field.options) {
                     CheckBox cb = new CheckBox(this);
                     cb.setText(option);
+                    cb.setTextColor(labelColor);
                     cb.setTextSize(14);
                     checkboxContainer.addView(cb);
                     group.add(cb);
                 }
-                layoutDynamicFields.addView(checkboxContainer);
+                fieldCard.addView(checkboxContainer);
                 dynamicCheckboxGroups.put(field.labelEnglish, group);
 
             } else {
                 EditText input = new EditText(this);
-                input.setHint(field.hintUrdu);
-                input.setTextSize(16);
-                input.setPadding(28, 28, 28, 28);
+                input.setHint(field.labelEnglish + " / " + field.hintUrdu);
+                input.setHintTextColor(hintColor);
+                input.setTextColor(inputTextColor);
+                input.setTextSize(15);
+                input.setPadding(28, 24, 28, 24);
                 input.setBackgroundResource(R.drawable.bg_skeu_input);
-                if ("number".equals(field.type)) input.setInputType(InputType.TYPE_CLASS_NUMBER);
-                layoutDynamicFields.addView(input);
+
+                String engLower = field.labelEnglish.toLowerCase();
+                boolean isTimeField = engLower.contains("time") || "time".equalsIgnoreCase(field.type);
+                boolean isDateField = !isTimeField && (engLower.contains("day") || engLower.contains("date") || engLower.contains("needed by") || "date".equalsIgnoreCase(field.type));
+
+                if (isTimeField) {
+                    input.setFocusable(false);
+                    input.setClickable(true);
+                    input.setHint("⏰ Select Time / " + field.hintUrdu);
+                    input.setOnClickListener(v -> showTimePickerDialog(input));
+                } else if (isDateField) {
+                    input.setFocusable(false);
+                    input.setClickable(true);
+                    input.setHint("📅 Select Date / " + field.hintUrdu);
+                    input.setOnClickListener(v -> showDatePickerDialog(input));
+                } else if ("number".equals(field.type)) {
+                    input.setInputType(InputType.TYPE_CLASS_NUMBER);
+                    input.addTextChangedListener(new TextWatcher() {
+                        @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                        @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+                        @Override public void afterTextChanged(Editable s) {
+                            recalcTotal();
+                        }
+                    });
+                }
+                fieldCard.addView(input);
                 dynamicTextInputs.put(field.labelEnglish, input);
             }
+
+            layoutDynamicFields.addView(fieldCard);
         }
     }
 
     private void submitOrder() {
+        saveCurrentProductFormDetails();
+
+        // 1. Identify all checked products in order
+        List<Product> checkedProducts = new ArrayList<>();
+        if (singleProductMode && currentProduct != null) {
+            checkedProducts.add(currentProduct);
+        } else {
+            for (Map.Entry<CheckBox, Product> entry : checklistMap.entrySet()) {
+                if (entry.getKey().isChecked() && entry.getValue() != null) {
+                    checkedProducts.add(entry.getValue());
+                }
+            }
+        }
+
+        if (checkedProducts.isEmpty()) {
+            Toast.makeText(this, "کم از کم ایک چیز منتخب کریں / Select at least one product", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // 2. MANDATORY PRODUCT FORM CHECK: Enforce that form details exist for EVERY checked product!
+        for (Product p : checkedProducts) {
+            if (p == null || p.getId() == null) continue;
+            String pid = p.getId().trim();
+
+            if (!productFormDetailsMap.containsKey(pid) || productFormDetailsMap.get(pid) == null || productFormDetailsMap.get(pid).trim().isEmpty()) {
+                currentlyActiveFormProduct = p;
+                updateProductFormTabs();
+                buildDynamicForm(p.getCategory());
+
+                String prodName = p.getName() != null ? p.getName() : "Product";
+                Toast.makeText(this, "براہ کرم پہلے پروڈکٹ '" + prodName + "' کا فارم بھی پر کریں!", Toast.LENGTH_LONG).show();
+                VoiceGuide.explain(this, "براہ کرم پہلے پروڈکٹ " + prodName + " کا فارم پر کریں۔");
+                return;
+            }
+        }
+
+        // 3. Field-level validation for active on-screen input fields
+        for (Map.Entry<String, EditText> entry : dynamicTextInputs.entrySet()) {
+            EditText input = entry.getValue();
+            if (input != null) {
+                String val = input.getText().toString().trim();
+                if (TextUtils.isEmpty(val)) {
+                    input.setError("یہ فارم پر کرنا ضروری ہے / Required");
+                    input.requestFocus();
+                    Toast.makeText(this, "براہ کرم اس فارم کی تمام تفصیلات پر کریں / Please fill form details", Toast.LENGTH_LONG).show();
+                    return;
+                }
+            }
+        }
+
         String amountStr = etAmount.getText().toString().trim();
         String notes = etNotes.getText().toString().trim();
         boolean needsBuyerAddress = layoutBuyerAddress.getVisibility() == View.VISIBLE;
         String address = needsBuyerAddress ? etAddress.getText().toString().trim()
                 : (currentSeller.getShopAddress() != null ? currentSeller.getShopAddress() : currentSeller.getCity());
 
-        // Checklist mode mein kam az kam ek cheez tick honi chahiye
         String finalProductName = productName;
         if (!singleProductMode) {
             List<String> chosenNames = new ArrayList<>();
-            for (Map.Entry<CheckBox, Product> entry : checklistMap.entrySet()) {
-                if (entry.getKey().isChecked()) chosenNames.add(entry.getValue().getName() + " (PKR " + (long) entry.getValue().getPrice() + ")");
-            }
-            if (chosenNames.isEmpty()) {
-                Toast.makeText(this, "کم از کم ایک چیز منتخب کریں", Toast.LENGTH_LONG).show();
-                return;
+            for (Product p : checkedProducts) {
+                chosenNames.add(p.getName() + " (PKR " + (long) p.getPrice() + ")");
             }
             finalProductName = String.join(" + ", chosenNames);
         }
@@ -514,21 +856,18 @@ public class PlaceOrderActivity extends AppCompatActivity {
         final String finalDeliveryMethod = resolvedDeliveryMethod;
         final String finalProductNameCopy = finalProductName;
 
+        // Combine all saved product form details for final order details
         StringBuilder detailsBuilder = new StringBuilder();
-        for (Map.Entry<String, EditText> entry : dynamicTextInputs.entrySet()) {
-            String value = entry.getValue().getText().toString().trim();
-            if (!value.isEmpty()) detailsBuilder.append(entry.getKey()).append(": ").append(value).append("\n");
-        }
-        for (Map.Entry<String, Spinner> entry : dynamicSpinners.entrySet()) {
-            Object selected = entry.getValue().getSelectedItem();
-            if (selected != null) detailsBuilder.append(entry.getKey()).append(": ").append(selected).append("\n");
-        }
-        for (Map.Entry<String, List<CheckBox>> entry : dynamicCheckboxGroups.entrySet()) {
-            List<String> chosen = new ArrayList<>();
-            for (CheckBox cb : entry.getValue()) if (cb.isChecked()) chosen.add(cb.getText().toString());
-            if (!chosen.isEmpty()) detailsBuilder.append(entry.getKey()).append(": ").append(String.join(", ", chosen)).append("\n");
+        for (Product p : checkedProducts) {
+            if (p == null || p.getId() == null) continue;
+            String pid = p.getId().trim();
+            if (productFormDetailsMap.containsKey(pid)) {
+                detailsBuilder.append("=== ").append(p.getName()).append(" (").append(p.getCategory()).append(") ===\n");
+                detailsBuilder.append(productFormDetailsMap.get(pid)).append("\n\n");
+            }
         }
         if (!notes.isEmpty()) detailsBuilder.append("Notes: ").append(notes);
+
         String detailsTemp = detailsBuilder.toString().trim();
         if (detailsTemp.isEmpty()) detailsTemp = finalProductNameCopy;
         final String details = detailsTemp;
@@ -589,6 +928,48 @@ public class PlaceOrderActivity extends AppCompatActivity {
     }
 
     // ✅ DARK THEME - ADD AT END OF CLASS
+    private void showDatePickerDialog(EditText input) {
+        if (input == null) return;
+        final Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog dpd = new DatePickerDialog(this, (view, selectedYear, selectedMonth, selectedDay) -> {
+            Calendar selectedCal = Calendar.getInstance();
+            selectedCal.set(selectedYear, selectedMonth, selectedDay);
+
+            SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy (EEEE)", Locale.ENGLISH);
+            String formattedDate = sdf.format(selectedCal.getTime());
+
+            input.setText(formattedDate);
+            input.setError(null);
+        }, year, month, day);
+
+        dpd.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+        dpd.show();
+    }
+
+    private void showTimePickerDialog(EditText input) {
+        if (input == null) return;
+        final Calendar c = Calendar.getInstance();
+        int hour = c.get(Calendar.HOUR_OF_DAY);
+        int minute = c.get(Calendar.MINUTE);
+
+        TimePickerDialog tpd = new TimePickerDialog(this, (view, selectedHour, selectedMinute) -> {
+            String amPm = selectedHour >= 12 ? "PM" : "AM";
+            int displayHour = selectedHour % 12;
+            if (displayHour == 0) displayHour = 12;
+
+            String formattedTime = String.format(Locale.ENGLISH, "%02d:%02d %s", displayHour, selectedMinute, amPm);
+
+            input.setText(formattedTime);
+            input.setError(null);
+        }, hour, minute, false);
+
+        tpd.show();
+    }
+
     private void applyTheme() {
         PreferencesManager prefs = new PreferencesManager(this);
         if (prefs.isDarkThemeEnabled()) {

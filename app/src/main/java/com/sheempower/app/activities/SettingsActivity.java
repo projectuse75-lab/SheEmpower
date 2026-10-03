@@ -162,13 +162,16 @@ public class SettingsActivity extends AppCompatActivity {
 
         // ✅ DARK THEME - APP RESTART FIX
         switchDarkTheme.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (!buttonView.isPressed()) {
+                return; // Ignore programmatic setChecked() calls during layout pass
+            }
             preferencesManager.setDarkThemeEnabled(isChecked);
             AppCompatDelegate.setDefaultNightMode(isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
-            Toast.makeText(this, isChecked ? "🌙 Dark Theme ON" : "☀️ Light Theme ON", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, isChecked ? "🌙 Dark Theme ON / ڈارک تھیم آن" : "☀️ Light Theme ON / لائیٹ تھیم آن", Toast.LENGTH_SHORT).show();
 
-            // APP RESTART
+            // Perform clean, safe restart to apply theme across app
             Intent restartIntent = new Intent(SettingsActivity.this, MainActivity.class);
-            restartIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            restartIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(restartIntent);
             finish();
         });

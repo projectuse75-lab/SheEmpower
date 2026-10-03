@@ -134,15 +134,26 @@
                 android:layout_marginTop="6dp" />
 
             <Button
+                android:id="@+id/btnAddToCart"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="🛒 Add to Cart / کارٹ میں شامل کریں"
+                android:textSize="15sp"
+                android:fontFamily="sans-serif-medium"
+                android:background="@drawable/bg_skeu_button_cream"
+                android:textColor="@color/primary"
+                android:layout_marginTop="20dp" />
+
+            <Button
                 android:id="@+id/btnPlaceOrder"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:text="🛒 آرڈر دیں"
+                android:text="🛒 آرڈر دیں / Place Order"
                 android:textSize="15sp"
                 android:fontFamily="sans-serif-medium"
                 android:background="@drawable/bg_skeu_button_primary"
                 android:textColor="#FFFFFF"
-                android:layout_marginTop="20dp" />
+                android:layout_marginTop="10dp" />
 
             <Button
                 android:id="@+id/btnWhatsApp"

@@ -7,26 +7,27 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
+        android:background="#192A56"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:padding="16dp">
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="🛍️ تمام اشیاء"
+            android:text="🛍️ All Products / تمام اشیاء"
             android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="#192A56" />
+            android:fontFamily="sans-serif-black"
+            android:textColor="#FFFFFF" />
 
         <ImageButton
             android:id="@+id/btnSpeaker"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:src="@drawable/ic_speaker"
-            app:tint="@color/primary"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Speaker" />
     </LinearLayout>
