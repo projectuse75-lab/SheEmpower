@@ -50,7 +50,10 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.VH> {
         holder.tvAmount.setText("PKR " + (long) o.getAmount());
         holder.tvStatus.setText(Constants.getStatusLabel(o.getStatus(), o.getDeliveryMethod()));
         holder.tvStatus.setTextColor(0xFFFFFFFF);
-        holder.tvDetails.setText(o.getDetails());
+
+        // Strip raw image URL lines from details text so only actual images show below
+        String cleanedDetails = cleanDetailsText(o.getDetails());
+        holder.tvDetails.setText(cleanedDetails);
         holder.tvDetails.setMovementMethod(LinkMovementMethod.getInstance());
         Linkify.addLinks(holder.tvDetails, Linkify.WEB_URLS);
 
@@ -60,7 +63,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.VH> {
         holder.tvParty.setText(who);
         holder.tvAddress.setText("📍 " + (o.getAddress() != null ? o.getAddress() : ""));
 
-        // Extract and display sample image previews if present in order details
+        // Extract and display sample image previews as actual image views
         List<String> imageUrls = extractImageUrls(o.getDetails());
         if (imageUrls != null && !imageUrls.isEmpty()) {
             holder.layoutSampleImagesContainer.setVisibility(View.VISIBLE);
@@ -118,6 +121,29 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.VH> {
         } else {
             holder.btnAdvance.setVisibility(View.GONE);
         }
+    }
+
+    private String cleanDetailsText(String details) {
+        if (details == null || details.isEmpty()) return "";
+
+        String[] lines = details.split("\n");
+        StringBuilder cleaned = new StringBuilder();
+
+        for (String line : lines) {
+            String trimmed = line.trim();
+            String lower = trimmed.toLowerCase();
+
+            // Skip lines that contain sample image links or standalone image URLs
+            if (lower.contains("sample image:") || lower.contains("sample_image")
+                    || (lower.startsWith("http") && (lower.contains("cloudinary") || lower.endsWith(".jpg")
+                    || lower.contains(".jpeg") || lower.endsWith(".png") || lower.endsWith(".webp")))) {
+                continue;
+            }
+
+            cleaned.append(line).append("\n");
+        }
+
+        return cleaned.toString().trim();
     }
 
     private List<String> extractImageUrls(String text) {

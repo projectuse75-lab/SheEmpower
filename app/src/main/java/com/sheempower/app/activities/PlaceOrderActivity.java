@@ -61,6 +61,7 @@ public class PlaceOrderActivity extends AppCompatActivity {
     private String resolvedDeliveryMethod = Constants.DELIVERY_METHOD_PICKUP;
     private boolean isUpdatingCategorySpinner = false;
     private String currentActiveCategory = "";
+    private boolean isOnlyThisOrderSelected = false;
 
     /** Single product mode when opened directly from a product card */
     private boolean singleProductMode;
@@ -217,15 +218,19 @@ public class PlaceOrderActivity extends AppCompatActivity {
     private void setupMultiCategoryGuideButtons() {
         if (btnOnlyThisOrder != null) {
             btnOnlyThisOrder.setOnClickListener(v -> {
-                if (cardMultiCategoryGuide != null) {
-                    cardMultiCategoryGuide.setVisibility(View.GONE);
-                }
-                Toast.makeText(this, "صرف منتخب کردہ آرڈر فائنل کر دیا گیا۔ نیچے فارم پر کر کے جمع کروائیں! ✅", Toast.LENGTH_LONG).show();
+                isOnlyThisOrderSelected = true;
+                if (cardMultiCategoryGuide != null) cardMultiCategoryGuide.setVisibility(View.GONE);
+                if (layoutWizardNav != null) layoutWizardNav.setVisibility(View.GONE);
+                if (spinnerOrderCategory != null) spinnerOrderCategory.setVisibility(View.GONE);
+                if (tvPageIndicator != null) tvPageIndicator.setVisibility(View.GONE);
+
+                Toast.makeText(this, "صرف یہی آرڈر فائنل کر دیا گیا۔ نیچے فارم پر کر کے 'جمع کروائیں' دبائیں! ✅", Toast.LENGTH_LONG).show();
                 VoiceGuide.explain(this, "آپ نے منتخب کردہ آرڈر فائنل کر لیا ہے۔ نیچے فارم پر کر کے آرڈر جمع کروائیں۔");
             });
         }
         if (btnBrowseMore != null) {
             btnBrowseMore.setOnClickListener(v -> {
+                isOnlyThisOrderSelected = false;
                 if (currentCategoryIndex < availableOrderCategories.size() - 1) {
                     spinnerOrderCategory.setSelection(currentCategoryIndex + 1);
                 } else {
@@ -496,31 +501,36 @@ public class PlaceOrderActivity extends AppCompatActivity {
             tvCategoryHeader.setTextColor(headerColor);
         }
 
-        // Show multi-category guide card if seller has multiple categories
-        if (cardMultiCategoryGuide != null) {
-            cardMultiCategoryGuide.setVisibility(availableOrderCategories.size() > 1 ? View.VISIBLE : View.GONE);
-        }
-
-        // Update Wizard Page Indicator
-        if (tvPageIndicator != null && availableOrderCategories.size() > 1) {
-            tvPageIndicator.setVisibility(View.VISIBLE);
-            String urduCat = Constants.getUrduLabel(selectedCat);
-            tvPageIndicator.setText("صفحہ " + (currentCategoryIndex + 1) + " از " + availableOrderCategories.size() + " — " + urduCat + " / " + selectedCat);
-        } else if (tvPageIndicator != null) {
-            tvPageIndicator.setVisibility(View.GONE);
-        }
-
-        // Update Wizard Navigation Buttons
-        if (layoutWizardNav != null && availableOrderCategories.size() > 1) {
-            layoutWizardNav.setVisibility(View.VISIBLE);
-            if (btnPrevCategory != null) {
-                btnPrevCategory.setVisibility(currentCategoryIndex > 0 ? View.VISIBLE : View.GONE);
+        if (isOnlyThisOrderSelected) {
+            if (cardMultiCategoryGuide != null) cardMultiCategoryGuide.setVisibility(View.GONE);
+            if (layoutWizardNav != null) layoutWizardNav.setVisibility(View.GONE);
+            if (spinnerOrderCategory != null) spinnerOrderCategory.setVisibility(View.GONE);
+            if (tvPageIndicator != null) tvPageIndicator.setVisibility(View.GONE);
+        } else {
+            if (spinnerOrderCategory != null) spinnerOrderCategory.setVisibility(View.VISIBLE);
+            if (cardMultiCategoryGuide != null) {
+                cardMultiCategoryGuide.setVisibility(availableOrderCategories.size() > 1 ? View.VISIBLE : View.GONE);
             }
-            if (btnNextCategory != null) {
-                btnNextCategory.setVisibility(currentCategoryIndex < availableOrderCategories.size() - 1 ? View.VISIBLE : View.GONE);
+
+            if (tvPageIndicator != null && availableOrderCategories.size() > 1) {
+                tvPageIndicator.setVisibility(View.VISIBLE);
+                String urduCat = Constants.getUrduLabel(selectedCat);
+                tvPageIndicator.setText("صفحہ " + (currentCategoryIndex + 1) + " از " + availableOrderCategories.size() + " — " + urduCat + " / " + selectedCat);
+            } else if (tvPageIndicator != null) {
+                tvPageIndicator.setVisibility(View.GONE);
             }
-        } else if (layoutWizardNav != null) {
-            layoutWizardNav.setVisibility(View.GONE);
+
+            if (layoutWizardNav != null && availableOrderCategories.size() > 1) {
+                layoutWizardNav.setVisibility(View.VISIBLE);
+                if (btnPrevCategory != null) {
+                    btnPrevCategory.setVisibility(currentCategoryIndex > 0 ? View.VISIBLE : View.GONE);
+                }
+                if (btnNextCategory != null) {
+                    btnNextCategory.setVisibility(currentCategoryIndex < availableOrderCategories.size() - 1 ? View.VISIBLE : View.GONE);
+                }
+            } else if (layoutWizardNav != null) {
+                layoutWizardNav.setVisibility(View.GONE);
+            }
         }
 
         updateSellerMetaCard(selectedCat);
