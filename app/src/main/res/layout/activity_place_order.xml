@@ -72,7 +72,20 @@
             android:background="@drawable/bg_skeu_card"
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
-            android:layout_marginBottom="10dp" />
+            android:layout_marginBottom="6dp" />
+
+        <TextView
+            android:id="@+id/tvPageIndicator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/text_primary"
+            android:fontFamily="sans-serif-bold"
+            android:textSize="14sp"
+            android:padding="10dp"
+            android:background="@drawable/bg_skeu_card"
+            android:layout_marginBottom="10dp"
+            android:visibility="gone" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -121,6 +134,104 @@
             android:textColor="@color/text_primary"
             android:fontFamily="sans-serif-medium"
             android:textSize="13sp" />
+
+        <!-- Multi-Category Choice Guidance Card -->
+        <LinearLayout
+            android:id="@+id/cardMultiCategoryGuide"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_skeu_card"
+            android:padding="12dp"
+            android:layout_marginTop="10dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tvMultiCategoryGuideTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="💡 یہ بیچنے والی دیگر زمروں میں بھی چیزیں بیچتی ہیں!"
+                android:fontFamily="sans-serif-bold"
+                android:textColor="@color/warning_amber"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/tvMultiCategoryGuideDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="اگر آپ کو دیگر چیزیں نہیں چاہیے تو 'دیگر چیزیں نہیں چاہیے' کا بٹن دبائیں۔ اگر مزید دیکھنا چاہتی ہیں تو 'اگلا صفحہ' دبائیں۔"
+                android:textColor="@color/text_primary"
+                android:textSize="12sp"
+                android:layout_marginTop="2dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+
+                <Button
+                    android:id="@+id/btnOnlyThisOrder"
+                    android:layout_width="0dp"
+                    android:layout_height="42dp"
+                    android:layout_weight="1"
+                    android:text="🛑 دیگر چیزیں نہیں چاہیے"
+                    android:textSize="11sp"
+                    android:textColor="#FFFFFF"
+                    android:background="@drawable/bg_skeu_button_primary"
+                    android:layout_marginEnd="4dp" />
+
+                <Button
+                    android:id="@+id/btnBrowseMore"
+                    android:layout_width="0dp"
+                    android:layout_height="42dp"
+                    android:layout_weight="1"
+                    android:text="▶️ اگلا صفحہ (دیگر دیکھیں)"
+                    android:textSize="11sp"
+                    android:textColor="#FFFFFF"
+                    android:background="@drawable/bg_skeu_button_primary"
+                    android:layout_marginStart="4dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Bulk / Large Order Note Banner -->
+        <LinearLayout
+            android:id="@+id/cardBulkOrderNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_skeu_card"
+            android:padding="12dp"
+            android:layout_marginTop="10dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="💡 بڑا یا خاص آرڈر بنوانا ہے؟"
+                android:fontFamily="sans-serif-bold"
+                android:textColor="@color/warning_amber"
+                android:textSize="13sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="اگر آپ بہت بڑا آرڈر (جیسے فنکشن کا کھانا یا بلک آرڈر) دینا چاہتی ہیں تو ڈائریکٹ واٹس ایپ پر بات کر لیں۔"
+                android:textColor="@color/text_primary"
+                android:textSize="12sp"
+                android:layout_marginTop="2dp" />
+
+            <Button
+                android:id="@+id/btnBulkWhatsApp"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:text="💬 واٹس ایپ پر بات کریں"
+                android:textSize="12sp"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/bg_skeu_button_primary"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:layout_marginTop="6dp" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tvSelectedItem"
@@ -252,6 +363,36 @@
             android:background="@drawable/bg_skeu_input"
             android:layout_marginTop="6dp" />
 
+        <LinearLayout
+            android:id="@+id/layoutWizardNav"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone">
+
+            <Button
+                android:id="@+id/btnPrevCategory"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:text="⬅️ پچھلا / Previous"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/bg_skeu_button_primary"
+                android:layout_marginEnd="6dp" />
+
+            <Button
+                android:id="@+id/btnNextCategory"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:text="اگلا / Next ➔"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/bg_skeu_button_primary"
+                android:layout_marginStart="6dp" />
+        </LinearLayout>
+
         <Button
             android:id="@+id/btnSubmitOrder"
             android:layout_width="match_parent"
@@ -261,7 +402,7 @@
             android:textSize="15sp"
             android:background="@drawable/bg_skeu_button_primary"
             android:textColor="#FFFFFF"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
             android:layout_marginBottom="20dp" />
 
     </LinearLayout>

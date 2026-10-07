@@ -13,8 +13,6 @@ public class CategoryFormConfig {
     static {
         // ---------------- Cooking ----------------
         List<OrderField> cooking = new ArrayList<>();
-        cooking.add(new OrderField("کتنے لوگوں کے لیے کھانا چاہیے؟", "Number of People", "مثال: 20", "number"));
-        cooking.add(new OrderField("کون سا کھانا چاہیے؟", "Dish Details", "مثال: بریانی، قورمہ، حلوہ", "text"));
         cooking.add(new OrderField("مصالحہ کتنا تیز چاہیے؟", "Taste Style", "spinner",
                 new String[]{"تیز مصالحہ", "ہلکا مصالحہ", "تندوری انداز", "دیسی انداز"}));
         cooking.add(new OrderField("کس فنکشن کے لیے؟", "Occasion", "spinner",
@@ -43,7 +41,6 @@ public class CategoryFormConfig {
         List<OrderField> mehndi = new ArrayList<>();
         mehndi.add(new OrderField("کس فنکشن کے لیے مہندی چاہیے؟", "Function Type", "spinner",
                 new String[]{"مہندی کی رسم", "بارات", "ولیمہ", "نکاح", "ڈھولکی", "عام فنکشن"}));
-        mehndi.add(new OrderField("کتنے لوگوں کی مہندی لگے گی؟", "Number of People", "مثال: دلہن اور 15 مہمان", "number"));
         mehndi.add(new OrderField("ڈیزائن کا انداز", "Design Style", "spinner",
                 new String[]{"عربی ڈیزائن", "روایتی پاکستانی", "راجستھانی", "ہلکا سادہ ڈیزائن"}));
         mehndi.add(new OrderField("کس دن چاہیے؟", "Which Day", "مثال: 20 اگست", "text"));
@@ -54,10 +51,8 @@ public class CategoryFormConfig {
         List<OrderField> makeup = new ArrayList<>();
         makeup.add(new OrderField("کس فنکشن کے لیے میک اپ چاہیے؟", "Function Type", "spinner",
                 new String[]{"بارات", "ولیمہ", "مہندی", "نکاح", "پارٹی", "منگنی"}));
-        makeup.add(new OrderField("کتنے لوگوں کا میک اپ چاہیے؟", "Number of People", "مثال: دلہن اور 3 مہمان", "number"));
         makeup.add(new OrderField("میک اپ کا انداز", "Makeup Style", "spinner",
                 new String[]{"ہلکا / نیچرل میک اپ", "بھاری / HD میک اپ", "پارٹی میک اپ"}));
-        // ✅ YEH LINE ADD KI
         makeup.add(new OrderField("اضافی خدمات (اختیاری)", "Additional Services", "multi",
                 new String[]{"ویکسنگ / Waxing", "تھریڈنگ / Threading", "آئی برو / Eyebrow Plucking",
                         "فیشل / Facial", "نیل آرٹ / Nail Art", "ہیئر اسٹائل / Hair Styling"}));
@@ -67,11 +62,10 @@ public class CategoryFormConfig {
 
         // ---------------- Embroidery ----------------
         List<OrderField> embroidery = new ArrayList<>();
-        embroidery.add(new OrderField("کیا کڑھائی کرنی ہے؟", "What to Embroider", "مثال: دوپٹہ، کرتا، وال آرٹ", "text"));
+        embroidery.add(new OrderField("کس چیز پر کڑھائی کرنی ہے؟", "What Garment/Item to Embroider", "مثال: دوپٹہ، کرتا، وال آرٹ، چادر", "text"));
         embroidery.add(new OrderField("دھاگے کی قسم", "Thread Type", "spinner",
                 new String[]{"ریشم کا دھاگہ", "دبکا ورک", "گوٹا ورک", "آری ورک"}));
         embroidery.add(new OrderField("ڈیزائن کی تفصیل", "Design Details", "مثال: پھولوں کا ڈیزائن", "text"));
-        embroidery.add(new OrderField("کتنی تعداد چاہیے؟", "Quantity", "مثال: 2 عدد", "number"));
         embroidery.add(new OrderField("کب تک چاہیے؟", "Needed By", "مثال: 15 دن میں", "text"));
         FORMS.put("Embroidery", embroidery);
     }

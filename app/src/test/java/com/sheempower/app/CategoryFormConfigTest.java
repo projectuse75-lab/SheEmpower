@@ -18,7 +18,7 @@ public class CategoryFormConfigTest {
                 CategoryFormConfig.getFieldsForCategory("Cooking");
 
         assertNotNull(fields);
-        assertEquals(6, fields.size());
+        assertEquals(4, fields.size());
     }
 
     @Test
@@ -38,7 +38,7 @@ public class CategoryFormConfigTest {
                 CategoryFormConfig.getFieldsForCategory("Mehndi");
 
         assertNotNull(fields);
-        assertEquals(5, fields.size());
+        assertEquals(4, fields.size());
     }
 
     @Test
@@ -48,7 +48,7 @@ public class CategoryFormConfigTest {
                 CategoryFormConfig.getFieldsForCategory("Makeup");
 
         assertNotNull(fields);
-        assertEquals(6, fields.size());
+        assertEquals(5, fields.size());
     }
 
     @Test
@@ -58,7 +58,7 @@ public class CategoryFormConfigTest {
                 CategoryFormConfig.getFieldsForCategory("Embroidery");
 
         assertNotNull(fields);
-        assertEquals(5, fields.size());
+        assertEquals(4, fields.size());
     }
 
     @Test

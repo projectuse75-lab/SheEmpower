@@ -45,14 +45,42 @@
         android:layout_height="wrap_content"
         android:textColor="@color/text_secondary"
         android:textSize="12sp"
-        android:layout_marginTop="4dp" />
+        android:layout_marginTop="4dp"
+        android:autoLink="web"
+        android:linksClickable="true" />
+
+    <LinearLayout
+        android:id="@+id/layoutSampleImagesContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="8dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvSampleImagesHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📸 نمونہ تصویر / Sample Image (Tap to view full)"
+            android:textColor="@color/primary"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif-bold" />
+
+        <LinearLayout
+            android:id="@+id/layoutSampleImages"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/tvOrderAddress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/text_secondary"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        android:layout_marginTop="4dp" />
 
     <TextView
         android:id="@+id/tvOrderStatus"

@@ -1,16 +1,26 @@
 package com.sheempower.app.adapters;
 
+import android.content.Intent;
+import android.net.Uri;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import com.bumptech.glide.Glide;
 import com.sheempower.app.R;
 import com.sheempower.app.models.Order;
 import com.sheempower.app.utils.Constants;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.VH> {
 
@@ -41,12 +51,52 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.VH> {
         holder.tvStatus.setText(Constants.getStatusLabel(o.getStatus(), o.getDeliveryMethod()));
         holder.tvStatus.setTextColor(0xFFFFFFFF);
         holder.tvDetails.setText(o.getDetails());
+        holder.tvDetails.setMovementMethod(LinkMovementMethod.getInstance());
+        Linkify.addLinks(holder.tvDetails, Linkify.WEB_URLS);
 
         String who = isSellerView
                 ? "خریدار: " + (o.getBuyerName() != null ? o.getBuyerName() : "—")
                 : "بیچنے والی: " + (o.getSellerName() != null ? o.getSellerName() : "—");
         holder.tvParty.setText(who);
         holder.tvAddress.setText("📍 " + (o.getAddress() != null ? o.getAddress() : ""));
+
+        // Extract and display sample image previews if present in order details
+        List<String> imageUrls = extractImageUrls(o.getDetails());
+        if (imageUrls != null && !imageUrls.isEmpty()) {
+            holder.layoutSampleImagesContainer.setVisibility(View.VISIBLE);
+            holder.layoutSampleImages.removeAllViews();
+
+            float density = holder.itemView.getResources().getDisplayMetrics().density;
+            int imgSize = Math.round(120 * density);
+            int margin = Math.round(6 * density);
+
+            for (String imgUrl : imageUrls) {
+                ImageView iv = new ImageView(holder.itemView.getContext());
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(imgSize, imgSize);
+                params.setMargins(0, 0, margin, 0);
+                iv.setLayoutParams(params);
+                iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                iv.setBackgroundResource(R.drawable.bg_skeu_card);
+
+                Glide.with(holder.itemView.getContext())
+                        .load(imgUrl)
+                        .placeholder(R.drawable.placeholder_avatar)
+                        .into(iv);
+
+                iv.setOnClickListener(v -> {
+                    try {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(imgUrl));
+                        holder.itemView.getContext().startActivity(intent);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+
+                holder.layoutSampleImages.addView(iv);
+            }
+        } else {
+            holder.layoutSampleImagesContainer.setVisibility(View.GONE);
+        }
 
         if (isSellerView) {
             if (Constants.STATUS_PENDING.equals(o.getStatus())) {
@@ -70,11 +120,32 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.VH> {
         }
     }
 
+    private List<String> extractImageUrls(String text) {
+        if (text == null || text.isEmpty()) return null;
+        List<String> list = new ArrayList<>();
+        Pattern pattern = Pattern.compile("https?://[^\\s]+");
+        Matcher matcher = pattern.matcher(text);
+
+        while (matcher.find()) {
+            String url = matcher.group().replaceAll("[\\)\\]\\}\"']$", "");
+            String lower = url.toLowerCase();
+            if (lower.contains("cloudinary") || lower.endsWith(".jpg") || lower.contains(".jpeg") 
+                    || lower.endsWith(".png") || lower.endsWith(".webp")) {
+                if (!list.contains(url)) {
+                    list.add(url);
+                }
+            }
+        }
+        return list;
+    }
+
     @Override public int getItemCount() { return orders.size(); }
 
     static class VH extends RecyclerView.ViewHolder {
         TextView tvProduct, tvAmount, tvStatus, tvDetails, tvParty, tvAddress;
         Button btnAdvance;
+        LinearLayout layoutSampleImagesContainer, layoutSampleImages;
+
         VH(@NonNull View itemView) {
             super(itemView);
             tvProduct = itemView.findViewById(R.id.tvOrderProduct);
@@ -84,6 +155,8 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.VH> {
             tvParty   = itemView.findViewById(R.id.tvOrderParty);
             tvAddress = itemView.findViewById(R.id.tvOrderAddress);
             btnAdvance= itemView.findViewById(R.id.btnAdvanceStatus);
+            layoutSampleImagesContainer = itemView.findViewById(R.id.layoutSampleImagesContainer);
+            layoutSampleImages          = itemView.findViewById(R.id.layoutSampleImages);
         }
     }
 }
