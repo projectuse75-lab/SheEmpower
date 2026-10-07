@@ -29,10 +29,6 @@ public class CategoryFormConfig {
         stitching.add(new OrderField("ناپ (سائز/لمبائی)", "Size / Measurements", "مثال: چھاتی 36, لمبائی 40, بازو 18", "text"));
         stitching.add(new OrderField("کپڑا آپ دیں گی یا سلائی والی؟", "Fabric Provided By", "spinner",
                 new String[]{"میں کپڑا دوں گی", "سلائی والی خود لائے"}));
-        stitching.add(new OrderField("کڑھائی چاہیے یا نہیں؟", "Embroidery Needed", "spinner",
-                new String[]{"کڑھائی نہیں چاہیے", "ہاں، کڑھائی چاہیے"}));
-        stitching.add(new OrderField("دھاگے / کڑھائی کا انداز", "Thread / Style", "spinner",
-                new String[]{"ریشم کا دھاگہ", "دبکا ورک", "گوٹا ورک", "آری ورک", "سادہ سلائی"}));
         stitching.add(new OrderField("ڈیزائن کی تفصیل", "Design Details", "مثال: گلے کا ڈیزائن، آستین کی لمبائی", "text"));
         stitching.add(new OrderField("کب تک چاہیے؟", "Needed By", "مثال: 10 دن میں", "text"));
         FORMS.put("Stitching", stitching);

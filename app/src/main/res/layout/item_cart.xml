@@ -105,7 +105,7 @@
             android:id="@+id/btnRemoveCartItem"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="🗑️ Remove / حذف کریں"
+            android:text="Remove 🗑️"
             android:textColor="#E74C3C"
             android:textSize="11sp"
             android:padding="6dp"

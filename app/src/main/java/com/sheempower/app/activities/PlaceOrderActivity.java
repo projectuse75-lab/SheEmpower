@@ -43,6 +43,9 @@ public class PlaceOrderActivity extends AppCompatActivity {
     public static final String EXTRA_PRODUCT_NAME     = "productName";
     public static final String EXTRA_PRODUCT_PRICE    = "productPrice";
     public static final String EXTRA_PRODUCT_CATEGORY = "productCategory";
+    public static final String EXTRA_CART_CHECKED_IDS = "cartCheckedProductIds";
+
+    private ArrayList<String> cartCheckedProductIds = null;
 
     private static final int REQUEST_PICK_SAMPLE_IMAGE = 1005;
 
@@ -109,6 +112,7 @@ public class PlaceOrderActivity extends AppCompatActivity {
         session = new SessionManager(this);
 
         if (getIntent() != null) {
+            cartCheckedProductIds = getIntent().getStringArrayListExtra(EXTRA_CART_CHECKED_IDS);
             sellerId         = getIntent().getStringExtra(EXTRA_SELLER_ID);
             if (sellerId != null) sellerId = sellerId.trim();
             productId        = getIntent().getStringExtra(EXTRA_PRODUCT_ID);
@@ -149,12 +153,9 @@ public class PlaceOrderActivity extends AppCompatActivity {
         layoutBuyerAddress  = findViewById(R.id.layoutBuyerAddress);
         layoutProductChecklist = findViewById(R.id.layoutProductChecklist);
         layoutWizardNav     = findViewById(R.id.layoutWizardNav);
-        cardMultiCategoryGuide = findViewById(R.id.cardMultiCategoryGuide);
-        btnPrevCategory     = findViewById(R.id.btnPrevCategory);
-        btnNextCategory     = findViewById(R.id.btnNextCategory);
-        btnBulkWhatsApp     = findViewById(R.id.btnBulkWhatsApp);
         btnOnlyThisOrder    = findViewById(R.id.btnOnlyThisOrder);
         btnBrowseMore       = findViewById(R.id.btnBrowseMore);
+        btnBulkWhatsApp     = findViewById(R.id.btnBulkWhatsApp);
         etAmount            = findViewById(R.id.etAmount);
         etAddress           = findViewById(R.id.etAddress);
         etNotes             = findViewById(R.id.etNotes);
@@ -376,6 +377,18 @@ public class PlaceOrderActivity extends AppCompatActivity {
                         if (sellerCategoryProductsMap.isEmpty()) {
                             for (String cat : Constants.CATEGORIES) {
                                 sellerCategoryProductsMap.put(cat, new ArrayList<>());
+                            }
+                        }
+
+                        if (cartCheckedProductIds != null && !cartCheckedProductIds.isEmpty() && !singleProductMode) {
+                            checkedProductIds.clear();
+                            for (String cPid : cartCheckedProductIds) {
+                                if (cPid != null && !cPid.trim().isEmpty()) {
+                                    checkedProductIds.add(cPid.trim());
+                                    if (!productQuantitiesMap.containsKey(cPid.trim())) {
+                                        productQuantitiesMap.put(cPid.trim(), 1);
+                                    }
+                                }
                             }
                         }
 

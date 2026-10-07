@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:text="✂️ Crop Image / کاٹیں"
+            android:text="Crop Image ✂️ "
             android:textColor="#FFFFFF"
             android:textSize="18sp"
             android:fontFamily="sans-serif-black" />
@@ -59,7 +59,7 @@
             android:layout_height="52dp"
             android:layout_weight="1"
             android:layout_marginEnd="8dp"
-            android:text="Cancel / منسوخ"
+            android:text="Cancel "
             android:textSize="14sp"
             android:backgroundTint="#E74C3C"
             android:textColor="#FFFFFF" />
@@ -70,7 +70,7 @@
             android:layout_height="52dp"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
-            android:text="Crop / کاٹیں"
+            android:text="Crop"
             android:textSize="14sp"
             android:backgroundTint="#2ECC71"
             android:textColor="#FFFFFF" />

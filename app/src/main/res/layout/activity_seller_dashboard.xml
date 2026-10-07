@@ -63,7 +63,7 @@
                 android:textStyle="bold"
                 android:lineSpacingExtra="4dp"
                 android:layout_marginTop="10dp"
-                android:text="🎨 Mehendi / مہندی" />
+                android:text="Seller's dashboard " />
 
             <TextView
                 android:id="@+id/tvStatus"

@@ -28,7 +28,7 @@ public class CategoryFormConfigTest {
                 CategoryFormConfig.getFieldsForCategory("Stitching");
 
         assertNotNull(fields);
-        assertEquals(8, fields.size());
+        assertEquals(6, fields.size());
     }
 
     @Test

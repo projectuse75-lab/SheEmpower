@@ -47,13 +47,19 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.VH> {
             holder.cbSelect.setOnCheckedChangeListener(null);
             holder.cbSelect.setChecked(item.isSelected());
             holder.cbSelect.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                item.setSelected(isChecked);
                 if (isChecked) {
+                    // Allow multiple items from the SAME seller, uncheck other sellers' items
+                    String activeSellerId = item.getSellerId() != null ? item.getSellerId().trim() : "";
                     for (CartItem ci : cartList) {
-                        ci.setSelected(ci == item);
+                        if (ci != item && ci.isSelected()) {
+                            String otherSellerId = ci.getSellerId() != null ? ci.getSellerId().trim() : "";
+                            if (!activeSellerId.isEmpty() && !activeSellerId.equalsIgnoreCase(otherSellerId)) {
+                                ci.setSelected(false);
+                            }
+                        }
                     }
                     notifyDataSetChanged();
-                } else {
-                    item.setSelected(false);
                 }
                 if (listener != null) listener.onSelectToggle(item, isChecked);
             });

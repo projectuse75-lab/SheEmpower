@@ -53,6 +53,60 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <!-- STATUS FILTER BUTTONS -->
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:layout_marginBottom="12dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnFilterAll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="All "
+                    android:textSize="12sp"
+                    android:background="@drawable/bg_skeu_button_primary"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginEnd="6dp" />
+
+                <Button
+                    android:id="@+id/btnFilterPending"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="New"
+                    android:textSize="12sp"
+                    android:background="@drawable/bg_skeu_button_cream"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginEnd="6dp" />
+
+                <Button
+                    android:id="@+id/btnFilterInProgress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="In Progress "
+                    android:textSize="12sp"
+                    android:background="@drawable/bg_skeu_button_cream"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginEnd="6dp" />
+
+                <Button
+                    android:id="@+id/btnFilterCompleted"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="Completed "
+                    android:textSize="12sp"
+                    android:background="@drawable/bg_skeu_button_cream"
+                    android:textColor="@color/text_primary" />
+
+            </LinearLayout>
+        </HorizontalScrollView>
+
         <TextView
             android:id="@+id/tvEmpty"
             android:layout_width="match_parent"

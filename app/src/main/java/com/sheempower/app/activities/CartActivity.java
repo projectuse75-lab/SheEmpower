@@ -105,17 +105,19 @@ public class CartActivity extends AppCompatActivity {
         cartItemList.clear();
         cartItemList.addAll(CartManager.getInstance(this).getCartItems());
 
-        boolean selectedFound = false;
+        // Ensure selected items belong to the same seller (allow multiple items from same seller)
+        String activeSellerId = "";
         for (CartItem ci : cartItemList) {
             if (ci.isSelected()) {
-                if (selectedFound) {
+                String sid = ci.getSellerId() != null ? ci.getSellerId().trim() : "";
+                if (activeSellerId.isEmpty()) {
+                    activeSellerId = sid;
+                } else if (!activeSellerId.equalsIgnoreCase(sid)) {
                     ci.setSelected(false);
-                } else {
-                    selectedFound = true;
                 }
             }
         }
-        if (!selectedFound && !cartItemList.isEmpty()) {
+        if (activeSellerId.isEmpty() && !cartItemList.isEmpty()) {
             cartItemList.get(0).setSelected(true);
         }
 
@@ -168,23 +170,37 @@ public class CartActivity extends AppCompatActivity {
     private void updateCartItemQuantity(CartItem item, int newQty) {
         if (item == null || item.getProductId() == null) return;
 
+        if (newQty <= 0) {
+            removeCartItem(item);
+            return;
+        }
+
+        item.setQuantity(newQty);
         CartManager.getInstance(this).updateQuantity(item.getProductId(), newQty);
+
+        if (cartAdapter != null) cartAdapter.notifyDataSetChanged();
+        recalculateCartSummary();
 
         String uid = session.getUid();
         if (uid != null) {
-            if (newQty <= 0) {
-                FirebaseDatabase.getInstance().getReference().child("carts").child(uid.trim()).child(item.getProductId()).removeValue();
-            } else {
-                FirebaseDatabase.getInstance().getReference().child("carts").child(uid.trim()).child(item.getProductId()).child("quantity").setValue(newQty);
-            }
+            FirebaseDatabase.getInstance().getReference().child("carts").child(uid.trim()).child(item.getProductId()).child("quantity").setValue(newQty);
         }
-        loadCartItems();
     }
 
     private void removeCartItem(CartItem item) {
         if (item == null || item.getProductId() == null) return;
 
+        for (int i = 0; i < cartItemList.size(); i++) {
+            if (item.getProductId().equals(cartItemList.get(i).getProductId())) {
+                cartItemList.remove(i);
+                break;
+            }
+        }
+
         CartManager.getInstance(this).removeFromCart(item.getProductId());
+
+        if (cartAdapter != null) cartAdapter.notifyDataSetChanged();
+        recalculateCartSummary();
 
         String uid = session.getUid();
         if (uid != null) {
@@ -192,7 +208,6 @@ public class CartActivity extends AppCompatActivity {
         }
 
         Toast.makeText(this, "آئٹم حذف کر دیا گیا / Item removed", Toast.LENGTH_SHORT).show();
-        loadCartItems();
     }
 
     private void recalculateCartSummary() {
@@ -222,6 +237,14 @@ public class CartActivity extends AppCompatActivity {
         CartItem firstItem = items.get(0);
         Intent i = new Intent(this, PlaceOrderActivity.class);
         i.putExtra(PlaceOrderActivity.EXTRA_SELLER_ID, firstItem.getSellerId());
+
+        ArrayList<String> checkedProductIds = new ArrayList<>();
+        for (CartItem ci : items) {
+            if (ci.getProductId() != null && !ci.getProductId().trim().isEmpty()) {
+                checkedProductIds.add(ci.getProductId().trim());
+            }
+        }
+        i.putStringArrayListExtra(PlaceOrderActivity.EXTRA_CART_CHECKED_IDS, checkedProductIds);
 
         if (items.size() == 1) {
             i.putExtra(PlaceOrderActivity.EXTRA_PRODUCT_ID, firstItem.getProductId());

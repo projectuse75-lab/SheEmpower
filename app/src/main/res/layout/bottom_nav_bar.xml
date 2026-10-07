@@ -108,7 +108,7 @@
             android:id="@+id/navLabel4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="سیٹنگز"
+            android:text="Settings"
             android:textSize="10sp"
             android:textColor="@color/text_primary"/>
 

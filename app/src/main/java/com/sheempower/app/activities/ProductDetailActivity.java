@@ -150,15 +150,17 @@ public class ProductDetailActivity extends AppCompatActivity {
         bindSellerMeta();
 
         boolean isSellerView = getIntent().getBooleanExtra(EXTRA_IS_SELLER_VIEW, false);
-        boolean isSellerOrAdmin = session.isLoggedIn() && (session.isSeller() || session.isAdmin());
-        boolean isOwnProduct = session.isLoggedIn() && session.getUid() != null && currentProduct.getSellerId() != null
-                && session.getUid().trim().equalsIgnoreCase(currentProduct.getSellerId().trim());
 
-        if (isSellerView || isSellerOrAdmin || isOwnProduct) {
+        if (isSellerView) {
             if (btnPlaceOrder != null) btnPlaceOrder.setVisibility(View.GONE);
             if (btnAddToCart != null) btnAddToCart.setVisibility(View.GONE);
             if (btnWhatsApp != null) btnWhatsApp.setVisibility(View.GONE);
-            if (isSellerView && btnViewSeller != null) btnViewSeller.setVisibility(View.GONE);
+            if (btnViewSeller != null) btnViewSeller.setVisibility(View.GONE);
+        } else {
+            if (btnPlaceOrder != null) btnPlaceOrder.setVisibility(View.VISIBLE);
+            if (btnAddToCart != null) btnAddToCart.setVisibility(View.VISIBLE);
+            if (btnWhatsApp != null) btnWhatsApp.setVisibility(View.VISIBLE);
+            if (btnViewSeller != null) btnViewSeller.setVisibility(View.VISIBLE);
         }
 
         if (currentProduct.getSellerId() != null && !currentProduct.getSellerId().trim().isEmpty()) {
@@ -221,11 +223,6 @@ public class ProductDetailActivity extends AppCompatActivity {
         if (!session.isLoggedIn()) {
             Toast.makeText(this, LanguageHelper.processDualString(this, "پہلے لاگ ان کریں / Please Login First"), Toast.LENGTH_SHORT).show();
             startActivity(new Intent(this, LoginActivity.class));
-            return;
-        }
-
-        if (session.isSeller() || session.isAdmin()) {
-            Toast.makeText(this, "سیلر اور ایڈمن خرید نہیں سکتے / Sellers & Admins cannot place orders or add to cart", Toast.LENGTH_LONG).show();
             return;
         }
 

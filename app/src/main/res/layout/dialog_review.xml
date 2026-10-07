@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-black"
         android:gravity="center"
-        android:text="⭐ Rate &amp; Review / جائزہ دیں"
+        android:text="Rate and Review ⭐"
         android:textColor="@color/text_primary"
         android:textSize="18sp" />
 
@@ -41,7 +41,7 @@
         android:layout_marginTop="16dp"
         android:background="@drawable/bg_skeu_input"
         android:gravity="top|start"
-        android:hint="جائزہ لکھیں (اختیاری) / Write your review (optional)..."
+        android:hint="Write your review (optional)..."
         android:padding="12dp"
         android:textColor="@color/text_primary"
         android:textSize="14sp" />
@@ -53,7 +53,7 @@
         android:layout_marginTop="20dp"
         android:background="@drawable/bg_skeu_button_primary"
         android:fontFamily="sans-serif-bold"
-        android:text="⭐ Submit Review / جائزہ جمع کریں"
+        android:text=" Submit Review ⭐"
         android:textColor="#FFFFFF"
         android:textSize="14sp" />
 
