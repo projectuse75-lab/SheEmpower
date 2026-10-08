@@ -32,15 +32,23 @@ public class OneSignalHelper {
 
         try {
             OneSignal.initWithContext(context, Constants.ONESIGNAL_APP_ID);
+
             // Android 13+ runtime notification permission request
             OneSignal.getNotifications().requestPermission(true, Continue.with(result -> {
                 if (result.isSuccess() && Boolean.TRUE.equals(result.getData())) {
                     Log.d(TAG, "OneSignal notification permission granted");
-                    OneSignal.getUser().getPushSubscription().optIn();
+                    if (OneSignal.getUser().getPushSubscription() != null) {
+                        OneSignal.getUser().getPushSubscription().optIn();
+                    }
                 } else {
                     Log.w(TAG, "OneSignal notification permission denied");
                 }
             }));
+
+            if (OneSignal.getUser().getPushSubscription() != null) {
+                OneSignal.getUser().getPushSubscription().optIn();
+            }
+
             Log.d(TAG, "OneSignal initialized with App ID: " + Constants.ONESIGNAL_APP_ID);
         } catch (Exception e) {
             Log.e(TAG, "OneSignal init failed: " + e.getMessage(), e);
@@ -53,23 +61,31 @@ public class OneSignalHelper {
 
         try {
             // Is uid ko OneSignal ke user ke sath login/link kar dete hain
-            OneSignal.login(sellerUid);
+            OneSignal.login(sellerUid.trim());
 
-            // Subscription ID turant nikalte hain
-            String subscriptionId = OneSignal.getUser().getPushSubscription().getId();
+            if (OneSignal.getUser().getPushSubscription() != null) {
+                OneSignal.getUser().getPushSubscription().optIn();
+            }
+
+            // Subscription ID nikal kar save karte hain
+            String subscriptionId = OneSignal.getUser().getPushSubscription() != null ?
+                    OneSignal.getUser().getPushSubscription().getId() : null;
+
             if (subscriptionId != null && !subscriptionId.isEmpty()) {
-                saveIdToFirebase(sellerUid, subscriptionId);
+                saveIdToFirebase(sellerUid.trim(), subscriptionId);
             }
 
             // Push subscription state change hone par automatically Firebase update hoga
-            OneSignal.getUser().getPushSubscription().addObserver(state -> {
-                if (state != null && state.getCurrent() != null) {
-                    String id = state.getCurrent().getId();
-                    if (id != null && !id.isEmpty()) {
-                        saveIdToFirebase(sellerUid, id);
+            if (OneSignal.getUser().getPushSubscription() != null) {
+                OneSignal.getUser().getPushSubscription().addObserver(state -> {
+                    if (state != null && state.getCurrent() != null) {
+                        String id = state.getCurrent().getId();
+                        if (id != null && !id.isEmpty()) {
+                            saveIdToFirebase(sellerUid.trim(), id);
+                        }
                     }
-                }
-            });
+                });
+            }
         } catch (Exception e) {
             Log.e(TAG, "updateSellerPlayerId failed: " + e.getMessage(), e);
         }
@@ -89,19 +105,35 @@ public class OneSignalHelper {
     public static void sendPushToSeller(String sellerUid, String title, String message) {
         if (sellerUid == null || sellerUid.trim().isEmpty()) return;
 
-        FirebaseDatabase.getInstance().getReference(Constants.NODE_SELLERS).child(sellerUid)
+        final String cleanSellerUid = sellerUid.trim();
+
+        // Check SELLERS node first, fallback to USERS node
+        FirebaseDatabase.getInstance().getReference(Constants.NODE_SELLERS).child(cleanSellerUid)
                 .child(Constants.KEY_ONESIGNAL_PLAYER_ID)
                 .get()
                 .addOnSuccessListener(snapshot -> {
                     String playerId = snapshot.getValue(String.class);
-                    if (playerId == null || playerId.trim().isEmpty()) {
-                        Log.w(TAG, "Seller Player ID not found in Firebase, sending push via external_id alias: " + sellerUid);
+                    if (playerId != null && !playerId.trim().isEmpty()) {
+                        callOneSignalRestApi(cleanSellerUid, playerId, title, message);
+                    } else {
+                        // Check USERS node fallback
+                        FirebaseDatabase.getInstance().getReference(Constants.NODE_USERS).child(cleanSellerUid)
+                                .child(Constants.KEY_ONESIGNAL_PLAYER_ID)
+                                .get()
+                                .addOnSuccessListener(userSnap -> {
+                                    String userPlayerId = userSnap.getValue(String.class);
+                                    callOneSignalRestApi(cleanSellerUid, userPlayerId, title, message);
+                                })
+                                .addOnFailureListener(e -> callOneSignalRestApi(cleanSellerUid, null, title, message));
                     }
-                    callOneSignalRestApi(sellerUid, playerId, title, message);
                 })
                 .addOnFailureListener(e -> {
-                    Log.e(TAG, "Player ID fetch failed: " + e.getMessage());
-                    callOneSignalRestApi(sellerUid, null, title, message);
+                    Log.e(TAG, "Player ID fetch failed from SELLERS, fallback to USERS: " + e.getMessage());
+                    FirebaseDatabase.getInstance().getReference(Constants.NODE_USERS).child(cleanSellerUid)
+                            .child(Constants.KEY_ONESIGNAL_PLAYER_ID)
+                            .get()
+                            .addOnSuccessListener(userSnap -> callOneSignalRestApi(cleanSellerUid, userSnap.getValue(String.class), title, message))
+                            .addOnFailureListener(err -> callOneSignalRestApi(cleanSellerUid, null, title, message));
                 });
     }
 
@@ -111,16 +143,18 @@ public class OneSignalHelper {
                 JSONObject body = new JSONObject();
                 body.put("app_id", Constants.ONESIGNAL_APP_ID);
 
-                // OneSignal SDK v5 compatibility:
-                // Pass subscription ID via "include_subscription_ids" and "include_player_ids"
+                // OneSignal REST API v1 Payload targeting:
+                // If subscription ID is present, use include_subscription_ids
+                // Otherwise use include_aliases / include_external_user_ids
                 if (playerId != null && !playerId.trim().isEmpty()) {
                     JSONArray idsArray = new JSONArray().put(playerId.trim());
                     body.put("include_subscription_ids", idsArray);
-                    body.put("include_player_ids", idsArray);
                 } else {
-                    // Fallback to targeting by OneSignal login external_id alias
+                    JSONArray externalUserIds = new JSONArray().put(sellerUid.trim());
+                    body.put("include_external_user_ids", externalUserIds);
+
                     JSONObject aliases = new JSONObject();
-                    aliases.put("external_id", new JSONArray().put(sellerUid));
+                    aliases.put("external_id", sellerUid.trim());
                     body.put("include_aliases", aliases);
                     body.put("target_channel", "push");
                 }
@@ -134,6 +168,8 @@ public class OneSignalHelper {
                 body.put("contents", contents);
 
                 body.put("android_channel_id", Constants.CHANNEL_ID);
+                body.put("priority", 10); // High priority for instant delivery on Android
+                body.put("ttl", 259200); // Time to live 3 days
 
                 OkHttpClient client = new OkHttpClient();
                 RequestBody requestBody = RequestBody.create(

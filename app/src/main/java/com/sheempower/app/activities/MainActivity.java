@@ -19,10 +19,13 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.sheempower.app.utils.OneSignalHelper;
 import com.sheempower.app.R;
 import com.sheempower.app.adapters.ProductAdapter;
 import com.sheempower.app.adapters.SellerAdapter;
@@ -123,6 +126,11 @@ public class MainActivity extends AppCompatActivity {
         );
 
         loadSellersThenProducts();
+
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            OneSignalHelper.updateSellerPlayerId(currentUser.getUid());
+        }
 
         TextView btnCartHeader = findViewById(R.id.btnCartHeader);
         if (btnCartHeader != null) {
