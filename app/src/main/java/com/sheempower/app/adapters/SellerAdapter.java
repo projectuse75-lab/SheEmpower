@@ -11,12 +11,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.sheempower.app.R;
 import com.sheempower.app.models.Seller;
+import com.sheempower.app.utils.PreferencesManager;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 public class SellerAdapter extends RecyclerView.Adapter<SellerAdapter.VH> {
@@ -73,6 +75,10 @@ public class SellerAdapter extends RecyclerView.Adapter<SellerAdapter.VH> {
             return;
         }
 
+        boolean isDark = new PreferencesManager(holder.itemView.getContext()).isDarkThemeEnabled();
+        int textColor = isDark ? 0xFFFFFFFF : 0xFF192A56;
+        int ratingColor = isDark ? 0xFFF7D794 : 0xFF192A56;
+
         // =========================================================
         // BUSINESS NAME
         // =========================================================
@@ -84,6 +90,7 @@ public class SellerAdapter extends RecyclerView.Adapter<SellerAdapter.VH> {
         }
 
         holder.tvName.setText(businessName);
+        holder.tvName.setTextColor(textColor);
 
 
         // =========================================================
@@ -109,6 +116,7 @@ public class SellerAdapter extends RecyclerView.Adapter<SellerAdapter.VH> {
         }
 
         holder.tvCity.setText(locationText);
+        holder.tvCity.setTextColor(textColor);
 
 
         // =========================================================
@@ -119,7 +127,7 @@ public class SellerAdapter extends RecyclerView.Adapter<SellerAdapter.VH> {
 
             holder.tvRating.setText(
                     "⭐ " + String.format(
-                            java.util.Locale.getDefault(),
+                            Locale.getDefault(),
                             "%.1f",
                             seller.getRating()
                     )
@@ -129,6 +137,7 @@ public class SellerAdapter extends RecyclerView.Adapter<SellerAdapter.VH> {
 
             holder.tvRating.setText("⭐ N/A");
         }
+        holder.tvRating.setTextColor(ratingColor);
 
 
         // =========================================================

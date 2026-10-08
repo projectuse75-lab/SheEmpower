@@ -344,6 +344,118 @@
                 android:background="@drawable/bg_skeu_button_primary" />
         </LinearLayout>
 
+        <!-- PAYMENT METHOD SECTION -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="💵 Payment Method / ادائیگی کا طریقہ"
+            android:textColor="@color/text_primary"
+            android:fontFamily="sans-serif-bold"
+            android:textSize="15sp"
+            android:layout_marginTop="16dp" />
+
+        <RadioGroup
+            android:id="@+id/rgPaymentMethod"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_skeu_card"
+            android:padding="12dp"
+            android:layout_marginTop="8dp">
+
+            <RadioButton
+                android:id="@+id/rbPaymentCOD"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="💵 Cash on Delivery (COD) / کیش آن ڈیلیوری"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp" />
+
+            <RadioButton
+                android:id="@+id/rbPaymentEasyPaisa"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="💳 EasyPaisa / ایزی پیسہ"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp" />
+
+            <RadioButton
+                android:id="@+id/rbPaymentJazzCash"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="💳 JazzCash / جاز کیش"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp" />
+        </RadioGroup>
+
+        <!-- SELLER ACCOUNT & PAYMENT PROOF SECTION -->
+        <LinearLayout
+            android:id="@+id/layoutPaymentProofSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_skeu_card"
+            android:padding="14dp"
+            android:layout_marginTop="12dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tvSellerAccountInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="💳 Seller Account Information"
+                android:textColor="@color/accent"
+                android:fontFamily="sans-serif-bold"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ادائیگی کے بعد اپنی رسید کا اسکرین شاٹ اپلوڈ کریں / After payment, upload your payment screenshot:"
+                android:textColor="@color/text_primary"
+                android:textSize="13sp"
+                android:layout_marginTop="6dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="10dp">
+
+                <Button
+                    android:id="@+id/btnPickPaymentProof"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:text="📷 Upload Screenshot / رسید لائیں"
+                    android:textSize="12sp"
+                    android:background="@drawable/bg_skeu_button_cream"
+                    android:textColor="@color/primary"
+                    android:layout_marginEnd="6dp" />
+
+                <ImageView
+                    android:id="@+id/ivPaymentProofPreview"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:scaleType="centerCrop"
+                    android:background="@drawable/bg_skeu_input"
+                    android:visibility="gone"
+                    android:contentDescription="Payment Proof Preview" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvPaymentProofStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:layout_marginTop="6dp" />
+        </LinearLayout>
+
         <Button
             android:id="@+id/btnSubmitOrder"
             android:layout_width="match_parent"

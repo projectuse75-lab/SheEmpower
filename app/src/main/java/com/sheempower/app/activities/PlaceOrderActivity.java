@@ -13,6 +13,8 @@ import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.*;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.google.android.material.textfield.TextInputEditText;
@@ -83,6 +85,32 @@ public class PlaceOrderActivity extends AppCompatActivity {
 
     /** Product-by-Product Sample Images: Product ID -> Cloudinary URL */
     private final Map<String, String> productFormImagesMap = new HashMap<>();
+
+    private RadioGroup rgPaymentMethod;
+    private RadioButton rbPaymentCOD, rbPaymentEasyPaisa, rbPaymentJazzCash;
+    private LinearLayout layoutPaymentProofSection;
+    private TextView tvSellerAccountInfo, tvPaymentProofStatus;
+    private Button btnPickPaymentProof;
+    private ImageView ivPaymentProofPreview;
+
+    private String selectedPaymentMethod = "cod";
+    private String selectedPaymentStatus = "pending";
+    private String uploadedPaymentProofUrl = null;
+    private Uri pendingPaymentProofUri = null;
+
+    private final ActivityResultLauncher<String> paymentProofPicker =
+            registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+                if (uri != null) {
+                    pendingPaymentProofUri = uri;
+                    if (ivPaymentProofPreview != null) {
+                        ivPaymentProofPreview.setImageURI(uri);
+                        ivPaymentProofPreview.setVisibility(View.VISIBLE);
+                    }
+                    if (tvPaymentProofStatus != null) {
+                        tvPaymentProofStatus.setText("✅ تصویر منتخب ہو گئی / Screenshot selected");
+                    }
+                }
+            });
 
     /** Currently active product whose form is being filled */
     private Product currentlyActiveFormProduct = null;
@@ -160,6 +188,22 @@ public class PlaceOrderActivity extends AppCompatActivity {
         etAddress           = findViewById(R.id.etAddress);
         etNotes             = findViewById(R.id.etNotes);
         btnSubmitOrder      = findViewById(R.id.btnSubmitOrder);
+
+        rgPaymentMethod           = findViewById(R.id.rgPaymentMethod);
+        rbPaymentCOD              = findViewById(R.id.rbPaymentCOD);
+        rbPaymentEasyPaisa        = findViewById(R.id.rbPaymentEasyPaisa);
+        rbPaymentJazzCash         = findViewById(R.id.rbPaymentJazzCash);
+        layoutPaymentProofSection = findViewById(R.id.layoutPaymentProofSection);
+        tvSellerAccountInfo       = findViewById(R.id.tvSellerAccountInfo);
+        tvPaymentProofStatus      = findViewById(R.id.tvPaymentProofStatus);
+        btnPickPaymentProof       = findViewById(R.id.btnPickPaymentProof);
+        ivPaymentProofPreview     = findViewById(R.id.ivPaymentProofPreview);
+
+        if (btnPickPaymentProof != null) {
+            btnPickPaymentProof.setOnClickListener(v -> paymentProofPicker.launch("image/*"));
+        }
+
+        setupPaymentMethodSelection();
 
         if (!session.isLoggedIn()) {
             Toast.makeText(this, "پہلے لاگ ان کریں", Toast.LENGTH_SHORT).show();
@@ -1222,6 +1266,71 @@ public class PlaceOrderActivity extends AppCompatActivity {
         final String finalDetails = details;
         final String finalProductName = finalProductNameCombined;
 
+        // Validation for Online Payment Proof Screenshot
+        if (!"cod".equalsIgnoreCase(selectedPaymentMethod)) {
+            if (pendingPaymentProofUri == null && (uploadedPaymentProofUrl == null || uploadedPaymentProofUrl.isEmpty())) {
+                btnSubmitOrder.setEnabled(true);
+                Toast.makeText(this, "براہ کرم ادائیگی کی رسید/اسکرین شاٹ اپلوڈ کریں / Please upload payment proof screenshot", Toast.LENGTH_LONG).show();
+                if (layoutPaymentProofSection != null) layoutPaymentProofSection.requestFocus();
+                return;
+            }
+        }
+
+        // Upload payment proof screenshot to Cloudinary folder "payment_proofs"
+        if (pendingPaymentProofUri != null && (uploadedPaymentProofUrl == null || uploadedPaymentProofUrl.isEmpty())) {
+            btnSubmitOrder.setEnabled(false);
+            if (tvPaymentProofStatus != null) tvPaymentProofStatus.setText("⏳ اسکرین شاٹ اپلوڈ ہو رہا ہے... / Uploading proof...");
+
+            CloudinaryHelper.upload(this, pendingPaymentProofUri, "payment_proofs", (url, error) -> {
+                if (url != null) {
+                    uploadedPaymentProofUrl = url;
+                    if (tvPaymentProofStatus != null) tvPaymentProofStatus.setText("✅ اسکرین شاٹ اپلوڈ ہو گیا / Proof uploaded");
+                    proceedWithOrderSaving(finalGrandTotal, finalAddress, finalDeliveryMethod, finalDetails, notes, finalProductName, uid);
+                } else {
+                    btnSubmitOrder.setEnabled(true);
+                    if (tvPaymentProofStatus != null) tvPaymentProofStatus.setText("❌ اپلوڈ ناکام: " + error);
+                    Toast.makeText(this, "رسید اپلوڈ نہ ہو سکی: " + error, Toast.LENGTH_LONG).show();
+                }
+            });
+            return;
+        }
+
+        proceedWithOrderSaving(finalGrandTotal, finalAddress, finalDeliveryMethod, finalDetails, notes, finalProductName, uid);
+    }
+
+    private void setupPaymentMethodSelection() {
+        if (rgPaymentMethod == null) return;
+
+        rgPaymentMethod.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.rbPaymentEasyPaisa) {
+                selectedPaymentMethod = "easypaisa";
+                selectedPaymentStatus = "submitted";
+                if (layoutPaymentProofSection != null) layoutPaymentProofSection.setVisibility(View.VISIBLE);
+                String accountNum = (currentSeller != null && currentSeller.getWhatsappNumber() != null && !currentSeller.getWhatsappNumber().isEmpty())
+                        ? currentSeller.getWhatsappNumber() : "03001234567";
+                String sName = (currentSeller != null && currentSeller.getOwnerName() != null) ? currentSeller.getOwnerName() : "Seller";
+                if (tvSellerAccountInfo != null) {
+                    tvSellerAccountInfo.setText("💳 EasyPaisa Account Number: " + accountNum + "\nAccount Title: " + sName);
+                }
+            } else if (checkedId == R.id.rbPaymentJazzCash) {
+                selectedPaymentMethod = "jazzcash";
+                selectedPaymentStatus = "submitted";
+                if (layoutPaymentProofSection != null) layoutPaymentProofSection.setVisibility(View.VISIBLE);
+                String accountNum = (currentSeller != null && currentSeller.getWhatsappNumber() != null && !currentSeller.getWhatsappNumber().isEmpty())
+                        ? currentSeller.getWhatsappNumber() : "03001234567";
+                String sName = (currentSeller != null && currentSeller.getOwnerName() != null) ? currentSeller.getOwnerName() : "Seller";
+                if (tvSellerAccountInfo != null) {
+                    tvSellerAccountInfo.setText("💳 JazzCash Account Number: " + accountNum + "\nAccount Title: " + sName);
+                }
+            } else {
+                selectedPaymentMethod = "cod";
+                selectedPaymentStatus = "pending";
+                if (layoutPaymentProofSection != null) layoutPaymentProofSection.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    private void proceedWithOrderSaving(double finalGrandTotal, String finalAddress, String finalDeliveryMethod, String finalDetails, String notes, String finalProductName, String uid) {
         FirebaseDatabase.getInstance().getReference().child(Constants.NODE_USERS).child(uid.trim())
                 .get().addOnSuccessListener(userSnap -> {
                     String buyerName = userSnap.child("name").getValue(String.class);
@@ -1249,6 +1358,12 @@ public class PlaceOrderActivity extends AppCompatActivity {
         order.setAmount(amount);
         order.setStatus(Constants.STATUS_PENDING);
         order.setTimestamp(System.currentTimeMillis());
+        order.setPaymentMethod(selectedPaymentMethod);
+        order.setPaymentStatus(selectedPaymentStatus);
+        if (uploadedPaymentProofUrl != null) {
+            order.setPaymentProofUrl(uploadedPaymentProofUrl);
+            order.setPaymentProofUploadedAt(System.currentTimeMillis());
+        }
 
         dbRef.child(Constants.NODE_ORDERS).child(orderId).setValue(order)
                 .addOnSuccessListener(v -> {

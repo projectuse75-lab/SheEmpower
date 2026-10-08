@@ -40,6 +40,15 @@
         android:layout_marginTop="4dp" />
 
     <TextView
+        android:id="@+id/tvOrderTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_secondary"
+        android:textSize="11sp"
+        android:fontFamily="sans-serif-medium"
+        android:layout_marginTop="2dp" />
+
+    <TextView
         android:id="@+id/tvOrderDetails"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -81,6 +90,89 @@
         android:textColor="@color/text_secondary"
         android:textSize="12sp"
         android:layout_marginTop="4dp" />
+
+    <!-- PAYMENT INFO SECTION -->
+    <LinearLayout
+        android:id="@+id/layoutPaymentInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/bg_skeu_card"
+        android:padding="8dp"
+        android:layout_marginTop="8dp">
+
+        <TextView
+            android:id="@+id/tvOrderPaymentMethod"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="💳 Payment Method: COD"
+            android:textColor="@color/text_primary"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif-bold" />
+
+        <TextView
+            android:id="@+id/tvOrderPaymentStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Status: Pending"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"
+            android:layout_marginTop="2dp" />
+
+        <LinearLayout
+            android:id="@+id/layoutAdminPaymentActions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="6dp"
+            android:visibility="gone">
+
+            <Button
+                android:id="@+id/btnViewPaymentProof"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_weight="1"
+                android:text="📄 View Proof / رسید دیکھیں"
+                android:textSize="11sp"
+                android:background="@drawable/bg_skeu_button_cream"
+                android:textColor="@color/primary"
+                android:layout_marginEnd="4dp" />
+
+            <Button
+                android:id="@+id/btnVerifyPayment"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_weight="1"
+                android:text="✅ Payment Received / موصول ہوئی"
+                android:textSize="10sp"
+                android:fontFamily="sans-serif-bold"
+                android:background="@drawable/bg_skeu_button_green"
+                android:textColor="#FFFFFF"
+                android:layout_marginEnd="4dp" />
+
+            <Button
+                android:id="@+id/btnRejectPayment"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_weight="1"
+                android:text="❌ Not Received / موصول نہیں ہوئی"
+                android:textSize="10sp"
+                android:fontFamily="sans-serif-bold"
+                android:background="@drawable/bg_skeu_button_primary"
+                android:textColor="#FFFFFF" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnReuploadPaymentProof"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:text="📤 Re-upload Payment Proof / نئی رسید اپلوڈ کریں"
+            android:textSize="12sp"
+            android:background="@drawable/bg_skeu_button_primary"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="6dp"
+            android:visibility="gone" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/tvOrderStatus"

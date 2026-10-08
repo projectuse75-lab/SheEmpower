@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.sheempower.app.R;
 import com.sheempower.app.models.Product;
+import com.sheempower.app.utils.PreferencesManager;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,8 +52,16 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
     @Override
     public void onBindViewHolder(@NonNull VH holder, int position) {
         Product p = products.get(position);
+
+        boolean isDark = new PreferencesManager(holder.itemView.getContext()).isDarkThemeEnabled();
+        int textColor = isDark ? 0xFFFFFFFF : 0xFF192A56;
+        int priceColor = isDark ? 0xFFF7D794 : 0xFF192A56;
+
         holder.tvName.setText(p.getName());
+        holder.tvName.setTextColor(textColor);
+
         holder.tvPrice.setText("PKR " + (long) p.getPrice());
+        holder.tvPrice.setTextColor(priceColor);
         if (p.getImageUrl() != null && !p.getImageUrl().isEmpty()) {
             Glide.with(holder.itemView).load(p.getImageUrl()).into(holder.ivImage);
         } else {

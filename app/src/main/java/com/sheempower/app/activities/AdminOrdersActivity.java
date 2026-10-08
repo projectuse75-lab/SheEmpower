@@ -38,7 +38,7 @@ public class AdminOrdersActivity extends AppCompatActivity {
         tvEmpty  = findViewById(R.id.tvEmpty);
 
         rvOrders.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new OrderAdapter(orderList, false);
+        adapter = new OrderAdapter(orderList, false, true);
         rvOrders.setAdapter(adapter);
 
         BottomNavHelper.setupForAdmin(this, findViewById(R.id.bottomNav), 2);

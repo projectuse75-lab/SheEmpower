@@ -124,13 +124,19 @@ public class MyOrdersActivity extends AppCompatActivity {
 
     private void updateFilterButtonStyles(Button btn, boolean isSelected) {
         if (btn == null) return;
+        boolean isDark = isDarkMode();
         if (isSelected) {
             btn.setBackgroundResource(R.drawable.bg_skeu_button_primary);
             btn.setTextColor(0xFFFFFFFF);
         } else {
             btn.setBackgroundResource(R.drawable.bg_skeu_button_cream);
-            btn.setTextColor(0xFF192A56);
+            btn.setTextColor(isDark ? 0xFFFFFFFF : 0xFF192A56);
         }
+    }
+
+    private boolean isDarkMode() {
+        PreferencesManager prefs = new PreferencesManager(this);
+        return prefs.isDarkThemeEnabled();
     }
 
     private void loadOrders() {

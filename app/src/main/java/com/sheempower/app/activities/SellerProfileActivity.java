@@ -28,7 +28,7 @@ public class SellerProfileActivity extends AppCompatActivity {
 
     private CircleImageView ivSellerAvatar;
     private ImageView ivSellerVerifiedBadge;
-    private TextView tvName, tvCategory, tvCity, tvBio, tvRating, tvStatus, tvCapacity, tvDeliveryBadge;
+    private TextView tvName, tvCategory, tvCity, tvBio, tvRating, tvStatus, tvCapacity, tvDeliveryBadge, tvProductsHeader;
     private Button btnPlaceOrder, btnWhatsAppChat;
     private RecyclerView rvProducts;
     private ProductAdapter productAdapter;
@@ -80,6 +80,7 @@ public class SellerProfileActivity extends AppCompatActivity {
         btnPlaceOrder   = findViewById(R.id.btnPlaceOrder);
         btnWhatsAppChat = findViewById(R.id.btnWhatsAppChat);
         rvProducts      = findViewById(R.id.rvSellerProducts);
+        tvProductsHeader = findViewById(R.id.tvProductsHeader);
 
         layoutBuyerActions = findViewById(R.id.layoutBuyerActions);
         layoutAdminReview  = findViewById(R.id.layoutAdminReview);
@@ -301,15 +302,32 @@ public class SellerProfileActivity extends AppCompatActivity {
         }
     }
 
+    private boolean isDarkMode() {
+        PreferencesManager prefs = new PreferencesManager(this);
+        return prefs.isDarkThemeEnabled();
+    }
+
     private void bindSellerData() {
+        boolean isDark = isDarkMode();
+        int textColor = isDark ? 0xFFFFFFFF : 0xFF192A56;
+
         String business = currentSeller.getBusinessName() != null && !currentSeller.getBusinessName().isEmpty()
                 ? currentSeller.getBusinessName()
                 : currentSeller.getOwnerName();
         tvName.setText(business);
+        tvName.setTextColor(textColor);
 
         tvCategory.setText(getCategoriesText(currentSeller));
+        tvCategory.setTextColor(textColor);
+
+        if (tvProductsHeader != null) {
+            tvProductsHeader.setTextColor(textColor);
+        }
+
         tvCity.setText(currentSeller.getCity());
+        tvCity.setTextColor(isDark ? 0xFFFFFFFF : 0xFF6B7A99);
         tvBio.setText(currentSeller.getBio());
+        tvBio.setTextColor(textColor);
         tvRating.setText(String.format("⭐ %.1f (%d)", currentSeller.getRating(), currentSeller.getRatingCount()));
 
         boolean approved = Constants.isApproved(currentSeller.getVerificationStatus());
