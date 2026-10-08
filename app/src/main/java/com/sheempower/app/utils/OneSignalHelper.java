@@ -1,7 +1,13 @@
 package com.sheempower.app.utils;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.util.Log;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.firebase.database.FirebaseDatabase;
 import com.onesignal.Continue;
@@ -33,7 +39,29 @@ public class OneSignalHelper {
         try {
             OneSignal.initWithContext(context, Constants.ONESIGNAL_APP_ID);
 
-            // Android 13+ runtime notification permission request
+            if (OneSignal.getUser().getPushSubscription() != null) {
+                OneSignal.getUser().getPushSubscription().optIn();
+            }
+
+            Log.d(TAG, "OneSignal initialized with App ID: " + Constants.ONESIGNAL_APP_ID);
+        } catch (Exception e) {
+            Log.e(TAG, "OneSignal init failed: " + e.getMessage(), e);
+        }
+    }
+
+    /** Explicit Android 13+ runtime notification permission prompt */
+    public static void requestNotificationPermission(Activity activity) {
+        if (activity == null || activity.isFinishing()) return;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(activity, android.Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(activity,
+                        new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 1001);
+            }
+        }
+
+        try {
             OneSignal.getNotifications().requestPermission(true, Continue.with(result -> {
                 if (result.isSuccess() && Boolean.TRUE.equals(result.getData())) {
                     Log.d(TAG, "OneSignal notification permission granted");
@@ -48,10 +76,8 @@ public class OneSignalHelper {
             if (OneSignal.getUser().getPushSubscription() != null) {
                 OneSignal.getUser().getPushSubscription().optIn();
             }
-
-            Log.d(TAG, "OneSignal initialized with App ID: " + Constants.ONESIGNAL_APP_ID);
         } catch (Exception e) {
-            Log.e(TAG, "OneSignal init failed: " + e.getMessage(), e);
+            Log.e(TAG, "OneSignal permission request error: " + e.getMessage());
         }
     }
 
@@ -75,7 +101,7 @@ public class OneSignalHelper {
                 saveIdToFirebase(sellerUid.trim(), subscriptionId);
             }
 
-            // Push subscription state change hone par automatically Firebase update hoga
+            // Push subscription state change hone par automatically Firebase update ہوگا
             if (OneSignal.getUser().getPushSubscription() != null) {
                 OneSignal.getUser().getPushSubscription().addObserver(state -> {
                     if (state != null && state.getCurrent() != null) {

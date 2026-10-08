@@ -72,6 +72,7 @@ public class SellerDashboardActivity extends AppCompatActivity {
 
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
+            OneSignalHelper.requestNotificationPermission(this);
             OneSignalHelper.updateSellerPlayerId(currentUser.getUid());
             BatteryOptimizationHelper.checkAndPrompt(this);
         }
