@@ -29,7 +29,7 @@ public class SellerProfileActivity extends AppCompatActivity {
     private CircleImageView ivSellerAvatar;
     private ImageView ivSellerVerifiedBadge;
     private TextView tvName, tvCategory, tvCity, tvBio, tvRating, tvStatus, tvCapacity, tvDeliveryBadge, tvProductsHeader;
-    private Button btnPlaceOrder, btnWhatsAppChat;
+    private Button btnPlaceOrder, btnWhatsAppChat, btnViewReviews;
     private RecyclerView rvProducts;
     private ProductAdapter productAdapter;
     private final List<Product> productList = new ArrayList<>();
@@ -79,8 +79,16 @@ public class SellerProfileActivity extends AppCompatActivity {
         tvDeliveryBadge = findViewById(R.id.tvSellerDeliveryBadge);
         btnPlaceOrder   = findViewById(R.id.btnPlaceOrder);
         btnWhatsAppChat = findViewById(R.id.btnWhatsAppChat);
+        btnViewReviews  = findViewById(R.id.btnViewReviews);
         rvProducts      = findViewById(R.id.rvSellerProducts);
         tvProductsHeader = findViewById(R.id.tvProductsHeader);
+
+        if (btnViewReviews != null) {
+            btnViewReviews.setOnClickListener(v -> openReviewsActivity());
+        }
+        if (tvRating != null) {
+            tvRating.setOnClickListener(v -> openReviewsActivity());
+        }
 
         layoutBuyerActions = findViewById(R.id.layoutBuyerActions);
         layoutAdminReview  = findViewById(R.id.layoutAdminReview);
@@ -221,6 +229,14 @@ public class SellerProfileActivity extends AppCompatActivity {
                 .setPositiveButton("ہاں، ختم کریں / Yes, Delete", (dialog, which) -> deleteSellerFromFirebase())
                 .setNegativeButton("منسوخ / Cancel", null)
                 .show();
+    }
+
+    private void openReviewsActivity() {
+        if (sellerId != null && !sellerId.trim().isEmpty()) {
+            Intent i = new Intent(this, ProductReviewsActivity.class);
+            i.putExtra(ProductReviewsActivity.EXTRA_SELLER_ID, sellerId.trim());
+            startActivity(i);
+        }
     }
 
     private void deleteSellerFromFirebase() {

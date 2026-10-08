@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.firebase.database.FirebaseDatabase;
 import com.sheempower.app.R;
+import com.sheempower.app.activities.AddReviewActivity;
 import com.sheempower.app.models.Order;
 import com.sheempower.app.utils.CloudinaryHelper;
 import com.sheempower.app.utils.Constants;
@@ -179,6 +180,25 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.VH> {
             if (holder.btnReuploadPaymentProof != null) holder.btnReuploadPaymentProof.setVisibility(View.GONE);
         }
 
+        // Rate & Review button for Buyer on COMPLETED orders
+        if (!isSellerView && !isAdminView && Constants.STATUS_COMPLETED.equalsIgnoreCase(o.getStatus())) {
+            if (holder.btnRateReview != null) {
+                holder.btnRateReview.setTextColor(isDark ? 0xFFFFFFFF : 0xFF192A56);
+                holder.btnRateReview.setVisibility(View.VISIBLE);
+                holder.btnRateReview.setOnClickListener(v -> {
+                    Intent intent = new Intent(ctx, AddReviewActivity.class);
+                    intent.putExtra(AddReviewActivity.EXTRA_ORDER_ID, o.getId());
+                    intent.putExtra(AddReviewActivity.EXTRA_SELLER_ID, o.getSellerId());
+                    intent.putExtra(AddReviewActivity.EXTRA_SELLER_NAME, o.getSellerName());
+                    intent.putExtra(AddReviewActivity.EXTRA_PRODUCT_ID, o.getProductId());
+                    intent.putExtra(AddReviewActivity.EXTRA_PROD_NAME, o.getProductName());
+                    ctx.startActivity(intent);
+                });
+            }
+        } else {
+            if (holder.btnRateReview != null) holder.btnRateReview.setVisibility(View.GONE);
+        }
+
         // Sample Images
         List<String> imageUrls = extractImageUrls(o.getDetails());
         if (imageUrls != null && !imageUrls.isEmpty()) {
@@ -318,7 +338,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.VH> {
     static class VH extends RecyclerView.ViewHolder {
         TextView tvProduct, tvAmount, tvStatus, tvDetails, tvParty, tvAddress, tvOrderTime;
         TextView tvPaymentMethod, tvPaymentStatus;
-        Button btnAdvance, btnViewPaymentProof, btnVerifyPayment, btnRejectPayment, btnReuploadPaymentProof;
+        Button btnAdvance, btnViewPaymentProof, btnVerifyPayment, btnRejectPayment, btnReuploadPaymentProof, btnRateReview;
         LinearLayout layoutSampleImagesContainer, layoutSampleImages, layoutAdminPaymentActions;
 
         VH(@NonNull View itemView) {
@@ -331,6 +351,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.VH> {
             tvAddress = itemView.findViewById(R.id.tvOrderAddress);
             tvOrderTime = itemView.findViewById(R.id.tvOrderTime);
             btnAdvance= itemView.findViewById(R.id.btnAdvanceStatus);
+            btnRateReview = itemView.findViewById(R.id.btnRateReview);
             layoutSampleImagesContainer = itemView.findViewById(R.id.layoutSampleImagesContainer);
             layoutSampleImages          = itemView.findViewById(R.id.layoutSampleImages);
 

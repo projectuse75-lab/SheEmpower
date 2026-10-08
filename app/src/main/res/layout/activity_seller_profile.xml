@@ -91,6 +91,17 @@
             android:textColor="@color/warning_amber"
             android:layout_marginTop="4dp" />
 
+        <Button
+            android:id="@+id/btnViewReviews"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="⭐ View Reviews &amp; Ratings / جائزے دیکھیں"
+            android:fontFamily="sans-serif-bold"
+            android:textSize="13sp"
+            android:background="@drawable/bg_skeu_button_cream"
+            android:textColor="@color/text_primary"
+            android:layout_marginTop="8dp" />
+
         <TextView
             android:id="@+id/tvSellerStatus"
             android:layout_width="match_parent"

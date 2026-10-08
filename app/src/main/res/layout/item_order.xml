@@ -195,4 +195,16 @@
         android:textSize="12sp"
         android:layout_marginTop="8dp" />
 
+    <Button
+        android:id="@+id/btnRateReview"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="⭐ Rate &amp; Review / جائزہ دیں"
+        android:fontFamily="sans-serif-bold"
+        android:textSize="13sp"
+        android:background="@drawable/bg_skeu_button_cream"
+        android:textColor="@color/primary"
+        android:layout_marginTop="8dp"
+        android:visibility="gone" />
+
 </LinearLayout>

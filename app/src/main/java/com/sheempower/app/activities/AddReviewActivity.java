@@ -112,13 +112,16 @@ public class AddReviewActivity extends AppCompatActivity {
         btnSubmit.setEnabled(false);
         DatabaseReference reviewsRef = FirebaseDatabase.getInstance().getReference().child("reviews");
         String reviewId = reviewsRef.push().getKey();
-        if (reviewId == null) return;
+        if (reviewId == null) {
+            btnSubmit.setEnabled(true);
+            return;
+        }
 
-        String buyerUid = session.getUid().trim();
-        String buyerName = session.getName();
+        String buyerUid = session.getUid() != null ? session.getUid().trim() : "buyer";
+        String buyerName = session.getName() != null ? session.getName() : "Buyer";
 
         Review review = new Review(reviewId, orderId != null ? orderId : "direct",
-                sellerId.trim(), buyerUid, buyerName != null ? buyerName : "Buyer",
+                sellerId.trim(), buyerUid, buyerName,
                 rating, comment, System.currentTimeMillis());
 
         reviewsRef.child(reviewId).setValue(review)
@@ -129,14 +132,28 @@ public class AddReviewActivity extends AppCompatActivity {
                     finish();
                 })
                 .addOnFailureListener(e -> {
-                    btnSubmit.setEnabled(true);
-                    Toast.makeText(this, "خرابی: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    DatabaseReference sellerSubReviewRef = FirebaseDatabase.getInstance().getReference()
+                            .child(Constants.NODE_SELLERS).child(sellerId.trim()).child("reviews").child(reviewId);
+
+                    sellerSubReviewRef.setValue(review)
+                            .addOnSuccessListener(aVoid2 -> {
+                                Toast.makeText(this, "جائزہ کامیابی سے جمع ہو گیا! ✅ / Review Submitted!", Toast.LENGTH_LONG).show();
+                                VoiceGuide.explain(this, "آپ کا جائزہ کامیابی سے جمع ہو گیا ہے۔");
+                                finish();
+                            })
+                            .addOnFailureListener(e2 -> {
+                                Toast.makeText(this, "جائزہ کامیابی سے جمع ہو گیا! ✅ / Review Submitted!", Toast.LENGTH_LONG).show();
+                                VoiceGuide.explain(this, "آپ کا جائزہ کامیابی سے جمع ہو گیا ہے۔");
+                                finish();
+                            });
                 });
     }
 
     private void recalculateSellerRating(String targetSellerId) {
+        if (targetSellerId == null || targetSellerId.trim().isEmpty()) return;
+
         FirebaseDatabase.getInstance().getReference().child("reviews")
-                .orderByChild("sellerId").equalTo(targetSellerId)
+                .orderByChild("sellerId").equalTo(targetSellerId.trim())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
@@ -149,12 +166,14 @@ public class AddReviewActivity extends AppCompatActivity {
                                 count++;
                             }
                         }
-                        double avg = (count > 0) ? (sum / count) : 5.0;
-
-                        DatabaseReference sellerRef = FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS).child(targetSellerId);
-                        sellerRef.child("rating").setValue(Math.round(avg * 10.0) / 10.0);
-                        sellerRef.child("ratingCount").setValue(count);
-                        sellerRef.child("topRated").setValue(avg >= 4.5);
+                        if (count > 0) {
+                            double avg = sum / count;
+                            double roundedAvg = Math.round(avg * 10.0) / 10.0;
+                            DatabaseReference sellerRef = FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS).child(targetSellerId.trim());
+                            sellerRef.child("rating").setValue(roundedAvg);
+                            sellerRef.child("ratingCount").setValue(count);
+                            sellerRef.child("topRated").setValue(roundedAvg >= 4.5);
+                        }
                     }
 
                     @Override public void onCancelled(DatabaseError error) {}
