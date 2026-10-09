@@ -22,7 +22,7 @@ public class Constants {
     public static final String NODE_NOTIFICATIONS = "notifications";
 
     // ✅ NAYA: Notification Channel
-    public static final String CHANNEL_ID = "she_empower_orders";
+    public static final String CHANNEL_ID = "orders_channel";
     public static final String CHANNEL_NAME = "Order Notifications";
 
     public static final String CLOUDINARY_CLOUD_NAME    = "lstovyxq";

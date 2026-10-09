@@ -322,8 +322,8 @@ public class LoginActivity extends AppCompatActivity {
                                     }
                                     session.saveUser(uid, user.getRole(), user.getName());
 
-                                    // ✅ FCM Token Sync
-                                    com.sheempower.app.utils.FcmHelper.initAndSyncToken(uid);
+                                    // ✅ Save FCM Token to users/{uid}/fcmToken
+                                    com.sheempower.app.utils.FcmTokenHelper.saveCurrentToken(uid);
 
                                     session.saveEmail(user.getEmail());
                                     VoiceGuide.explain(LoginActivity.this, "خوش آمدید " + user.getName());

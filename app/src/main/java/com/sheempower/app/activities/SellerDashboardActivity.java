@@ -30,13 +30,16 @@ public class SellerDashboardActivity extends AppCompatActivity {
     private Button btnAddProduct;
     private SessionManager session;
 
-    // ✅ NAYA — "My Products" section
     private RecyclerView rvMyProducts;
     private TextView tvNoProducts, tvSellerDashboardRating;
     private Button btnViewSellerReviews;
     private ProductAdapter myProductAdapter;
     private final List<Product> myProductList = new ArrayList<>();
     private Seller currentSeller;
+
+    private DatabaseReference notifRef;
+    private ValueEventListener notifListener;
+    private boolean isInitialNotifLoad = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,20 +84,76 @@ public class SellerDashboardActivity extends AppCompatActivity {
         btnAddProduct.setOnClickListener(v -> startActivity(new Intent(this, AddProductActivity.class)));
 
         setupMyProductsList();
+        tag:FCM
+        // Android 13+ Notification Permission Request
+        if (android.os.Build.VERSION.SDK_INT >= 33 &&
+                checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 501);
+        }
 
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
-            FcmHelper.initAndSyncToken(currentUser.getUid());
+            FcmTokenHelper.saveCurrentToken(currentUser.getUid());
             BatteryOptimizationHelper.checkAndPrompt(this);
         }
 
         loadSellerStatus();
         loadStats();
         loadMyProducts();
+        setupRealtimeOrderNotificationListener();
 
         BottomNavHelper.setupForSeller(this, findViewById(R.id.bottomNav), 1);
     }
 
+    private void setupRealtimeOrderNotificationListener() {
+        String uid = session.getUid();
+        if (uid == null || uid.trim().isEmpty()) return;
+
+        notifRef = FirebaseDatabase.getInstance().getReference()
+                .child(Constants.NODE_NOTIFICATIONS)
+                .child(uid.trim());
+
+        notifListener = notifRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (isInitialNotifLoad) {
+                    isInitialNotifLoad = false;
+                    return;
+                }
+
+                int unread = 0;
+                String latestMsg = "";
+
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    Boolean read = child.child("read").getValue(Boolean.class);
+                    if (read == null || !read) {
+                        unread++;
+                        String m = child.child("message").getValue(String.class);
+                        if (m != null) latestMsg = m;
+                    }
+                }
+
+                if (unread > 0) {
+                    loadStats(); // Auto-refresh order dashboard stats!
+                    TTSHelper.getInstance(SellerDashboardActivity.this).speak("آپ کو ایک نیا آرڈر موصول ہوا ہے");
+                    if (!latestMsg.isEmpty()) {
+                        Toast.makeText(SellerDashboardActivity.this, "🛒 " + latestMsg, Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {}
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (notifRef != null && notifListener != null) {
+            notifRef.removeEventListener(notifListener);
+        }
+    }
 
     @Override
     protected void onResume() {

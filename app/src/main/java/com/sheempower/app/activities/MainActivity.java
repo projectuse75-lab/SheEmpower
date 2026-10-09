@@ -25,7 +25,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.sheempower.app.utils.FcmHelper;
+import com.sheempower.app.utils.FcmTokenHelper;
 import com.sheempower.app.R;
 import com.sheempower.app.adapters.ProductAdapter;
 import com.sheempower.app.adapters.SellerAdapter;
@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
 
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
-            FcmHelper.initAndSyncToken(currentUser.getUid());
+            FcmTokenHelper.saveCurrentToken(currentUser.getUid());
         }
 
         TextView btnCartHeader = findViewById(R.id.btnCartHeader);
