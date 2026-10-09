@@ -246,6 +246,12 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        VoiceGuide.stop(this);
+    }
+
     /** ✅ NAYI — admin ki apni saaf-suthri identity screen, koi seller/buyer field nahi */
     private void showAdminProfile() {
         tvBusinessHeader.setText("🛡️ Admin");
@@ -296,6 +302,7 @@ public class ProfileActivity extends AppCompatActivity {
         btnSwitchRole.setVisibility(View.GONE);
         btnEditProfile.setVisibility(View.GONE);
         btnMyOrders.setVisibility(View.GONE);
+        if (btnMyReviews != null) btnMyReviews.setVisibility(View.GONE);
         btnLogout.setVisibility(View.GONE);
         if (ivVerifiedBadge != null) ivVerifiedBadge.setVisibility(View.GONE);
 

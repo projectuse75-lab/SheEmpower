@@ -1430,6 +1430,12 @@ public class PlaceOrderActivity extends AppCompatActivity {
         tpd.show();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        VoiceGuide.stop(this);
+    }
+
     private void applyTheme() {
         PreferencesManager prefs = new PreferencesManager(this);
         if (prefs.isDarkThemeEnabled()) {

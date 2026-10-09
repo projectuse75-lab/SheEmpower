@@ -443,10 +443,15 @@ public class SellerProfileActivity extends AppCompatActivity {
             tvDeliveryBadge.setTextColor(0xFFB25E00);
         }
 
-        if (currentSeller.getCapacityDescription() != null && !currentSeller.getCapacityDescription().isEmpty()) {
-            tvCapacity.setText("🙋‍♀️ " + currentSeller.getCapacityDescription());
+        if (currentSeller.getCapacityDescription() != null && !currentSeller.getCapacityDescription().trim().isEmpty()) {
+            String capVal = currentSeller.getCapacityDescription().trim();
+            tvCapacity.setText(LanguageHelper.processDualString(this,
+                    "🙋‍♀️ ایک دن میں کام کی گنجائش: " + capVal + " / " +
+                    "Daily Capacity of Work: " + capVal));
             tvCapacity.setVisibility(View.VISIBLE);
-        } else tvCapacity.setVisibility(View.GONE);
+        } else {
+            tvCapacity.setVisibility(View.GONE);
+        }
 
         if (currentSeller.getImageUrl() != null && !currentSeller.getImageUrl().trim().isEmpty()) {
             Glide.with(this)
@@ -463,13 +468,14 @@ public class SellerProfileActivity extends AppCompatActivity {
         List<String> cats = Constants.getActiveSellerCategories(seller);
         if (!cats.isEmpty()) {
             StringBuilder sb = new StringBuilder();
+            int index = 1;
             for (String c : cats) {
-                if (sb.length() > 0) sb.append(" • ");
-                sb.append(Constants.getCategoryDisplayLabel(this, c));
+                if (sb.length() > 0) sb.append("\n");
+                sb.append(index++).append(". ").append(Constants.getCategoryDisplayLabel(this, c));
             }
             return sb.toString();
         }
-        return Constants.getCategoryDisplayLabel(this, seller.getCategory());
+        return "1. " + Constants.getCategoryDisplayLabel(this, seller.getCategory());
     }
 
     private void loadSellerProducts() {
