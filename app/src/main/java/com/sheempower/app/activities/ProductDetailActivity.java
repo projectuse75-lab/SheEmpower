@@ -284,6 +284,21 @@ public class ProductDetailActivity extends AppCompatActivity {
         Toast.makeText(this, "کارٹ میں شامل ہو گیا! 🛒 / Added to Cart!", Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ImageButton btnSpeaker = findViewById(R.id.btnSpeaker);
+        if (btnSpeaker != null) {
+            VoiceGuide.updateSpeakerIcon(btnSpeaker, VoiceGuide.isMuted(this));
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        VoiceGuide.stop(this);
+    }
+
     private boolean isDarkMode() {
         PreferencesManager prefs = new PreferencesManager(this);
         return prefs.isDarkThemeEnabled();

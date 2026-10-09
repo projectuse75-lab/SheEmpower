@@ -2,6 +2,9 @@ package com.sheempower.app.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -37,7 +40,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_dashboard);
 
-        VoiceGuide.announceScreen(this,
+        ImageButton btnSpeaker = findViewById(R.id.btnSpeaker);
+        VoiceGuide.setupSpeakerButton(btnSpeaker, this,
                 "یہ ایڈمن ڈیش بورڈ ہے۔ اوپر آپ کو اعداد و شمار نظر آئیں گے۔ منظوری کے منتظر بیچنے والیوں کو منظور یا مسترد کریں۔ نیچے تمام بیچنے والیوں کی فہرست میں کسی کو بند یا فعال بھی کر سکتی ہیں۔ کسی بھی نام پر کلک کر کے پوری پروفائل دیکھیں، جہاں اس کی تمام اشیاء بھی نظر آئیں گی۔");
 
         tvTotalSellers  = findViewById(R.id.tvTotalSellers);
@@ -70,11 +74,24 @@ public class AdminDashboardActivity extends AppCompatActivity {
         loadAllSellers();
     }
 
-    @Override protected void onResume() {
+    @Override
+    protected void onResume() {
         super.onResume();
+        ImageButton btnSpeaker = findViewById(R.id.btnSpeaker);
+        if (btnSpeaker != null) {
+            VoiceGuide.updateSpeakerIcon(btnSpeaker, VoiceGuide.isMuted(this));
+        }
+        VoiceGuide.announceScreen(this,
+                "یہ ایڈمن ڈیش بورڈ ہے۔ اوپر آپ کو اعداد و شمار نظر آئیں گے۔ منظوری کے منتظر بیچنے والیوں کو منظور یا مسترد کریں۔ نیچے تمام بیچنے والیوں کی فہرست میں کسی کو بند یا فعال بھی کر سکتی ہیں۔ کسی بھی نام پر کلک کر کے پوری پروفائل دیکھیں، جہاں اس کی تمام اشیاء بھی نظر آئیں گی۔");
         loadStats();
         loadPendingSellers();
         loadAllSellers();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        VoiceGuide.stop(this);
     }
 
     private void openSellerProfile(Seller seller) {
@@ -119,10 +136,10 @@ public class AdminDashboardActivity extends AppCompatActivity {
                         }
                         pendingAdapter.notifyDataSetChanged();
                         tvPendingCount.setText(pendingList.size() + " منظوری کے منتظر");
-                        tvEmptyPending.setVisibility(pendingList.isEmpty() ? android.view.View.VISIBLE : android.view.View.GONE);
+                        tvEmptyPending.setVisibility(pendingList.isEmpty() ? View.VISIBLE : View.GONE);
                     }
                     @Override public void onCancelled(DatabaseError error) {
-                        tvEmptyPending.setVisibility(android.view.View.VISIBLE);
+                        tvEmptyPending.setVisibility(View.VISIBLE);
                         tvEmptyPending.setText("خرابی: " + error.getMessage());
                     }
                 });
@@ -173,8 +190,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
             this.list = list; this.onToggle = onToggle; this.onRowClick = onRowClick;
         }
 
-        @Override public VH onCreateViewHolder(android.view.ViewGroup parent, int viewType) {
-            android.view.View v = android.view.LayoutInflater.from(parent.getContext())
+        @Override public VH onCreateViewHolder(ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_admin_seller_manage, parent, false);
             return new VH(v);
         }
@@ -195,7 +212,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
         static class VH extends RecyclerView.ViewHolder {
             TextView tvName, tvStatus;
             Button btnToggle;
-            VH(android.view.View itemView) {
+            VH(View itemView) {
                 super(itemView);
                 tvName    = itemView.findViewById(R.id.tvAdminSellerName);
                 tvStatus  = itemView.findViewById(R.id.tvAdminSellerStatus);

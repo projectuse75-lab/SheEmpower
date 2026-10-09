@@ -88,6 +88,12 @@ public class MyOrdersActivity extends AppCompatActivity {
         loadOrders();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        VoiceGuide.stop(this);
+    }
+
     private void setupFilterButtons() {
         if (btnFilterAll != null) btnFilterAll.setOnClickListener(v -> applyFilter("ALL"));
         if (btnFilterPending != null) btnFilterPending.setOnClickListener(v -> applyFilter(Constants.STATUS_PENDING));

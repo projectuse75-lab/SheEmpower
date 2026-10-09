@@ -111,16 +111,15 @@ public class AddReviewActivity extends AppCompatActivity {
 
         String comment = etComment != null ? etComment.getText().toString().trim() : "";
 
-        btnSubmit.setEnabled(false);
-        DatabaseReference reviewsRef = FirebaseDatabase.getInstance().getReference().child("reviews");
-        String reviewId = reviewsRef.push().getKey();
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
+        String reviewId = dbRef.child("reviews").push().getKey();
         if (reviewId == null) {
             btnSubmit.setEnabled(true);
             return;
         }
 
         String buyerUid = session.getUid() != null ? session.getUid().trim() : "buyer";
-        String buyerName = session.getName() != null ? session.getName() : "Buyer";
+        String buyerName = session.getName() != null && !session.getName().isEmpty() ? session.getName() : "Buyer";
 
         Review review = new Review(reviewId, orderId != null ? orderId : "direct",
                 sellerId.trim(), buyerUid, buyerName,
@@ -129,35 +128,26 @@ public class AddReviewActivity extends AppCompatActivity {
                 "Cooking",
                 rating, comment, System.currentTimeMillis());
 
-        reviewsRef.child(reviewId).setValue(review)
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(this, "جائزہ کامیابی سے جمع ہو گیا! ✅ / Review Submitted!", Toast.LENGTH_LONG).show();
-                    VoiceGuide.explain(this, "آپ کا جائزہ کامیابی سے جمع ہو گیا ہے۔");
-                    recalculateSellerRating(sellerId.trim());
-                    if (productId != null && !productId.trim().isEmpty()) {
-                        recalculateProductRating(productId.trim());
-                    }
-                    finish();
-                })
-                .addOnFailureListener(e -> {
-                    DatabaseReference sellerSubReviewRef = FirebaseDatabase.getInstance().getReference()
-                            .child(Constants.NODE_SELLERS).child(sellerId.trim()).child("reviews").child(reviewId);
+        // Save to root reviews node
+        dbRef.child("reviews").child(reviewId).setValue(review);
 
-                    sellerSubReviewRef.setValue(review)
-                            .addOnSuccessListener(aVoid2 -> {
-                                Toast.makeText(this, "جائزہ کامیابی سے جمع ہو گیا! ✅ / Review Submitted!", Toast.LENGTH_LONG).show();
-                                VoiceGuide.explain(this, "آپ کا جائزہ کامیابی سے جمع ہو گیا ہے۔");
-                                if (productId != null && !productId.trim().isEmpty()) {
-                                    recalculateProductRating(productId.trim());
-                                }
-                                finish();
-                            })
-                            .addOnFailureListener(e2 -> {
-                                Toast.makeText(this, "جائزہ کامیابی سے جمع ہو گیا! ✅ / Review Submitted!", Toast.LENGTH_LONG).show();
-                                VoiceGuide.explain(this, "آپ کا جائزہ کامیابی سے جمع ہو گیا ہے۔");
-                                finish();
-                            });
-                });
+        // Save to seller's reviews node
+        dbRef.child(Constants.NODE_SELLERS).child(sellerId.trim()).child("reviews").child(reviewId).setValue(review);
+
+        // Save to product's reviews node if productId exists
+        if (productId != null && !productId.trim().isEmpty()) {
+            dbRef.child(Constants.NODE_PRODUCTS).child(productId.trim()).child("reviews").child(reviewId).setValue(review);
+        }
+
+        // Recalculate ratings
+        recalculateSellerRating(sellerId.trim());
+        if (productId != null && !productId.trim().isEmpty()) {
+            recalculateProductRating(productId.trim());
+        }
+
+        Toast.makeText(this, "جائزہ کامیابی سے جمع ہو گیا! ✅ / Review Submitted!", Toast.LENGTH_LONG).show();
+        VoiceGuide.explain(this, "آپ کا جائزہ کامیابی سے جمع ہو گیا ہے۔");
+        finish();
     }
 
     private void recalculateProductRating(String targetProductId) {

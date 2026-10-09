@@ -3,6 +3,7 @@ package com.sheempower.app.activities;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -49,7 +50,8 @@ public class SellerOrdersActivity extends AppCompatActivity {
 
         setupFilterButtons();
 
-        VoiceGuide.announceScreen(this,
+        ImageButton btnSpeaker = findViewById(R.id.btnSpeaker);
+        VoiceGuide.setupSpeakerButton(btnSpeaker, this,
                 "یہاں آپ کو ملنے والے آرڈرز کی فہرست ہے۔ ہر آرڈر پر نیچے بٹن دبا کر اس کی حالت آگے بڑھائیں — پہلے کام شروع کریں دبائیں، پھر جب کام مکمل ہو جائے تو مکمل کا بٹن دبائیں۔");
 
         rvOrders.setLayoutManager(new LinearLayoutManager(this));
@@ -67,7 +69,23 @@ public class SellerOrdersActivity extends AppCompatActivity {
         loadOrders();
     }
 
-    @Override protected void onResume() { super.onResume(); loadOrders(); }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ImageButton btnSpeaker = findViewById(R.id.btnSpeaker);
+        if (btnSpeaker != null) {
+            VoiceGuide.updateSpeakerIcon(btnSpeaker, VoiceGuide.isMuted(this));
+        }
+        VoiceGuide.announceScreen(this,
+                "یہاں آپ کو ملنے والے آرڈرز کی فہرست ہے۔ ہر آرڈر پر نیچے بٹن دبا کر اس کی حالت آگے بڑھائیں — پہلے کام شروع کریں دبائیں، پھر جب کام مکمل ہو جائے تو مکمل کا بٹن دبائیں۔");
+        loadOrders();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        VoiceGuide.stop(this);
+    }
 
     private void setupFilterButtons() {
         if (btnFilterAll != null) btnFilterAll.setOnClickListener(v -> applyFilter("ALL"));

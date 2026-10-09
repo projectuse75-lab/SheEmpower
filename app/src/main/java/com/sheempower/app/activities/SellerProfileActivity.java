@@ -320,6 +320,12 @@ public class SellerProfileActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        VoiceGuide.stop(this);
+    }
+
     private boolean isDarkMode() {
         PreferencesManager prefs = new PreferencesManager(this);
         return prefs.isDarkThemeEnabled();

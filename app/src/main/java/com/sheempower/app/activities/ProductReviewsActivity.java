@@ -182,6 +182,27 @@ public class ProductReviewsActivity extends AppCompatActivity {
                                 parseAndAddReviewsFromSnapshot(reviewsSnap);
                             }
                         }
+                        loadProductsSubReviews();
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+                        loadProductsSubReviews();
+                    }
+                });
+    }
+
+    private void loadProductsSubReviews() {
+        FirebaseDatabase.getInstance().getReference().child(Constants.NODE_PRODUCTS)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        for (DataSnapshot prodSnap : snapshot.getChildren()) {
+                            DataSnapshot reviewsSnap = prodSnap.child("reviews");
+                            if (reviewsSnap.exists()) {
+                                parseAndAddReviewsFromSnapshot(reviewsSnap);
+                            }
+                        }
                         applyCategoryFilter(selectedCategoryFilter);
                     }
 
@@ -195,6 +216,9 @@ public class ProductReviewsActivity extends AppCompatActivity {
     private void parseAndAddReviewsFromSnapshot(DataSnapshot snapshot) {
         if (snapshot == null || !snapshot.exists()) return;
 
+        SessionManager sm = new SessionManager(this);
+        String sessionName = sm.getName() != null ? sm.getName().trim() : "";
+
         for (DataSnapshot child : snapshot.getChildren()) {
             Review r = child.getValue(Review.class);
             if (r == null) continue;
@@ -203,7 +227,9 @@ public class ProductReviewsActivity extends AppCompatActivity {
 
             // 1. My Reviews (Buyer Specific)
             if (buyerId != null && !buyerId.trim().isEmpty()) {
-                if (r.getBuyerId() != null && buyerId.trim().equalsIgnoreCase(r.getBuyerId().trim())) {
+                String bId = buyerId.trim();
+                if ((r.getBuyerId() != null && bId.equalsIgnoreCase(r.getBuyerId().trim())) ||
+                    (!sessionName.isEmpty() && r.getBuyerName() != null && sessionName.equalsIgnoreCase(r.getBuyerName().trim()))) {
                     match = true;
                 }
             }

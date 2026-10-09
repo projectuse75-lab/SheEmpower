@@ -12,12 +12,12 @@
         android:orientation="vertical"
         android:paddingBottom="24dp">
 
-        <!-- LOGO & BRAND HEADER -->
+        <!-- LOGO & BRAND HEADER - NAVY BLUE -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@color/background"
+            android:background="#192A56"
             android:paddingTop="28dp"
             android:paddingBottom="20dp"
             android:paddingStart="20dp"
@@ -36,7 +36,7 @@
                     android:layout_alignParentTop="true"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@drawable/ic_arrow_back"
-                    app:tint="@color/text_primary"
+                    app:tint="#FFFFFF"
                     android:contentDescription="Back"
                     android:scaleType="centerInside" />
 
@@ -56,6 +56,7 @@
                     android:layout_alignParentTop="true"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@drawable/ic_speaker"
+                    app:tint="#FFFFFF"
                     android:contentDescription="Speaker"
                     android:scaleType="centerInside" />
 
@@ -67,7 +68,7 @@
                 android:text="SHE EMPOWER"
                 android:textSize="20sp"
                 android:fontFamily="sans-serif-black"
-                android:textColor="@color/text_primary"
+                android:textColor="#FFFFFF"
                 android:layout_marginTop="8dp" />
 
             <TextView
@@ -76,7 +77,7 @@
                 android:text="شی ایمپاور"
                 android:textSize="14sp"
                 android:fontFamily="sans-serif-bold"
-                android:textColor="@color/text_secondary"
+                android:textColor="#FFFFFF"
                 android:layout_marginTop="2dp" />
 
         </LinearLayout>
