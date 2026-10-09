@@ -322,10 +322,8 @@ public class LoginActivity extends AppCompatActivity {
                                     }
                                     session.saveUser(uid, user.getRole(), user.getName());
 
-                                    // ✅ ADDED: Seller ke liye OneSignal Player ID update
-                                    if (Constants.ROLE_SELLER.equals(user.getRole())) {
-                                        com.sheempower.app.utils.OneSignalHelper.updateSellerPlayerId(uid);
-                                    }
+                                    // ✅ FCM Token Sync
+                                    com.sheempower.app.utils.FcmHelper.initAndSyncToken(uid);
 
                                     session.saveEmail(user.getEmail());
                                     VoiceGuide.explain(LoginActivity.this, "خوش آمدید " + user.getName());

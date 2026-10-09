@@ -50,6 +50,8 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-database")
     implementation("com.google.firebase:firebase-storage")
+    implementation("com.google.firebase:firebase-messaging")
+    implementation("com.google.firebase:firebase-analytics")
 
     // Image Loading
     implementation("com.github.bumptech.glide:glide:4.16.0")
@@ -58,7 +60,6 @@ dependencies {
 
     // OkHttp for Cloudinary
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation("com.onesignal:OneSignal:[5.0.0, 5.99.99]")
     // ✅ TESTING DEPENDENCIES — ADDED
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

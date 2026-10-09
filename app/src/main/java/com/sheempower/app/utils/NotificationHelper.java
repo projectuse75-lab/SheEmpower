@@ -64,7 +64,7 @@ public class NotificationHelper {
 
         ref.child(notifId).setValue(notification)
                 .addOnSuccessListener(v ->
-                        OneSignalHelper.sendPushToSeller(order.getSellerId(), title, message))
+                        FcmHelper.sendPushToSeller(order.getSellerId(), title, message))
                 .addOnFailureListener(e ->
                         android.util.Log.e("NotificationHelper",
                                 "Firebase notification save failed: " + e.getMessage()));
