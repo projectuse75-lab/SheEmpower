@@ -16,7 +16,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.sheempower.app.R;
 import com.sheempower.app.adapters.ReviewAdapter;
 import com.sheempower.app.models.Review;
+import com.sheempower.app.utils.Constants;
 import com.sheempower.app.utils.PreferencesManager;
+import com.sheempower.app.utils.SessionManager;
 import com.sheempower.app.utils.VoiceGuide;
 import java.util.ArrayList;
 import java.util.List;
@@ -146,51 +148,92 @@ public class ProductReviewsActivity extends AppCompatActivity {
     }
 
     private void loadReviews() {
-        if (sellerId == null && productId == null && buyerId == null) return;
+        if (buyerId == null && sellerId == null && productId == null) {
+            SessionManager sm = new SessionManager(this);
+            buyerId = sm.getUid();
+        }
+        if (buyerId == null && sellerId == null && productId == null) return;
+
+        fullReviewList.clear();
 
         FirebaseDatabase.getInstance().getReference().child("reviews")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
-                        fullReviewList.clear();
+                        parseAndAddReviewsFromSnapshot(snapshot);
+                        loadSellersSubReviews();
+                    }
 
-                        for (DataSnapshot child : snapshot.getChildren()) {
-                            Review r = child.getValue(Review.class);
-                            if (r == null) continue;
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+                        loadSellersSubReviews();
+                    }
+                });
+    }
 
-                            boolean match = false;
-
-                            // 1. My Reviews (Buyer Specific)
-                            if (buyerId != null && !buyerId.trim().isEmpty()) {
-                                if (r.getBuyerId() != null && buyerId.trim().equalsIgnoreCase(r.getBuyerId().trim())) {
-                                    match = true;
-                                }
-                            }
-                            // 2. Product Specific Public Reviews
-                            else if (productId != null && !productId.trim().isEmpty()) {
-                                if (r.getProductId() != null && productId.trim().equalsIgnoreCase(r.getProductId().trim())) {
-                                    match = true;
-                                }
-                            }
-                            // 3. Seller Specific Reviews
-                            else if (sellerId != null && !sellerId.trim().isEmpty()) {
-                                if (r.getSellerId() != null && sellerId.trim().equalsIgnoreCase(r.getSellerId().trim())) {
-                                    match = true;
-                                }
-                            }
-
-                            if (match) {
-                                if (r.getReviewId() == null) r.setReviewId(child.getKey());
-                                fullReviewList.add(r);
+    private void loadSellersSubReviews() {
+        FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        for (DataSnapshot sellerSnap : snapshot.getChildren()) {
+                            DataSnapshot reviewsSnap = sellerSnap.child("reviews");
+                            if (reviewsSnap.exists()) {
+                                parseAndAddReviewsFromSnapshot(reviewsSnap);
                             }
                         }
-
                         applyCategoryFilter(selectedCategoryFilter);
                     }
 
                     @Override
-                    public void onCancelled(DatabaseError error) {}
+                    public void onCancelled(DatabaseError error) {
+                        applyCategoryFilter(selectedCategoryFilter);
+                    }
                 });
+    }
+
+    private void parseAndAddReviewsFromSnapshot(DataSnapshot snapshot) {
+        if (snapshot == null || !snapshot.exists()) return;
+
+        for (DataSnapshot child : snapshot.getChildren()) {
+            Review r = child.getValue(Review.class);
+            if (r == null) continue;
+
+            boolean match = false;
+
+            // 1. My Reviews (Buyer Specific)
+            if (buyerId != null && !buyerId.trim().isEmpty()) {
+                if (r.getBuyerId() != null && buyerId.trim().equalsIgnoreCase(r.getBuyerId().trim())) {
+                    match = true;
+                }
+            }
+            // 2. Product Specific Public Reviews
+            else if (productId != null && !productId.trim().isEmpty()) {
+                if (r.getProductId() != null && productId.trim().equalsIgnoreCase(r.getProductId().trim())) {
+                    match = true;
+                }
+            }
+            // 3. Seller Specific Reviews
+            else if (sellerId != null && !sellerId.trim().isEmpty()) {
+                if (r.getSellerId() != null && sellerId.trim().equalsIgnoreCase(r.getSellerId().trim())) {
+                    match = true;
+                }
+            }
+
+            if (match) {
+                if (r.getReviewId() == null) r.setReviewId(child.getKey());
+                boolean exists = false;
+                for (Review existing : fullReviewList) {
+                    if (existing.getReviewId() != null && existing.getReviewId().equalsIgnoreCase(r.getReviewId())) {
+                        exists = true;
+                        break;
+                    }
+                }
+                if (!exists) {
+                    fullReviewList.add(r);
+                }
+            }
+        }
     }
 
     private void applyTheme() {
