@@ -27,7 +27,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import com.sheempower.app.R;
+import com.sheempower.app.models.Review;
 import com.sheempower.app.models.Seller;
+import java.util.Locale;
 import java.util.ArrayList;
 import java.util.List;
 import com.sheempower.app.models.User;
@@ -275,6 +277,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         if (btnSwitchRole != null) btnSwitchRole.setVisibility(View.GONE);
         if (btnMyOrders != null) btnMyOrders.setVisibility(View.GONE); // admin ke apne orders nahi hote
+        if (btnMyReviews != null) btnMyReviews.setVisibility(View.GONE); // admin ke reviews nahi hote
 
         String uid = session.getUid() != null ? session.getUid().trim() : "admin";
         FirebaseDatabase.getInstance().getReference().child(Constants.NODE_USERS).child(uid).child("imageUrl")
@@ -521,20 +524,15 @@ public class ProfileActivity extends AppCompatActivity {
     private void loadSellerInformation(String uid) {
         DatabaseReference sellerRef = FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS).child(uid);
 
-        sellerRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        sellerRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 currentSeller = snapshot.getValue(Seller.class);
-                if (currentSeller == null) {
-                    Toast.makeText(ProfileActivity.this, "Seller details nahi milin", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+                if (currentSeller == null) return;
                 showSellerInformation(currentSeller);
             }
             @Override
-            public void onCancelled(DatabaseError error) {
-                Toast.makeText(ProfileActivity.this, "Seller details load nahi ho saken", Toast.LENGTH_SHORT).show();
-            }
+            public void onCancelled(DatabaseError error) {}
         });
     }
 
@@ -597,9 +595,93 @@ public class ProfileActivity extends AppCompatActivity {
         if (tvVoiceStatus != null) {
             tvVoiceStatus.setText(!safe(seller.getVoiceUrl()).isEmpty() ? "Voice Verification\nSubmitted" : "Voice Verification\nNot submitted");
         }
-        if (tvRating != null) tvRating.setText("Rating\n" + seller.getRating());
-        if (tvRatingCount != null) tvRatingCount.setText("Rating Count\n" + seller.getRatingCount());
-        if (tvTopRated != null) tvTopRated.setText("Top Rated\n" + (seller.isTopRated() ? "Yes" : "No"));
+        double rVal = seller.getRating();
+        long rCount = seller.getRatingCount();
+        boolean isTop = seller.isTopRated() || (rVal >= 4.5 && rCount > 0);
+
+        if (tvRating != null) {
+            if (rCount > 0 && rVal > 0) {
+                tvRating.setText(String.format(Locale.ENGLISH, "Rating / ریٹنگ\n⭐ %.1f / 5.0", rVal));
+            } else {
+                tvRating.setText("Rating / ریٹنگ\n⭐ N/A");
+            }
+        }
+
+        if (tvRatingCount != null) {
+            tvRatingCount.setText("Rating Count / ریٹنگز کی تعداد\n" + rCount + (rCount == 1 ? " buyer" : " buyers"));
+        }
+
+        if (tvTopRated != null) {
+            tvTopRated.setText("Top Rated / اعلیٰ ریٹنگ\n" + (isTop ? "Yes 🏆 (اعلیٰ)" : "No (عام)"));
+        }
+
+        // Dynamically recalculate & update rating on load for 100% accuracy
+        String sellerUid = session.getUid();
+        if (sellerUid != null && !sellerUid.trim().isEmpty()) {
+            final String sid = sellerUid.trim();
+            final DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
+
+            dbRef.child("reviews").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    List<Review> list = new ArrayList<>();
+                    for (DataSnapshot child : snapshot.getChildren()) {
+                        Review r = child.getValue(Review.class);
+                        if (r != null && r.getSellerId() != null && sid.equalsIgnoreCase(r.getSellerId().trim())) {
+                            list.add(r);
+                        }
+                    }
+
+                    dbRef.child(Constants.NODE_SELLERS).child(sid).child("reviews")
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot subSnap) {
+                                    for (DataSnapshot child : subSnap.getChildren()) {
+                                        Review r = child.getValue(Review.class);
+                                        if (r != null) {
+                                            boolean exists = false;
+                                            for (Review ex : list) {
+                                                if (ex.getReviewId() != null && ex.getReviewId().equalsIgnoreCase(child.getKey())) {
+                                                    exists = true; break;
+                                                }
+                                            }
+                                            if (!exists) list.add(r);
+                                        }
+                                    }
+
+                                    double sum = 0;
+                                    long count = list.size();
+                                    for (Review r : list) {
+                                        sum += r.getRating();
+                                    }
+
+                                    if (count > 0) {
+                                        double avg = sum / count;
+                                        double roundedAvg = Math.round(avg * 10.0) / 10.0;
+                                        boolean top = roundedAvg >= 4.5;
+
+                                        if (tvRating != null) tvRating.setText(String.format(Locale.ENGLISH, "Rating / ریٹنگ\n⭐ %.1f / 5.0", roundedAvg));
+                                        if (tvRatingCount != null) tvRatingCount.setText("Rating Count / ریٹنگز کی تعداد\n" + count + (count == 1 ? " buyer" : " buyers"));
+                                        if (tvTopRated != null) tvTopRated.setText("Top Rated / اعلیٰ ریٹنگ\n" + (top ? "Yes 🏆 (اعلیٰ)" : "No (عام)"));
+
+                                        DatabaseReference sellerRef = dbRef.child(Constants.NODE_SELLERS).child(sid);
+                                        sellerRef.child("rating").setValue(roundedAvg);
+                                        sellerRef.child("ratingCount").setValue(count);
+                                        sellerRef.child("topRated").setValue(top);
+                                    } else {
+                                        if (tvRating != null) tvRating.setText("Rating / ریٹنگ\n⭐ N/A");
+                                        if (tvRatingCount != null) tvRatingCount.setText("Rating Count / ریٹنگز کی تعداد\n0 buyers");
+                                        if (tvTopRated != null) tvTopRated.setText("Top Rated / اعلیٰ ریٹنگ\nNo (عام)");
+                                    }
+                                }
+
+                                @Override public void onCancelled(DatabaseError error) {}
+                            });
+                }
+
+                @Override public void onCancelled(DatabaseError error) {}
+            });
+        }
 
         if (etFullName != null) etFullName.setText(owner);
         if (etPhone != null) etPhone.setText(phone);

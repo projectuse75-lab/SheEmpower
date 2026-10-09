@@ -46,11 +46,11 @@ public class Constants {
     public static final String[] STATUS_ORDER = { STATUS_PENDING, STATUS_IN_PROGRESS, STATUS_COMPLETED };
 
     public static String getStatusLabel(String status, String deliveryMethod) {
-        boolean isPickup = DELIVERY_METHOD_PICKUP.equals(deliveryMethod);
+        if (status == null) return "زیر التواء / Pending";
         switch (status) {
-            case STATUS_PENDING:     return "زیر التواء / Not Started";
+            case STATUS_PENDING:     return "زیر التواء / Pending";
             case STATUS_IN_PROGRESS: return "کام جاری ہے / In Progress";
-            case STATUS_COMPLETED:   return isPickup ? "مکمل — خریدار خود لے جائے" : "مکمل — ڈیلیوری کریں";
+            case STATUS_COMPLETED:   return "مکمل ہو گیا / Completed";
             default: return status;
         }
     }

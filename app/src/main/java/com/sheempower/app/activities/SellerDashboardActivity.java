@@ -17,6 +17,7 @@ import com.sheempower.app.R;
 import com.sheempower.app.adapters.ProductAdapter;
 import com.sheempower.app.models.Order;
 import com.sheempower.app.models.Product;
+import com.sheempower.app.models.Review;
 import com.sheempower.app.models.Seller;
 import com.sheempower.app.utils.*;
 import com.sheempower.app.utils.PreferencesManager;
@@ -59,13 +60,13 @@ public class SellerDashboardActivity extends AppCompatActivity {
         tvCompletedOrders = findViewById(R.id.tvCompletedOrders);
         tvEarnings        = findViewById(R.id.tvEarnings);
         tvSellerDashboardRating = findViewById(R.id.tvSellerDashboardRating);
-        btnViewSellerReviews    = findViewById(R.id.btnViewSellerReviews);
+        View cardSellerReviews  = findViewById(R.id.cardSellerReviews);
         btnAddProduct     = findViewById(R.id.btnAddProduct);
         rvMyProducts      = findViewById(R.id.rvMyProducts);
         tvNoProducts      = findViewById(R.id.tvNoProducts);
 
-        if (btnViewSellerReviews != null) {
-            btnViewSellerReviews.setOnClickListener(v -> {
+        if (cardSellerReviews != null) {
+            cardSellerReviews.setOnClickListener(v -> {
                 Intent i = new Intent(this, ProductReviewsActivity.class);
                 i.putExtra(ProductReviewsActivity.EXTRA_SELLER_ID, session.getUid());
                 startActivity(i);
@@ -341,9 +342,68 @@ public class SellerDashboardActivity extends AppCompatActivity {
                             btnAddProduct.setEnabled(false);
                         }
 
-                        if (tvSellerDashboardRating != null) {
-                            tvSellerDashboardRating.setText(String.format(Locale.ENGLISH, "⭐ %.1f (%d reviews)", s.getRating(), s.getRatingCount()));
-                        }
+                        // Dynamically scan reviews for real-time accurate rating on Seller Dashboard
+                        final DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
+                        final String sellerUid = uid.trim();
+
+                        dbRef.child("reviews").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot snapshot) {
+                                List<Review> revList = new ArrayList<>();
+                                for (DataSnapshot child : snapshot.getChildren()) {
+                                    Review r = child.getValue(Review.class);
+                                    if (r != null && r.getSellerId() != null && sellerUid.equalsIgnoreCase(r.getSellerId().trim())) {
+                                        revList.add(r);
+                                    }
+                                }
+
+                                dbRef.child(Constants.NODE_SELLERS).child(sellerUid).child("reviews")
+                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot subSnap) {
+                                                for (DataSnapshot child : subSnap.getChildren()) {
+                                                    Review r = child.getValue(Review.class);
+                                                    if (r != null) {
+                                                        boolean exists = false;
+                                                        for (Review ex : revList) {
+                                                            if (ex.getReviewId() != null && ex.getReviewId().equalsIgnoreCase(child.getKey())) {
+                                                                exists = true; break;
+                                                            }
+                                                        }
+                                                        if (!exists) revList.add(r);
+                                                    }
+                                                }
+
+                                                double sum = 0;
+                                                long count = revList.size();
+                                                for (Review r : revList) {
+                                                    sum += r.getRating();
+                                                }
+
+                                                if (count > 0) {
+                                                    double avg = sum / count;
+                                                    double roundedAvg = Math.round(avg * 10.0) / 10.0;
+                                                    boolean isTop = roundedAvg >= 4.5;
+                                                    if (tvSellerDashboardRating != null) {
+                                                        tvSellerDashboardRating.setText(String.format(Locale.ENGLISH, "⭐ %.1f (%d reviews)", roundedAvg, count));
+                                                    }
+                                                    DatabaseReference sellerRef = dbRef.child(Constants.NODE_SELLERS).child(sellerUid);
+                                                    sellerRef.child("rating").setValue(roundedAvg);
+                                                    sellerRef.child("ratingCount").setValue(count);
+                                                    sellerRef.child("topRated").setValue(isTop);
+                                                } else {
+                                                    if (tvSellerDashboardRating != null) {
+                                                        tvSellerDashboardRating.setText("⭐ 5.0 (0 reviews)");
+                                                    }
+                                                }
+                                            }
+
+                                            @Override public void onCancelled(DatabaseError error) {}
+                                        });
+                            }
+
+                            @Override public void onCancelled(DatabaseError error) {}
+                        });
                     }
 
                     @Override

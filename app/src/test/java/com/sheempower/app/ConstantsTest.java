@@ -74,7 +74,7 @@ public class ConstantsTest {
     @Test
     public void statusLabelTest() {
         assertEquals(
-                "زیر التواء / Not Started",
+                "زیر التواء / Pending",
                 Constants.getStatusLabel(
                         Constants.STATUS_PENDING,
                         Constants.DELIVERY_METHOD_DELIVERY
@@ -93,7 +93,7 @@ public class ConstantsTest {
     @Test
     public void completedDeliveryStatusTest() {
         assertEquals(
-                "مکمل — ڈیلیوری کریں",
+                "مکمل ہو گیا / Completed",
                 Constants.getStatusLabel(
                         Constants.STATUS_COMPLETED,
                         Constants.DELIVERY_METHOD_DELIVERY
@@ -104,7 +104,7 @@ public class ConstantsTest {
     @Test
     public void completedPickupStatusTest() {
         assertEquals(
-                "مکمل — خریدار خود لے جائے",
+                "مکمل ہو گیا / Completed",
                 Constants.getStatusLabel(
                         Constants.STATUS_COMPLETED,
                         Constants.DELIVERY_METHOD_PICKUP

@@ -123,18 +123,12 @@ public class SellerAdapter extends RecyclerView.Adapter<SellerAdapter.VH> {
         // RATING
         // =========================================================
 
-        if (seller.getRating() > 0) {
+        double rVal = seller.getRating();
+        long rCount = seller.getRatingCount();
 
-            holder.tvRating.setText(
-                    "⭐ " + String.format(
-                            Locale.getDefault(),
-                            "%.1f",
-                            seller.getRating()
-                    )
-            );
-
+        if (rCount > 0 && rVal > 0) {
+            holder.tvRating.setText(String.format(Locale.ENGLISH, "⭐ %.1f (%d)", rVal, rCount));
         } else {
-
             holder.tvRating.setText("⭐ N/A");
         }
         holder.tvRating.setTextColor(ratingColor);

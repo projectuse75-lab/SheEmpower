@@ -15,11 +15,13 @@ import com.google.firebase.database.*;
 import com.sheempower.app.R;
 import com.sheempower.app.adapters.ProductAdapter;
 import com.sheempower.app.models.Product;
+import com.sheempower.app.models.Review;
 import com.sheempower.app.models.Seller;
 import com.sheempower.app.utils.*;
 import de.hdodenhof.circleimageview.CircleImageView;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class SellerProfileActivity extends AppCompatActivity {
 
@@ -344,7 +346,82 @@ public class SellerProfileActivity extends AppCompatActivity {
         tvCity.setTextColor(isDark ? 0xFFFFFFFF : 0xFF6B7A99);
         tvBio.setText(currentSeller.getBio());
         tvBio.setTextColor(textColor);
-        tvRating.setText(String.format("⭐ %.1f (%d)", currentSeller.getRating(), currentSeller.getRatingCount()));
+        double initialRating = currentSeller.getRating();
+        long initialCount = currentSeller.getRatingCount();
+        if (initialCount > 0 && initialRating > 0) {
+            tvRating.setText(String.format(Locale.ENGLISH, "⭐ %.1f (%d)", initialRating, initialCount));
+        } else {
+            tvRating.setText("⭐ N/A (0)");
+        }
+
+        // Realtime dynamic review scan to ensure rating is 100% accurate on Seller Profile
+        if (sellerId != null && !sellerId.trim().isEmpty()) {
+            final String sid = sellerId.trim();
+            final DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
+
+            dbRef.child("reviews").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    List<Review> sellerReviews = new ArrayList<>();
+                    for (DataSnapshot child : snapshot.getChildren()) {
+                        Review r = child.getValue(Review.class);
+                        if (r != null && r.getSellerId() != null && sid.equalsIgnoreCase(r.getSellerId().trim())) {
+                            sellerReviews.add(r);
+                        }
+                    }
+
+                    dbRef.child(Constants.NODE_SELLERS).child(sid).child("reviews")
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot subSnap) {
+                                    for (DataSnapshot child : subSnap.getChildren()) {
+                                        Review r = child.getValue(Review.class);
+                                        if (r != null) {
+                                            boolean exists = false;
+                                            for (Review ex : sellerReviews) {
+                                                if (ex.getReviewId() != null && ex.getReviewId().equalsIgnoreCase(child.getKey())) {
+                                                    exists = true; break;
+                                                }
+                                            }
+                                            if (!exists) sellerReviews.add(r);
+                                        }
+                                    }
+
+                                    double sum = 0;
+                                    long count = sellerReviews.size();
+                                    for (Review r : sellerReviews) {
+                                        sum += r.getRating();
+                                    }
+
+                                    if (count > 0) {
+                                        double avg = sum / count;
+                                        double roundedAvg = Math.round(avg * 10.0) / 10.0;
+                                        boolean isTop = roundedAvg >= 4.5;
+                                        if (tvRating != null) {
+                                            tvRating.setText(String.format(Locale.ENGLISH, "⭐ %.1f (%d)", roundedAvg, count));
+                                        }
+                                        DatabaseReference sellerRef = dbRef.child(Constants.NODE_SELLERS).child(sid);
+                                        sellerRef.child("rating").setValue(roundedAvg);
+                                        sellerRef.child("ratingCount").setValue(count);
+                                        sellerRef.child("topRated").setValue(isTop);
+                                    } else {
+                                        if (tvRating != null) {
+                                            tvRating.setText("⭐ N/A (0)");
+                                        }
+                                        DatabaseReference sellerRef = dbRef.child(Constants.NODE_SELLERS).child(sid);
+                                        sellerRef.child("rating").setValue(0.0);
+                                        sellerRef.child("ratingCount").setValue(0);
+                                        sellerRef.child("topRated").setValue(false);
+                                    }
+                                }
+
+                                @Override public void onCancelled(DatabaseError error) {}
+                            });
+                }
+
+                @Override public void onCancelled(DatabaseError error) {}
+            });
+        }
 
         boolean approved = Constants.isApproved(currentSeller.getVerificationStatus());
         tvStatus.setText(approved

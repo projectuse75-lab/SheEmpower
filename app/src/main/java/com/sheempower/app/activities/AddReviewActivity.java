@@ -24,6 +24,8 @@ import com.sheempower.app.utils.Constants;
 import com.sheempower.app.utils.PreferencesManager;
 import com.sheempower.app.utils.SessionManager;
 import com.sheempower.app.utils.VoiceGuide;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AddReviewActivity extends AppCompatActivity {
 
@@ -190,33 +192,61 @@ public class AddReviewActivity extends AppCompatActivity {
 
     private void recalculateSellerRating(String targetSellerId) {
         if (targetSellerId == null || targetSellerId.trim().isEmpty()) return;
+        final String sid = targetSellerId.trim();
 
-        FirebaseDatabase.getInstance().getReference().child("reviews")
-                .orderByChild("sellerId").equalTo(targetSellerId.trim())
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
-                        double sum = 0;
-                        long count = 0;
-                        for (DataSnapshot child : snapshot.getChildren()) {
-                            Review r = child.getValue(Review.class);
-                            if (r != null) {
-                                sum += r.getRating();
-                                count++;
-                            }
-                        }
-                        if (count > 0) {
-                            double avg = sum / count;
-                            double roundedAvg = Math.round(avg * 10.0) / 10.0;
-                            DatabaseReference sellerRef = FirebaseDatabase.getInstance().getReference().child(Constants.NODE_SELLERS).child(targetSellerId.trim());
-                            sellerRef.child("rating").setValue(roundedAvg);
-                            sellerRef.child("ratingCount").setValue(count);
-                            sellerRef.child("topRated").setValue(roundedAvg >= 4.5);
-                        }
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
+
+        dbRef.child("reviews").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                List<Review> sellerReviews = new ArrayList<>();
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    Review r = child.getValue(Review.class);
+                    if (r != null && r.getSellerId() != null && sid.equalsIgnoreCase(r.getSellerId().trim())) {
+                        sellerReviews.add(r);
                     }
+                }
 
-                    @Override public void onCancelled(DatabaseError error) {}
-                });
+                // Also check subnode sellers/{sellerId}/reviews
+                dbRef.child(Constants.NODE_SELLERS).child(sid).child("reviews")
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot subSnap) {
+                                for (DataSnapshot child : subSnap.getChildren()) {
+                                    Review r = child.getValue(Review.class);
+                                    if (r != null) {
+                                        boolean exists = false;
+                                        for (Review existing : sellerReviews) {
+                                            if (existing.getReviewId() != null && existing.getReviewId().equalsIgnoreCase(child.getKey())) {
+                                                exists = true; break;
+                                            }
+                                        }
+                                        if (!exists) sellerReviews.add(r);
+                                    }
+                                }
+
+                                double sum = 0;
+                                long count = sellerReviews.size();
+                                for (Review r : sellerReviews) {
+                                    sum += r.getRating();
+                                }
+
+                                if (count > 0) {
+                                    double avg = sum / count;
+                                    double roundedAvg = Math.round(avg * 10.0) / 10.0;
+                                    DatabaseReference sellerRef = dbRef.child(Constants.NODE_SELLERS).child(sid);
+                                    sellerRef.child("rating").setValue(roundedAvg);
+                                    sellerRef.child("ratingCount").setValue(count);
+                                    sellerRef.child("topRated").setValue(roundedAvg >= 4.5);
+                                }
+                            }
+
+                            @Override public void onCancelled(DatabaseError error) {}
+                        });
+            }
+
+            @Override public void onCancelled(DatabaseError error) {}
+        });
     }
 
     private void applyTheme() {

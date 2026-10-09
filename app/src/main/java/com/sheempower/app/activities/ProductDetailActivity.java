@@ -81,6 +81,7 @@ public class ProductDetailActivity extends AppCompatActivity {
             if (btnWhatsApp != null) btnWhatsApp.setVisibility(View.GONE);
             if (btnViewSeller != null) btnViewSeller.setVisibility(View.GONE);
             if (btnAddToCart != null) btnAddToCart.setVisibility(View.GONE);
+            if (btnViewProductReviews != null) btnViewProductReviews.setVisibility(View.GONE);
         }
 
         if (btnAddToCart != null) {

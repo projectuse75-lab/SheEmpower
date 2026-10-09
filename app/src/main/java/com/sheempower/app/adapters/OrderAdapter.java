@@ -231,16 +231,16 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.VH> {
         }
 
         if (isSellerView) {
-            if (Constants.STATUS_PENDING.equals(o.getStatus())) {
+            if (Constants.STATUS_PENDING.equalsIgnoreCase(o.getStatus())) {
                 holder.btnAdvance.setVisibility(View.VISIBLE);
                 holder.btnAdvance.setText("▶️ کام شروع کریں / Start Work");
                 holder.btnAdvance.setOnClickListener(v -> {
                     if (statusChangeListener != null) statusChangeListener.onChange(o, Constants.STATUS_IN_PROGRESS);
                 });
-            } else if (Constants.STATUS_IN_PROGRESS.equals(o.getStatus())) {
+            } else if (Constants.STATUS_IN_PROGRESS.equalsIgnoreCase(o.getStatus())) {
                 holder.btnAdvance.setVisibility(View.VISIBLE);
-                boolean isPickup = Constants.DELIVERY_METHOD_PICKUP.equals(o.getDeliveryMethod());
-                holder.btnAdvance.setText(isPickup ? "✅ مکمل — خریدار خود لے جائے" : "✅ مکمل — ڈیلیوری کریں");
+                boolean isPickup = Constants.DELIVERY_METHOD_PICKUP.equalsIgnoreCase(o.getDeliveryMethod());
+                holder.btnAdvance.setText(isPickup ? "✅ مکمل — خریدار خود لے جائے" : "✅ مکمل — ڈیلیوری کی جائے");
                 holder.btnAdvance.setOnClickListener(v -> {
                     if (statusChangeListener != null) statusChangeListener.onChange(o, Constants.STATUS_COMPLETED);
                 });
@@ -248,12 +248,21 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.VH> {
                 holder.btnAdvance.setVisibility(View.GONE);
             }
         } else if (!isAdminView) {
-            // Buyer View: Show "I've Received / Picked Up" button for active pending/in_progress orders!
-            boolean isPendingOrProgress = Constants.STATUS_PENDING.equalsIgnoreCase(o.getStatus()) || Constants.STATUS_IN_PROGRESS.equalsIgnoreCase(o.getStatus());
-            if (isPendingOrProgress) {
+            // Buyer View: Show "Received" or "Picked Up" button ONLY after seller marks order as completed/ready!
+            boolean isCompletedBySeller = Constants.STATUS_COMPLETED.equalsIgnoreCase(o.getStatus());
+            boolean isNotYetDelivered = !"delivered".equalsIgnoreCase(o.getDeliveryAddress());
+
+            if (isCompletedBySeller && isNotYetDelivered) {
                 holder.btnAdvance.setVisibility(View.VISIBLE);
-                holder.btnAdvance.setText("📦 I've Received / Picked Up (میں نے آرڈر وصول کر لیا)");
-                holder.btnAdvance.setOnClickListener(v -> showConfirmReceiptDialog(ctx, o));
+                boolean isPickup = Constants.DELIVERY_METHOD_PICKUP.equalsIgnoreCase(o.getDeliveryMethod());
+
+                if (isPickup) {
+                    holder.btnAdvance.setText("🛍️ Order Picked Up (آرڈر وصول کر لیا)");
+                } else {
+                    holder.btnAdvance.setText("📦 Order Received (آرڈر موصول ہو گیا)");
+                }
+
+                holder.btnAdvance.setOnClickListener(v -> showConfirmReceiptDialog(ctx, o, isPickup));
             } else {
                 holder.btnAdvance.setVisibility(View.GONE);
             }
@@ -262,10 +271,17 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.VH> {
         }
     }
 
-    private void showConfirmReceiptDialog(Context ctx, Order order) {
+    private void showConfirmReceiptDialog(Context ctx, Order order, boolean isPickup) {
+        String title = isPickup
+                ? "Have you picked up your order? / کیا آپ نے اپنا آرڈر وصول کر لیا ہے؟"
+                : "Have you received your order? / کیا آپ کو اپنا آرڈر موصول ہو گیا ہے؟";
+        String msg = isPickup
+                ? "آرڈر کی وصولی کی تصدیق کرنے پر سیلر کو اطلاع مل جائے گی کہ آپ نے سامان وصول کر لیا ہے۔\nConfirming pickup will notify the seller that you have picked up your order."
+                : "آرڈر کی وصولی کی تصدیق کرنے پر سیلر کو اطلاع مل جائے گی کہ آپ کو سامان موصول ہو گیا ہے۔\nConfirming delivery will notify the seller that you have received your order.";
+
         new AlertDialog.Builder(ctx)
-                .setTitle("Have you received your order? / کیا آپ نے اپنا آرڈر وصول کر لیا ہے؟")
-                .setMessage("آرڈر کی وصولی کی تصدیق کرنے پر آرڈر مکمل ہو جائے گا۔\nConfirming receipt will mark this order as completed.")
+                .setTitle(title)
+                .setMessage(msg)
                 .setPositiveButton("ہاں / Yes", (dialog, which) -> {
                     if (order == null || order.getId() == null) return;
                     String oid = order.getId().trim();
@@ -275,8 +291,14 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.VH> {
 
                     orderRef.child("status").setValue(Constants.STATUS_COMPLETED);
                     orderRef.child("paymentStatus").setValue("verified");
-                    orderRef.child("deliveryStatus").setValue("delivered")
-                            .addOnSuccessListener(aVoid -> Toast.makeText(ctx, "آرڈر کی وصولی کی تصدیق ہو گئی! ✅", Toast.LENGTH_SHORT).show())
+                    orderRef.child("deliveryAddress").setValue("delivered")
+                            .addOnSuccessListener(aVoid -> {
+                                order.setStatus(Constants.STATUS_COMPLETED);
+                                order.setPaymentStatus("verified");
+                                order.setDeliveryAddress("delivered");
+                                notifyDataSetChanged();
+                                Toast.makeText(ctx, isPickup ? "آرڈر وصولی کی اطلاع سیلر کو بھیج دی گئی! ✅" : "آرڈر موصول ہونے کی اطلاع سیلر کو بھیج دی گئی! ✅", Toast.LENGTH_SHORT).show();
+                            })
                             .addOnFailureListener(e -> Toast.makeText(ctx, "خرابی: " + e.getMessage(), Toast.LENGTH_LONG).show());
                 })
                 .setNegativeButton("منسوخ / Cancel", null)
