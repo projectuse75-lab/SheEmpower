@@ -84,7 +84,7 @@ public class SellerDashboardActivity extends AppCompatActivity {
         btnAddProduct.setOnClickListener(v -> startActivity(new Intent(this, AddProductActivity.class)));
 
         setupMyProductsList();
-        tag:FCM
+
         // Android 13+ Notification Permission Request
         if (android.os.Build.VERSION.SDK_INT >= 33 &&
                 checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
@@ -93,7 +93,7 @@ public class SellerDashboardActivity extends AppCompatActivity {
 
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
-            FcmTokenHelper.saveCurrentToken(currentUser.getUid());
+            FcmTokenHelper.saveCurrentTokenWithContext(this, currentUser.getUid());
             BatteryOptimizationHelper.checkAndPrompt(this);
         }
 
