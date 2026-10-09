@@ -16,14 +16,16 @@ import com.sheempower.app.utils.CartManager;
 import com.sheempower.app.utils.*;
 import com.sheempower.app.utils.PreferencesManager;
 
+import java.util.Locale;
+
 public class ProductDetailActivity extends AppCompatActivity {
 
     public static final String EXTRA_PRODUCT_ID = "productId";
     public static final String EXTRA_IS_SELLER_VIEW = "isSellerView";
 
     private ImageView ivProduct;
-    private TextView tvName, tvPrice, tvSellerName, tvSellerMeta, tvSellerRating, tvDescription;
-    private Button btnViewSeller, btnPlaceOrder, btnWhatsApp, btnAddToCart;
+    private TextView tvName, tvPrice, tvSellerName, tvSellerMeta, tvSellerRating, tvDescription, tvProductRatingSummary;
+    private Button btnViewSeller, btnPlaceOrder, btnWhatsApp, btnAddToCart, btnViewProductReviews;
 
     private Product currentProduct;
     private Seller currentSeller;
@@ -54,6 +56,18 @@ public class ProductDetailActivity extends AppCompatActivity {
         tvSellerMeta   = findViewById(R.id.tvSellerMeta);
         tvSellerRating = findViewById(R.id.tvSellerRating);
         tvDescription  = findViewById(R.id.tvDescription);
+        tvProductRatingSummary = findViewById(R.id.tvProductRatingSummary);
+        btnViewProductReviews  = findViewById(R.id.btnViewProductReviews);
+
+        if (btnViewProductReviews != null) {
+            btnViewProductReviews.setOnClickListener(v -> {
+                if (currentProduct != null && currentProduct.getId() != null) {
+                    Intent i = new Intent(this, ProductReviewsActivity.class);
+                    i.putExtra(ProductReviewsActivity.EXTRA_PRODUCT_ID, currentProduct.getId().trim());
+                    startActivity(i);
+                }
+            });
+        }
         btnViewSeller  = findViewById(R.id.btnViewSeller);
         btnPlaceOrder  = findViewById(R.id.btnPlaceOrder);
         btnWhatsApp    = findViewById(R.id.btnWhatsApp);
@@ -136,6 +150,9 @@ public class ProductDetailActivity extends AppCompatActivity {
         tvName.setText(currentProduct.getName());
         tvPrice.setText("PKR " + (long) currentProduct.getPrice());
         tvDescription.setText(currentProduct.getDescription());
+        if (tvProductRatingSummary != null) {
+            tvProductRatingSummary.setText(String.format(Locale.ENGLISH, "⭐ %.1f (%d Reviews)", currentProduct.getRating(), currentProduct.getReviewCount()));
+        }
         if (currentProduct.getImageUrl() != null && !currentProduct.getImageUrl().isEmpty())
             Glide.with(ProductDetailActivity.this).load(currentProduct.getImageUrl()).into(ivProduct);
 

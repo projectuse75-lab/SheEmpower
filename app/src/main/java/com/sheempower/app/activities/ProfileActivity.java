@@ -37,6 +37,7 @@ import com.sheempower.app.utils.Constants;
 import com.sheempower.app.utils.SessionManager;
 import com.sheempower.app.utils.VoiceGuide;
 import com.sheempower.app.models.Buyer;
+import com.sheempower.app.utils.ImageCropHelper;
 import com.sheempower.app.utils.PreferencesManager;
 import com.sheempower.app.utils.LanguageHelper;
 
@@ -99,6 +100,7 @@ public class ProfileActivity extends AppCompatActivity {
     private Button btnSave;
     private Button btnCancelEdit;
     private Button btnMyOrders;
+    private Button btnMyReviews;
     private Button btnLogout;
     private Button btnGuestLogin;
     private Button btnGuestRegister;
@@ -112,7 +114,7 @@ public class ProfileActivity extends AppCompatActivity {
             registerForActivityResult(
                     new ActivityResultContracts.GetContent(),
                     uri -> {
-                        if (uri != null) showTouchCropDialog(uri);
+                        if (uri != null) ImageCropHelper.cropImage(this, uri, this::uploadProfilePic);
                     }
             );
 
@@ -370,6 +372,7 @@ public class ProfileActivity extends AppCompatActivity {
         btnCancelEdit = findViewById(R.id.btnCancelEdit);
 
         btnMyOrders = findViewById(R.id.btnMyOrders);
+        btnMyReviews = findViewById(R.id.btnMyReviews);
         btnLogout = findViewById(R.id.btnLogout);
 
         btnGuestLogin = findViewById(R.id.btnGuestLogin);
@@ -396,6 +399,17 @@ public class ProfileActivity extends AppCompatActivity {
 
         if (btnMyOrders != null) {
             btnMyOrders.setOnClickListener(v -> startActivity(new Intent(ProfileActivity.this, MyOrdersActivity.class)));
+        }
+
+        if (btnMyReviews != null) {
+            btnMyReviews.setOnClickListener(v -> {
+                String uid = session.getUid();
+                if (uid != null && !uid.trim().isEmpty()) {
+                    Intent i = new Intent(ProfileActivity.this, ProductReviewsActivity.class);
+                    i.putExtra(ProductReviewsActivity.EXTRA_BUYER_ID, uid.trim());
+                    startActivity(i);
+                }
+            });
         }
 
         if (btnLogout != null) {

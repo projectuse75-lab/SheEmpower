@@ -85,17 +85,12 @@ public class SellerRegistrationActivity extends AppCompatActivity {
                     new ActivityResultContracts.GetContent(),
                     uri -> {
                         if (uri != null) {
-                            cnicUri = uri;
-
-                            tvCnicStatus.setText(
-                                    "✅ اپلوڈ ہو رہی ہے..."
-                            );
-
-                            tvCnicStatus.setTextColor(
-                                    0xFF4CAF50
-                            );
-
-                            uploadCnic(uri);
+                            ImageCropHelper.cropImage(this, uri, croppedUri -> {
+                                cnicUri = croppedUri;
+                                tvCnicStatus.setText("✅ اپلوڈ ہو رہی ہے...");
+                                tvCnicStatus.setTextColor(0xFF4CAF50);
+                                uploadCnic(croppedUri);
+                            });
                         }
                     }
             );

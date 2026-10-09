@@ -133,6 +133,36 @@
                 android:textSize="14sp"
                 android:layout_marginTop="6dp" />
 
+            <!-- PRODUCT REVIEWS & RATING CARD -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_skeu_card"
+                android:padding="14dp"
+                android:layout_marginTop="16dp">
+
+                <TextView
+                    android:id="@+id/tvProductRatingSummary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="⭐ 5.0 (0 Reviews)"
+                    android:fontFamily="sans-serif-black"
+                    android:textColor="@color/accent"
+                    android:textSize="15sp" />
+
+                <Button
+                    android:id="@+id/btnViewProductReviews"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:text="⭐ View All Product Reviews / تمام ریویوز دیکھیں"
+                    android:fontFamily="sans-serif-bold"
+                    android:textSize="12sp"
+                    android:background="@drawable/bg_skeu_button_cream"
+                    android:textColor="@color/primary"
+                    android:layout_marginTop="8dp" />
+            </LinearLayout>
+
             <Button
                 android:id="@+id/btnAddToCart"
                 android:layout_width="match_parent"

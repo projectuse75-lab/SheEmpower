@@ -22,6 +22,7 @@ import com.sheempower.app.utils.*;
 import com.sheempower.app.utils.PreferencesManager;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class SellerDashboardActivity extends AppCompatActivity {
 
@@ -31,7 +32,8 @@ public class SellerDashboardActivity extends AppCompatActivity {
 
     // ✅ NAYA — "My Products" section
     private RecyclerView rvMyProducts;
-    private TextView tvNoProducts;
+    private TextView tvNoProducts, tvSellerDashboardRating;
+    private Button btnViewSellerReviews;
     private ProductAdapter myProductAdapter;
     private final List<Product> myProductList = new ArrayList<>();
     private Seller currentSeller;
@@ -53,9 +55,19 @@ public class SellerDashboardActivity extends AppCompatActivity {
         tvPendingOrders   = findViewById(R.id.tvPendingOrders);
         tvCompletedOrders = findViewById(R.id.tvCompletedOrders);
         tvEarnings        = findViewById(R.id.tvEarnings);
+        tvSellerDashboardRating = findViewById(R.id.tvSellerDashboardRating);
+        btnViewSellerReviews    = findViewById(R.id.btnViewSellerReviews);
         btnAddProduct     = findViewById(R.id.btnAddProduct);
         rvMyProducts      = findViewById(R.id.rvMyProducts);
         tvNoProducts      = findViewById(R.id.tvNoProducts);
+
+        if (btnViewSellerReviews != null) {
+            btnViewSellerReviews.setOnClickListener(v -> {
+                Intent i = new Intent(this, ProductReviewsActivity.class);
+                i.putExtra(ProductReviewsActivity.EXTRA_SELLER_ID, session.getUid());
+                startActivity(i);
+            });
+        }
 
         ImageButton btnSpeaker = findViewById(R.id.btnSpeaker);
         VoiceGuide.setupSpeakerButton(btnSpeaker, this,
@@ -268,6 +280,10 @@ public class SellerDashboardActivity extends AppCompatActivity {
                             tvStatus.setText("⏳ ایڈمن کی منظوری کا انتظار / Pending Approval");
                             tvStatus.setTextColor(0xFFFFA000);
                             btnAddProduct.setEnabled(false);
+                        }
+
+                        if (tvSellerDashboardRating != null) {
+                            tvSellerDashboardRating.setText(String.format(Locale.ENGLISH, "⭐ %.1f (%d reviews)", s.getRating(), s.getRatingCount()));
                         }
                     }
 

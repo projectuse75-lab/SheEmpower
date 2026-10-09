@@ -86,6 +86,82 @@
             </LinearLayout>
         </LinearLayout>
 
+        <!-- Category Filter Bar for Seller Reviews -->
+        <HorizontalScrollView
+            android:id="@+id/scrollCategoryFilter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:layout_marginTop="10dp"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnCatAll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="38dp"
+                    android:text="All / تمام"
+                    android:textSize="11sp"
+                    android:background="@drawable/bg_skeu_button_primary"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginEnd="6dp" />
+
+                <Button
+                    android:id="@+id/btnCatCooking"
+                    android:layout_width="wrap_content"
+                    android:layout_height="38dp"
+                    android:text="Cooking / کھانا"
+                    android:textSize="11sp"
+                    android:background="@drawable/bg_skeu_button_cream"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginEnd="6dp" />
+
+                <Button
+                    android:id="@+id/btnCatStitching"
+                    android:layout_width="wrap_content"
+                    android:layout_height="38dp"
+                    android:text="Stitching / سلائی"
+                    android:textSize="11sp"
+                    android:background="@drawable/bg_skeu_button_cream"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginEnd="6dp" />
+
+                <Button
+                    android:id="@+id/btnCatMehndi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="38dp"
+                    android:text="Mehndi / مہندی"
+                    android:textSize="11sp"
+                    android:background="@drawable/bg_skeu_button_cream"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginEnd="6dp" />
+
+                <Button
+                    android:id="@+id/btnCatMakeup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="38dp"
+                    android:text="Makeup / میک اپ"
+                    android:textSize="11sp"
+                    android:background="@drawable/bg_skeu_button_cream"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginEnd="6dp" />
+
+                <Button
+                    android:id="@+id/btnCatEmbroidery"
+                    android:layout_width="wrap_content"
+                    android:layout_height="38dp"
+                    android:text="Embroidery / کڑھائی"
+                    android:textSize="11sp"
+                    android:background="@drawable/bg_skeu_button_cream"
+                    android:textColor="@color/text_primary" />
+
+            </LinearLayout>
+        </HorizontalScrollView>
+
         <TextView
             android:id="@+id/tvNoProductReviews"
             android:layout_width="match_parent"

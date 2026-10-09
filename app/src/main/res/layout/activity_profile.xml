@@ -727,6 +727,18 @@
                 android:text="📦  MY ORDERS"/>
 
             <Button
+                android:id="@+id/btnMyReviews"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_marginLeft="22dp"
+                android:layout_marginRight="22dp"
+                android:layout_marginTop="8dp"
+                android:text="⭐  MY REVIEWS / میری ریویوز"
+                android:textColor="#FFFFFF"
+                android:fontFamily="sans-serif-bold"
+                android:backgroundTint="@color/primary"/>
+
+            <Button
                 android:id="@+id/btnLogout"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"

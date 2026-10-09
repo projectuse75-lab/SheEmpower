@@ -24,6 +24,7 @@ import com.sheempower.app.models.Order;
 import com.sheempower.app.models.OrderField;
 import com.sheempower.app.models.Product;
 import com.sheempower.app.models.Seller;
+import com.sheempower.app.utils.ImageCropHelper;
 import com.sheempower.app.utils.PreferencesManager;
 import com.sheempower.app.utils.*;
 import java.text.SimpleDateFormat;
@@ -101,14 +102,16 @@ public class PlaceOrderActivity extends AppCompatActivity {
     private final ActivityResultLauncher<String> paymentProofPicker =
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
                 if (uri != null) {
-                    pendingPaymentProofUri = uri;
-                    if (ivPaymentProofPreview != null) {
-                        ivPaymentProofPreview.setImageURI(uri);
-                        ivPaymentProofPreview.setVisibility(View.VISIBLE);
-                    }
-                    if (tvPaymentProofStatus != null) {
-                        tvPaymentProofStatus.setText("✅ تصویر منتخب ہو گئی / Screenshot selected");
-                    }
+                    ImageCropHelper.cropImage(this, uri, croppedUri -> {
+                        pendingPaymentProofUri = croppedUri;
+                        if (ivPaymentProofPreview != null) {
+                            ivPaymentProofPreview.setImageURI(croppedUri);
+                            ivPaymentProofPreview.setVisibility(View.VISIBLE);
+                        }
+                        if (tvPaymentProofStatus != null) {
+                            tvPaymentProofStatus.setText("✅ تصویر منتخب ہو گئی / Screenshot selected");
+                        }
+                    });
                 }
             });
 
@@ -1138,24 +1141,26 @@ public class PlaceOrderActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_PICK_SAMPLE_IMAGE && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            Uri imageUri = data.getData();
+            Uri originalUri = data.getData();
             if (currentlyActiveFormProduct != null && currentlyActiveFormProduct.getId() != null) {
                 final String pid = currentlyActiveFormProduct.getId().trim();
-                if (tvSampleStatus != null) tvSampleStatus.setText("⏳ تصویر اپلوڈ ہو رہی ہے... / Uploading sample image...");
+                ImageCropHelper.cropImage(this, originalUri, croppedUri -> {
+                    if (tvSampleStatus != null) tvSampleStatus.setText("⏳ تصویر اپلوڈ ہو رہی ہے... / Uploading sample image...");
 
-                CloudinaryHelper.upload(this, imageUri, "order_samples", (url, error) -> {
-                    if (url != null) {
-                        productFormImagesMap.put(pid, url);
-                        if (tvSampleStatus != null) tvSampleStatus.setText("✅ تصویر اپلوڈ ہو گئی / Sample Image Uploaded");
-                        if (ivSamplePreview != null) {
-                            ivSamplePreview.setVisibility(View.VISIBLE);
-                            Glide.with(PlaceOrderActivity.this).load(url).into(ivSamplePreview);
+                    CloudinaryHelper.upload(this, croppedUri, "order_samples", (url, error) -> {
+                        if (url != null) {
+                            productFormImagesMap.put(pid, url);
+                            if (tvSampleStatus != null) tvSampleStatus.setText("✅ تصویر اپلوڈ ہو گئی / Sample Image Uploaded");
+                            if (ivSamplePreview != null) {
+                                ivSamplePreview.setVisibility(View.VISIBLE);
+                                Glide.with(PlaceOrderActivity.this).load(url).into(ivSamplePreview);
+                            }
+                            Toast.makeText(PlaceOrderActivity.this, "نمونہ تصویر کامیابی سے اپلوڈ ہو گئی! ✅", Toast.LENGTH_SHORT).show();
+                        } else {
+                            if (tvSampleStatus != null) tvSampleStatus.setText("❌ تصویر اپلوڈ نہ ہو سکی: " + error);
+                            Toast.makeText(PlaceOrderActivity.this, "تصویر اپلوڈ میں خرابی: " + error, Toast.LENGTH_LONG).show();
                         }
-                        Toast.makeText(PlaceOrderActivity.this, "نمونہ تصویر کامیابی سے اپلوڈ ہو گئی! ✅", Toast.LENGTH_SHORT).show();
-                    } else {
-                        if (tvSampleStatus != null) tvSampleStatus.setText("❌ تصویر اپلوڈ نہ ہو سکی: " + error);
-                        Toast.makeText(PlaceOrderActivity.this, "تصویر اپلوڈ میں خرابی: " + error, Toast.LENGTH_LONG).show();
-                    }
+                    });
                 });
             }
         }

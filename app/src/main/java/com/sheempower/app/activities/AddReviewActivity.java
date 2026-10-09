@@ -122,6 +122,9 @@ public class AddReviewActivity extends AppCompatActivity {
 
         Review review = new Review(reviewId, orderId != null ? orderId : "direct",
                 sellerId.trim(), buyerUid, buyerName,
+                productId != null ? productId.trim() : "",
+                productName != null ? productName : "Product",
+                "Cooking",
                 rating, comment, System.currentTimeMillis());
 
         reviewsRef.child(reviewId).setValue(review)
@@ -129,6 +132,9 @@ public class AddReviewActivity extends AppCompatActivity {
                     Toast.makeText(this, "جائزہ کامیابی سے جمع ہو گیا! ✅ / Review Submitted!", Toast.LENGTH_LONG).show();
                     VoiceGuide.explain(this, "آپ کا جائزہ کامیابی سے جمع ہو گیا ہے۔");
                     recalculateSellerRating(sellerId.trim());
+                    if (productId != null && !productId.trim().isEmpty()) {
+                        recalculateProductRating(productId.trim());
+                    }
                     finish();
                 })
                 .addOnFailureListener(e -> {
@@ -139,6 +145,9 @@ public class AddReviewActivity extends AppCompatActivity {
                             .addOnSuccessListener(aVoid2 -> {
                                 Toast.makeText(this, "جائزہ کامیابی سے جمع ہو گیا! ✅ / Review Submitted!", Toast.LENGTH_LONG).show();
                                 VoiceGuide.explain(this, "آپ کا جائزہ کامیابی سے جمع ہو گیا ہے۔");
+                                if (productId != null && !productId.trim().isEmpty()) {
+                                    recalculateProductRating(productId.trim());
+                                }
                                 finish();
                             })
                             .addOnFailureListener(e2 -> {
@@ -146,6 +155,36 @@ public class AddReviewActivity extends AppCompatActivity {
                                 VoiceGuide.explain(this, "آپ کا جائزہ کامیابی سے جمع ہو گیا ہے۔");
                                 finish();
                             });
+                });
+    }
+
+    private void recalculateProductRating(String targetProductId) {
+        if (targetProductId == null || targetProductId.trim().isEmpty()) return;
+
+        FirebaseDatabase.getInstance().getReference().child("reviews")
+                .orderByChild("productId").equalTo(targetProductId.trim())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        double sum = 0;
+                        long count = 0;
+                        for (DataSnapshot child : snapshot.getChildren()) {
+                            Review r = child.getValue(Review.class);
+                            if (r != null) {
+                                sum += r.getRating();
+                                count++;
+                            }
+                        }
+                        if (count > 0) {
+                            double avg = sum / count;
+                            double roundedAvg = Math.round(avg * 10.0) / 10.0;
+                            DatabaseReference prodRef = FirebaseDatabase.getInstance().getReference().child(Constants.NODE_PRODUCTS).child(targetProductId.trim());
+                            prodRef.child("rating").setValue(roundedAvg);
+                            prodRef.child("reviewCount").setValue(count);
+                        }
+                    }
+
+                    @Override public void onCancelled(DatabaseError error) {}
                 });
     }
 

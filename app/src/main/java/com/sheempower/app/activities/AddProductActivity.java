@@ -22,6 +22,7 @@ import com.sheempower.app.utils.CloudinaryHelper;
 import com.sheempower.app.utils.Constants;
 import com.sheempower.app.utils.SessionManager;
 import com.sheempower.app.utils.VoiceGuide;
+import com.sheempower.app.utils.ImageCropHelper;
 import com.sheempower.app.utils.PreferencesManager;
 import com.sheempower.app.utils.TouchCropView;
 import com.sheempower.app.utils.LanguageHelper;
@@ -54,7 +55,7 @@ public class AddProductActivity extends AppCompatActivity {
     private final ActivityResultLauncher<String> imagePicker =
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
                 if (uri != null) {
-                    showCropDialog(uri);
+                    ImageCropHelper.cropImage(this, uri, croppedUri -> uploadImageToCloudinary(croppedUri));
                 }
             });
 

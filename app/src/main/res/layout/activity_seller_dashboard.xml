@@ -189,6 +189,58 @@
                         android:layout_marginTop="4dp" />
                 </LinearLayout>
 
+                <!-- Reviews & Ratings Card -->
+                <LinearLayout
+                    android:id="@+id/cardSellerReviews"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_skeu_card"
+                    android:padding="16dp"
+                    android:layout_marginBottom="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tvSellerDashboardRating"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="⭐ 5.0"
+                                android:textSize="26sp"
+                                android:fontFamily="sans-serif-black"
+                                android:textColor="@color/accent" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="ریویوز اور ریٹنگز / Reviews &amp; Ratings"
+                                android:textSize="13sp"
+                                android:textColor="@color/text_secondary"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+
+                        <Button
+                            android:id="@+id/btnViewSellerReviews"
+                            android:layout_width="wrap_content"
+                            android:layout_height="44dp"
+                            android:text="ریویوز دیکھیں / View Reviews"
+                            android:textSize="11sp"
+                            android:fontFamily="sans-serif-bold"
+                            android:background="@drawable/bg_skeu_button_cream"
+                            android:textColor="@color/primary" />
+                    </LinearLayout>
+                </LinearLayout>
+
                 <!-- ============================================================ -->
                 <!-- ADD PRODUCT BUTTON - FIXED SIZE -->
                 <!-- ============================================================ -->

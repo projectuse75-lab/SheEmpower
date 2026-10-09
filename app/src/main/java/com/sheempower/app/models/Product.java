@@ -3,6 +3,8 @@ package com.sheempower.app.models;
 public class Product {
     private String id, sellerId, name, description, imageUrl, category;
     private double price;
+    private double rating;
+    private int reviewCount;
 
     public Product() {}
 
@@ -20,6 +22,8 @@ public class Product {
     public double getPrice()       { return price; }
     public String getImageUrl()    { return imageUrl; }
     public String getCategory()    { return category; }
+    public double getRating()      { return rating; }
+    public int getReviewCount()    { return reviewCount; }
 
     public void setId(String id)          { this.id = id; }
     public void setSellerId(String s)     { this.sellerId = s; }
@@ -28,4 +32,6 @@ public class Product {
     public void setPrice(double p)        { this.price = p; }
     public void setImageUrl(String u)     { this.imageUrl = u; }
     public void setCategory(String c)     { this.category = c; }
+    public void setRating(double r)       { this.rating = r; }
+    public void setReviewCount(int rc)    { this.reviewCount = rc; }
 }

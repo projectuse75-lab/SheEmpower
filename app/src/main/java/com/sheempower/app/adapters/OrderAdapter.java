@@ -18,6 +18,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.sheempower.app.R;
 import com.sheempower.app.activities.AddReviewActivity;
@@ -246,9 +247,40 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.VH> {
             } else {
                 holder.btnAdvance.setVisibility(View.GONE);
             }
+        } else if (!isAdminView) {
+            // Buyer View: Show "I've Received / Picked Up" button for active pending/in_progress orders!
+            boolean isPendingOrProgress = Constants.STATUS_PENDING.equalsIgnoreCase(o.getStatus()) || Constants.STATUS_IN_PROGRESS.equalsIgnoreCase(o.getStatus());
+            if (isPendingOrProgress) {
+                holder.btnAdvance.setVisibility(View.VISIBLE);
+                holder.btnAdvance.setText("📦 I've Received / Picked Up (میں نے آرڈر وصول کر لیا)");
+                holder.btnAdvance.setOnClickListener(v -> showConfirmReceiptDialog(ctx, o));
+            } else {
+                holder.btnAdvance.setVisibility(View.GONE);
+            }
         } else {
             holder.btnAdvance.setVisibility(View.GONE);
         }
+    }
+
+    private void showConfirmReceiptDialog(Context ctx, Order order) {
+        new AlertDialog.Builder(ctx)
+                .setTitle("Have you received your order? / کیا آپ نے اپنا آرڈر وصول کر لیا ہے؟")
+                .setMessage("آرڈر کی وصولی کی تصدیق کرنے پر آرڈر مکمل ہو جائے گا۔\nConfirming receipt will mark this order as completed.")
+                .setPositiveButton("ہاں / Yes", (dialog, which) -> {
+                    if (order == null || order.getId() == null) return;
+                    String oid = order.getId().trim();
+
+                    DatabaseReference orderRef = FirebaseDatabase.getInstance().getReference()
+                            .child(Constants.NODE_ORDERS).child(oid);
+
+                    orderRef.child("status").setValue(Constants.STATUS_COMPLETED);
+                    orderRef.child("paymentStatus").setValue("verified");
+                    orderRef.child("deliveryStatus").setValue("delivered")
+                            .addOnSuccessListener(aVoid -> Toast.makeText(ctx, "آرڈر کی وصولی کی تصدیق ہو گئی! ✅", Toast.LENGTH_SHORT).show())
+                            .addOnFailureListener(e -> Toast.makeText(ctx, "خرابی: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                })
+                .setNegativeButton("منسوخ / Cancel", null)
+                .show();
     }
 
     private void updatePaymentStatusInFirebase(Context ctx, String orderId, String newStatus) {
