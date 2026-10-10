@@ -1120,7 +1120,9 @@ public class PlaceOrderActivity extends AppCompatActivity {
             if (imgUrl != null && !imgUrl.isEmpty()) {
                 tvSampleStatus.setText("✅ تصویر اپلوڈ ہو گئی / Sample Image Uploaded");
                 ivSamplePreview.setVisibility(View.VISIBLE);
-                Glide.with(this).load(imgUrl).into(ivSamplePreview);
+                if (!isFinishing() && !isDestroyed()) {
+                    Glide.with(this).load(imgUrl).into(ivSamplePreview);
+                }
             }
         } else {
             tvSampleStatus.setText("کوئی تصویر منتخب نہیں ہے (اختیاری)");
@@ -1153,7 +1155,9 @@ public class PlaceOrderActivity extends AppCompatActivity {
                             if (tvSampleStatus != null) tvSampleStatus.setText("✅ تصویر اپلوڈ ہو گئی / Sample Image Uploaded");
                             if (ivSamplePreview != null) {
                                 ivSamplePreview.setVisibility(View.VISIBLE);
-                                Glide.with(PlaceOrderActivity.this).load(url).into(ivSamplePreview);
+                                if (!isFinishing() && !isDestroyed()) {
+                                    Glide.with(PlaceOrderActivity.this).load(url).into(ivSamplePreview);
+                                }
                             }
                             Toast.makeText(PlaceOrderActivity.this, "نمونہ تصویر کامیابی سے اپلوڈ ہو گئی! ✅", Toast.LENGTH_SHORT).show();
                         } else {

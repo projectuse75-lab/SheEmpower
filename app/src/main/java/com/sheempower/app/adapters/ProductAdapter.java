@@ -63,7 +63,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
         holder.tvPrice.setText("PKR " + (long) p.getPrice());
         holder.tvPrice.setTextColor(priceColor);
         if (p.getImageUrl() != null && !p.getImageUrl().isEmpty()) {
-            Glide.with(holder.itemView).load(p.getImageUrl()).into(holder.ivImage);
+            if (isValidContextForGlide(holder.itemView.getContext())) {
+                Glide.with(holder.itemView.getContext().getApplicationContext()).load(p.getImageUrl()).into(holder.ivImage);
+            }
         } else {
             holder.ivImage.setImageResource(R.drawable.placeholder_product);
         }

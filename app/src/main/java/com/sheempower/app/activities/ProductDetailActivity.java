@@ -154,8 +154,11 @@ public class ProductDetailActivity extends AppCompatActivity {
         if (tvProductRatingSummary != null) {
             tvProductRatingSummary.setText(String.format(Locale.ENGLISH, "⭐ %.1f (%d Reviews)", currentProduct.getRating(), currentProduct.getReviewCount()));
         }
-        if (currentProduct.getImageUrl() != null && !currentProduct.getImageUrl().isEmpty())
-            Glide.with(ProductDetailActivity.this).load(currentProduct.getImageUrl()).into(ivProduct);
+        if (currentProduct.getImageUrl() != null && !currentProduct.getImageUrl().isEmpty()) {
+            if (!isFinishing() && !isDestroyed()) {
+                Glide.with(ProductDetailActivity.this).load(currentProduct.getImageUrl()).into(ivProduct);
+            }
+        }
 
         if (ivProduct != null) {
             ivProduct.setOnClickListener(v -> {
@@ -261,11 +264,13 @@ public class ProductDetailActivity extends AppCompatActivity {
         if (btnClose != null) btnClose.setOnClickListener(v -> dialog.dismiss());
 
         if (ivFull != null) {
-            Glide.with(this)
-                    .load(imageUrl)
-                    .placeholder(R.drawable.placeholder_product)
-                    .error(R.drawable.placeholder_product)
-                    .into(ivFull);
+            if (!isFinishing() && !isDestroyed()) {
+                Glide.with(this)
+                        .load(imageUrl)
+                        .placeholder(R.drawable.placeholder_product)
+                        .error(R.drawable.placeholder_product)
+                        .into(ivFull);
+            }
 
             ivFull.setOnClickListener(v -> dialog.dismiss());
         }

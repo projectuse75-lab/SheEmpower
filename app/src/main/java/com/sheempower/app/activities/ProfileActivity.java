@@ -291,7 +291,9 @@ public class ProfileActivity extends AppCompatActivity {
                 .get().addOnSuccessListener(snapshot -> {
                     String imgUrl = snapshot.getValue(String.class);
                     if (imgUrl != null && !imgUrl.trim().isEmpty() && ivProfilePic != null) {
-                        Glide.with(this).load(imgUrl.trim()).into(ivProfilePic);
+                        if (!isFinishing() && !isDestroyed()) {
+                            Glide.with(this).load(imgUrl.trim()).into(ivProfilePic);
+                        }
                     }
                 });
     }
@@ -525,7 +527,9 @@ public class ProfileActivity extends AppCompatActivity {
         if (etPhone != null) etPhone.setText(phone);
 
         if (ivProfilePic != null && !safe(user.getImageUrl()).isEmpty()) {
-            Glide.with(this).load(user.getImageUrl()).into(ivProfilePic);
+            if (!isFinishing() && !isDestroyed()) {
+                Glide.with(this).load(user.getImageUrl()).into(ivProfilePic);
+            }
         }
     }
 
@@ -708,7 +712,9 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
         if (ivProfilePic != null && !safe(seller.getImageUrl()).isEmpty()) {
-            Glide.with(this).load(seller.getImageUrl()).into(ivProfilePic);
+            if (!isFinishing() && !isDestroyed()) {
+                Glide.with(this).load(seller.getImageUrl()).into(ivProfilePic);
+            }
         }
     }
 
@@ -832,7 +838,7 @@ public class ProfileActivity extends AppCompatActivity {
         Toast.makeText(this, "تصویر اپلوڈ ہو رہی ہے... / Uploading picture...", Toast.LENGTH_SHORT).show();
         CloudinaryHelper.upload(this, uri, "profile_pictures", (url, error) -> {
             if (url != null) {
-                if (ivProfilePic != null) {
+                if (ivProfilePic != null && !isFinishing() && !isDestroyed()) {
                     Glide.with(this).load(url).into(ivProfilePic);
                 }
                 String uid = session.getUid() != null ? session.getUid().trim() : "admin";

@@ -173,11 +173,13 @@ public class SellerProfileActivity extends AppCompatActivity {
                 View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_cnic_view, null);
                 ImageView ivCnicFull = dialogView.findViewById(R.id.ivCnicFull);
 
-                Glide.with(this)
-                        .load(currentSeller.getCnicUrl())
-                        .placeholder(R.drawable.placeholder_product)
-                        .error(R.drawable.placeholder_product)
-                        .into(ivCnicFull);
+                if (!isFinishing() && !isDestroyed()) {
+                    Glide.with(this)
+                            .load(currentSeller.getCnicUrl())
+                            .placeholder(R.drawable.placeholder_product)
+                            .error(R.drawable.placeholder_product)
+                            .into(ivCnicFull);
+                }
 
                 new AlertDialog.Builder(this)
                         .setTitle("شناختی کارڈ / CNIC")
@@ -463,11 +465,13 @@ public class SellerProfileActivity extends AppCompatActivity {
         }
 
         if (currentSeller.getImageUrl() != null && !currentSeller.getImageUrl().trim().isEmpty()) {
-            Glide.with(this)
-                    .load(currentSeller.getImageUrl().trim())
-                    .placeholder(R.drawable.placeholder_avatar)
-                    .error(R.drawable.placeholder_avatar)
-                    .into(ivSellerAvatar);
+            if (!isFinishing() && !isDestroyed()) {
+                Glide.with(this)
+                        .load(currentSeller.getImageUrl().trim())
+                        .placeholder(R.drawable.placeholder_avatar)
+                        .error(R.drawable.placeholder_avatar)
+                        .into(ivSellerAvatar);
+            }
         } else {
             ivSellerAvatar.setImageResource(R.drawable.placeholder_avatar);
         }
