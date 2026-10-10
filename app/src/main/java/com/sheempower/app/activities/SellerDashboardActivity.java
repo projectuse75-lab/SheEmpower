@@ -351,7 +351,7 @@ public class SellerDashboardActivity extends AppCompatActivity {
                             public void onDataChange(DataSnapshot snapshot) {
                                 List<Review> revList = new ArrayList<>();
                                 for (DataSnapshot child : snapshot.getChildren()) {
-                                    Review r = child.getValue(Review.class);
+                                    Review r = RatingHelper.parseReview(child);
                                     if (r != null && r.getSellerId() != null && sellerUid.equalsIgnoreCase(r.getSellerId().trim())) {
                                         revList.add(r);
                                     }
@@ -362,7 +362,7 @@ public class SellerDashboardActivity extends AppCompatActivity {
                                             @Override
                                             public void onDataChange(DataSnapshot subSnap) {
                                                 for (DataSnapshot child : subSnap.getChildren()) {
-                                                    Review r = child.getValue(Review.class);
+                                                    Review r = RatingHelper.parseReview(child);
                                                     if (r != null) {
                                                         boolean exists = false;
                                                         for (Review ex : revList) {

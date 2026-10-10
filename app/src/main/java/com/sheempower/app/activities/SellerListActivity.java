@@ -149,7 +149,7 @@ public class SellerListActivity extends AppCompatActivity {
                     startActivity(intent);
                 },
                 product -> requireBuyerLogin(() -> goToOrder(product)),
-                product -> chatOnWhatsApp(product.getSellerId())
+                product -> requireBuyerLogin(() -> chatOnWhatsApp(product.getSellerId()))
         );
 
         rvProducts.setAdapter(productAdapter);

@@ -18,6 +18,7 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.sheempower.app.utils.RatingHelper;
 import com.sheempower.app.utils.TouchCropView;
 
 import java.io.File;
@@ -633,7 +634,7 @@ public class ProfileActivity extends AppCompatActivity {
                 public void onDataChange(DataSnapshot snapshot) {
                     List<Review> list = new ArrayList<>();
                     for (DataSnapshot child : snapshot.getChildren()) {
-                        Review r = child.getValue(Review.class);
+                        Review r = RatingHelper.parseReview(child);
                         if (r != null && r.getSellerId() != null && sid.equalsIgnoreCase(r.getSellerId().trim())) {
                             list.add(r);
                         }
@@ -644,7 +645,7 @@ public class ProfileActivity extends AppCompatActivity {
                                 @Override
                                 public void onDataChange(DataSnapshot subSnap) {
                                     for (DataSnapshot child : subSnap.getChildren()) {
-                                        Review r = child.getValue(Review.class);
+                                        Review r = RatingHelper.parseReview(child);
                                         if (r != null) {
                                             boolean exists = false;
                                             for (Review ex : list) {

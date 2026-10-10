@@ -9,52 +9,82 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="?android:attr/windowBackground"
-        android:padding="20dp">
+        android:orientation="vertical">
 
-        <RelativeLayout
+        <!-- TOP NAV HEADER - NAVY BLUE -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="#192A56"
+            android:padding="16dp"
+            android:orientation="vertical"
+            android:layout_marginBottom="16dp">
 
-            <ImageButton
-                android:id="@+id/btnBack"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_arrow_back"
-                app:tint="#FFFFFF"
-                android:contentDescription="Back" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/ivSellerAvatar"
-                android:layout_width="90dp"
-                android:layout_height="90dp"
-                android:layout_centerHorizontal="true"
-                android:src="@drawable/placeholder_avatar" />
+                <ImageButton
+                    android:id="@+id/btnBack"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_arrow_back"
+                    app:tint="#FFFFFF"
+                    android:contentDescription="Back" />
 
-            <ImageView
-                android:id="@+id/ivSellerVerifiedBadge"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:layout_alignEnd="@id/ivSellerAvatar"
-                android:layout_alignBottom="@id/ivSellerAvatar"
-                android:src="@drawable/ic_verified_badge"
-                android:visibility="gone"
-                android:contentDescription="Verified Badge" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="🏪 Seller Profile\nبیچنے والی کی پروفائل"
+                    android:textSize="17sp"
+                    android:gravity="center"
+                    android:fontFamily="sans-serif-black"
+                    android:textColor="#FFFFFF" />
 
-            <ImageButton
-                android:id="@+id/btnSpeaker"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_speaker"
-                android:contentDescription="Speaker" />
-        </RelativeLayout>
+                <ImageButton
+                    android:id="@+id/btnSpeaker"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_speaker"
+                    app:tint="#FFFFFF"
+                    android:contentDescription="Speaker" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/ivSellerAvatar"
+                    android:layout_width="90dp"
+                    android:layout_height="90dp"
+                    android:layout_centerHorizontal="true"
+                    android:src="@drawable/placeholder_avatar" />
+
+                <ImageView
+                    android:id="@+id/ivSellerVerifiedBadge"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_alignEnd="@id/ivSellerAvatar"
+                    android:layout_alignBottom="@id/ivSellerAvatar"
+                    android:src="@drawable/ic_verified_badge"
+                    android:visibility="gone"
+                    android:contentDescription="Verified Badge" />
+            </RelativeLayout>
 
         <TextView
             android:id="@+id/tvSellerName"
@@ -259,5 +289,6 @@
             android:nestedScrollingEnabled="false"
             android:layout_marginTop="8dp" />
 
+    </LinearLayout>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

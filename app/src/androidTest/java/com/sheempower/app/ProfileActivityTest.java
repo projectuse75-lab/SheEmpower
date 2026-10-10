@@ -60,6 +60,10 @@ public class ProfileActivityTest {
                     .perform(scrollTo())
                     .check(matches(isDisplayed()));
 
+            onView(withId(R.id.btnMyReviews))
+                    .perform(scrollTo())
+                    .check(matches(isDisplayed()));
+
             onView(withId(R.id.btnLogout))
                     .perform(scrollTo())
                     .check(matches(isDisplayed()));

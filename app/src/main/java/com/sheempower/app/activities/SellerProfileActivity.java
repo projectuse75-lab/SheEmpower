@@ -18,6 +18,7 @@ import com.sheempower.app.models.Product;
 import com.sheempower.app.models.Review;
 import com.sheempower.app.models.Seller;
 import com.sheempower.app.utils.*;
+import com.sheempower.app.utils.RatingHelper;
 import de.hdodenhof.circleimageview.CircleImageView;
 import java.util.ArrayList;
 import java.util.List;
@@ -369,27 +370,25 @@ public class SellerProfileActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
                     List<Review> sellerReviews = new ArrayList<>();
-                    for (DataSnapshot child : snapshot.getChildren()) {
-                        Review r = child.getValue(Review.class);
-                        if (r != null && r.getSellerId() != null && sid.equalsIgnoreCase(r.getSellerId().trim())) {
-                            sellerReviews.add(r);
-                        }
-                    }
+                    addMatchingReviewsFromSnapshot(snapshot, sellerReviews, sid);
 
-                    dbRef.child(Constants.NODE_SELLERS).child(sid).child("reviews")
-                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                    // Scan sellers sub-nodes
+                    dbRef.child(Constants.NODE_SELLERS).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot sellersSnap) {
+                            for (DataSnapshot sChild : sellersSnap.getChildren()) {
+                                if (sChild.hasChild("reviews")) {
+                                    addMatchingReviewsFromSnapshot(sChild.child("reviews"), sellerReviews, sid);
+                                }
+                            }
+
+                            // Scan products sub-nodes
+                            dbRef.child(Constants.NODE_PRODUCTS).addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
-                                public void onDataChange(DataSnapshot subSnap) {
-                                    for (DataSnapshot child : subSnap.getChildren()) {
-                                        Review r = child.getValue(Review.class);
-                                        if (r != null) {
-                                            boolean exists = false;
-                                            for (Review ex : sellerReviews) {
-                                                if (ex.getReviewId() != null && ex.getReviewId().equalsIgnoreCase(child.getKey())) {
-                                                    exists = true; break;
-                                                }
-                                            }
-                                            if (!exists) sellerReviews.add(r);
+                                public void onDataChange(DataSnapshot prodsSnap) {
+                                    for (DataSnapshot pChild : prodsSnap.getChildren()) {
+                                        if (pChild.hasChild("reviews")) {
+                                            addMatchingReviewsFromSnapshot(pChild.child("reviews"), sellerReviews, sid);
                                         }
                                     }
 
@@ -410,19 +409,23 @@ public class SellerProfileActivity extends AppCompatActivity {
                                         sellerRef.child("rating").setValue(roundedAvg);
                                         sellerRef.child("ratingCount").setValue(count);
                                         sellerRef.child("topRated").setValue(isTop);
+                                    } else if (currentSeller != null && currentSeller.getRating() > 0) {
+                                        if (tvRating != null) {
+                                            tvRating.setText(String.format(Locale.ENGLISH, "⭐ %.1f (%d)", currentSeller.getRating(), currentSeller.getRatingCount()));
+                                        }
                                     } else {
                                         if (tvRating != null) {
                                             tvRating.setText("⭐ N/A (0)");
                                         }
-                                        DatabaseReference sellerRef = dbRef.child(Constants.NODE_SELLERS).child(sid);
-                                        sellerRef.child("rating").setValue(0.0);
-                                        sellerRef.child("ratingCount").setValue(0);
-                                        sellerRef.child("topRated").setValue(false);
                                     }
                                 }
 
                                 @Override public void onCancelled(DatabaseError error) {}
                             });
+                        }
+
+                        @Override public void onCancelled(DatabaseError error) {}
+                    });
                 }
 
                 @Override public void onCancelled(DatabaseError error) {}
@@ -468,6 +471,39 @@ public class SellerProfileActivity extends AppCompatActivity {
         } else {
             ivSellerAvatar.setImageResource(R.drawable.placeholder_avatar);
         }
+    }
+
+    private void addMatchingReviewsFromSnapshot(DataSnapshot snapshot, List<Review> targetList, String sid) {
+        if (snapshot == null || !snapshot.exists()) return;
+        for (DataSnapshot child : snapshot.getChildren()) {
+            Review r = RatingHelper.parseReview(child);
+            if (r != null && isReviewForSeller(r, sid, currentSeller)) {
+                if (r.getReviewId() == null) r.setReviewId(child.getKey());
+                boolean exists = false;
+                for (Review ex : targetList) {
+                    if (ex.getReviewId() != null && ex.getReviewId().equalsIgnoreCase(r.getReviewId())) {
+                        exists = true; break;
+                    }
+                }
+                if (!exists) targetList.add(r);
+            }
+        }
+    }
+
+    private boolean isReviewForSeller(Review r, String sid, Seller seller) {
+        if (r == null) return false;
+        String rSellerId = r.getSellerId() != null ? r.getSellerId().trim() : "";
+
+        if (!rSellerId.isEmpty()) {
+            if (sid != null && sid.trim().equalsIgnoreCase(rSellerId)) return true;
+            if (seller != null) {
+                if (seller.getUid() != null && seller.getUid().trim().equalsIgnoreCase(rSellerId)) return true;
+                if (seller.getEmail() != null && seller.getEmail().trim().equalsIgnoreCase(rSellerId)) return true;
+                if (seller.getPhone() != null && seller.getPhone().trim().equalsIgnoreCase(rSellerId)) return true;
+                if (seller.getWhatsappNumber() != null && seller.getWhatsappNumber().trim().equalsIgnoreCase(rSellerId)) return true;
+            }
+        }
+        return false;
     }
 
     private String getCategoriesText(Seller seller) {

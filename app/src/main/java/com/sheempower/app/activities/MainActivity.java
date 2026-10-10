@@ -709,8 +709,8 @@ public class MainActivity extends AppCompatActivity {
                                         () -> goToOrder(product)
                                 ),
                         product ->
-                                chatOnWhatsApp(
-                                        product.getSellerId()
+                                requireBuyerLogin(
+                                        () -> chatOnWhatsApp(product.getSellerId())
                                 )
                 );
 

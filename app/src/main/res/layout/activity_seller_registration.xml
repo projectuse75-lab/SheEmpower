@@ -39,8 +39,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
-                    android:text="🏪 Seller Registration / بیچنے والی بنیں"
-                    android:textSize="18sp"
+                    android:text="🏪 Seller Registration\nبیچنے والی بنیں"
+                    android:textSize="17sp"
+                    android:gravity="center"
                     android:fontFamily="sans-serif-black"
                     android:textColor="#FFFFFF" />
 

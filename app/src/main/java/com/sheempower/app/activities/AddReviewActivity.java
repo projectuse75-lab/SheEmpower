@@ -111,6 +111,7 @@ public class AddReviewActivity extends AppCompatActivity {
 
         String comment = etComment != null ? etComment.getText().toString().trim() : "";
 
+        btnSubmit.setEnabled(false);
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
         String reviewId = dbRef.child("reviews").push().getKey();
         if (reviewId == null) {
@@ -152,32 +153,58 @@ public class AddReviewActivity extends AppCompatActivity {
 
     private void recalculateProductRating(String targetProductId) {
         if (targetProductId == null || targetProductId.trim().isEmpty()) return;
+        final String pid = targetProductId.trim();
+        final DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
 
-        FirebaseDatabase.getInstance().getReference().child("reviews")
-                .orderByChild("productId").equalTo(targetProductId.trim())
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
-                        double sum = 0;
-                        long count = 0;
-                        for (DataSnapshot child : snapshot.getChildren()) {
-                            Review r = child.getValue(Review.class);
-                            if (r != null) {
-                                sum += r.getRating();
-                                count++;
-                            }
-                        }
-                        if (count > 0) {
-                            double avg = sum / count;
-                            double roundedAvg = Math.round(avg * 10.0) / 10.0;
-                            DatabaseReference prodRef = FirebaseDatabase.getInstance().getReference().child(Constants.NODE_PRODUCTS).child(targetProductId.trim());
-                            prodRef.child("rating").setValue(roundedAvg);
-                            prodRef.child("reviewCount").setValue(count);
-                        }
+        dbRef.child("reviews").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                List<Review> prodReviews = new ArrayList<>();
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    Review r = child.getValue(Review.class);
+                    if (r != null && r.getProductId() != null && pid.equalsIgnoreCase(r.getProductId().trim())) {
+                        prodReviews.add(r);
                     }
+                }
 
-                    @Override public void onCancelled(DatabaseError error) {}
-                });
+                dbRef.child(Constants.NODE_PRODUCTS).child(pid).child("reviews")
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot subSnap) {
+                                for (DataSnapshot child : subSnap.getChildren()) {
+                                    Review r = child.getValue(Review.class);
+                                    if (r != null) {
+                                        boolean exists = false;
+                                        for (Review ex : prodReviews) {
+                                            if (ex.getReviewId() != null && ex.getReviewId().equalsIgnoreCase(child.getKey())) {
+                                                exists = true; break;
+                                            }
+                                        }
+                                        if (!exists) prodReviews.add(r);
+                                    }
+                                }
+
+                                double sum = 0;
+                                long count = prodReviews.size();
+                                for (Review r : prodReviews) {
+                                    sum += r.getRating();
+                                }
+
+                                if (count > 0) {
+                                    double avg = sum / count;
+                                    double roundedAvg = Math.round(avg * 10.0) / 10.0;
+                                    DatabaseReference prodRef = dbRef.child(Constants.NODE_PRODUCTS).child(pid);
+                                    prodRef.child("rating").setValue(roundedAvg);
+                                    prodRef.child("reviewCount").setValue(count);
+                                }
+                            }
+
+                            @Override public void onCancelled(DatabaseError error) {}
+                        });
+            }
+
+            @Override public void onCancelled(DatabaseError error) {}
+        });
     }
 
     private void recalculateSellerRating(String targetSellerId) {

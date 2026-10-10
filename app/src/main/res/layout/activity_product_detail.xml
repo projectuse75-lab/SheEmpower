@@ -10,6 +10,51 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <!-- TOP NAV HEADER - NAVY BLUE -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#192A56"
+            android:padding="16dp"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageButton
+                    android:id="@+id/btnBack"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_arrow_back"
+                    app:tint="#FFFFFF"
+                    android:contentDescription="Back" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="🛍️ Product Details / چیز کی تفصیل"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-black"
+                    android:textColor="#FFFFFF" />
+
+                <ImageButton
+                    android:id="@+id/btnSpeaker"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_speaker"
+                    app:tint="#FFFFFF"
+                    android:contentDescription="Speaker" />
+            </RelativeLayout>
+        </LinearLayout>
+
         <ImageView
             android:id="@+id/ivProduct"
             android:layout_width="match_parent"
@@ -29,16 +74,6 @@
                 android:orientation="horizontal"
                 android:gravity="center_vertical">
 
-                <ImageButton
-                    android:id="@+id/btnBack"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginEnd="8dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_arrow_back"
-                    app:tint="@color/primary"
-                    android:contentDescription="Back" />
-
                 <TextView
                     android:id="@+id/tvProductName"
                     android:layout_width="0dp"
@@ -47,14 +82,6 @@
                     android:textSize="22sp"
                     android:fontFamily="sans-serif-black"
                     android:textColor="@color/text_primary" />
-
-                <ImageButton
-                    android:id="@+id/btnSpeaker"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_speaker"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="Speaker" />
             </LinearLayout>
 
             <TextView

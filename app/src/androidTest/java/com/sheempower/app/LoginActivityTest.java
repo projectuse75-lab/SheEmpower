@@ -34,10 +34,10 @@ public class LoginActivityTest {
         onView(withId(R.id.btnLogin))
                 .check(matches(isDisplayed()));
 
-        onView(withId(R.id.btnBuyerLogin))
+        onView(withId(R.id.tvGoBuyerRegister))
                 .check(matches(isDisplayed()));
 
-        onView(withId(R.id.btnSellerLogin))
+        onView(withId(R.id.tvGoSellerRegister))
                 .check(matches(isDisplayed()));
     }
 }

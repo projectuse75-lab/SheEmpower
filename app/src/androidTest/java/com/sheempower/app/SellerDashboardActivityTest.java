@@ -50,6 +50,10 @@ public class SellerDashboardActivityTest {
             onView(withId(R.id.btnAddProduct))
                     .check(matches(isDisplayed()));
 
+            // Reviews card
+            onView(withId(R.id.cardSellerReviews))
+                    .check(matches(isDisplayed()));
+
             // Bottom navigation
             onView(withId(R.id.bottomNav))
                     .check(matches(isDisplayed()));
