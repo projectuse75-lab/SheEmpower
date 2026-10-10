@@ -94,7 +94,7 @@ public class SellerDashboardActivity extends AppCompatActivity {
 
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
-            FcmTokenHelper.saveCurrentTokenWithContext(this, currentUser.getUid());
+            FcmTokenHelper.saveCurrentTokenWithContext(this, currentUser.getUid( ));
             BatteryOptimizationHelper.checkAndPrompt(this);
         }
 

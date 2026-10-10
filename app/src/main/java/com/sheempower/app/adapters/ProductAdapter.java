@@ -1,5 +1,7 @@
 package com.sheempower.app.adapters;
 
+import android.app.Activity;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -105,6 +107,17 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
     }
 
     @Override public int getItemCount() { return products.size(); }
+
+    private boolean isValidContextForGlide(Context context) {
+        if (context == null) {
+            return false;
+        }
+        if (context instanceof Activity) {
+            Activity activity = (Activity) context;
+            return !activity.isDestroyed() && !activity.isFinishing();
+        }
+        return true;
+    }
 
     static class VH extends RecyclerView.ViewHolder {
         ImageView ivImage;

@@ -87,13 +87,25 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         applyTheme();
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         session = new SessionManager(this);
+
+        Button btnProfilePicture = findViewById(R.id.btn_profile_picture);
+        if (btnProfilePicture != null) {
+            btnProfilePicture.setOnClickListener(v -> {
+                if (session.isLoggedIn()) {
+                    startActivity(new Intent(MainActivity.this, ProfilePictureActivity.class));
+                } else {
+                    Toast.makeText(MainActivity.this,
+                            "پہلے لاگ ان کریں / Please Login First",
+                            Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                }
+            });
+        }
 
         etSearch = findViewById(R.id.etSearch);
         btnLogin = findViewById(R.id.btnLogin);

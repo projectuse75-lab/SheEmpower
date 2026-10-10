@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="?android:attr/windowBackground">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- ===== HEADER CLOSE BUTTON ===== -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end"
+            android:layout_marginBottom="12dp">
+
+            <Button
+                android:id="@+id/btn_dialog_close"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:text="✕"
+                android:textSize="20sp"
+                android:textColor="#FF4081"
+                android:background="@drawable/bg_skeu_card" />
+
+        </LinearLayout>
+
+        <!-- ===== PROFILE IMAGE ===== -->
+        <ImageView
+            android:id="@+id/iv_dialog_image"
+            android:layout_width="match_parent"
+            android:layout_height="260dp"
+            android:scaleType="centerCrop"
+            android:layout_marginBottom="16dp"
+            android:contentDescription="Profile Image"
+            android:background="@drawable/bg_skeu_card" />
+
+        <!-- ===== DETAILS CARD ===== -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_skeu_card"
+            android:padding="16dp"
+            android:layout_marginBottom="16dp">
+
+            <!-- NAME -->
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_dialog_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="👤 نام / Name: -"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_dark"
+                android:layout_marginBottom="10dp" />
+
+            <!-- DIVIDER -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/divider"
+                android:layout_marginBottom="10dp" />
+
+            <!-- FATHER NAME -->
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_dialog_father_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="👨‍👦 والد کا نام / Father Name: -"
+                android:textSize="15sp"
+                android:textColor="@color/text_dark"
+                android:layout_marginBottom="10dp" />
+
+            <!-- DIVIDER -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/divider"
+                android:layout_marginBottom="10dp" />
+
+            <!-- CLASS -->
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_dialog_class"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🎓 کلاس / Class: -"
+                android:textSize="15sp"
+                android:textColor="@color/text_dark" />
+
+        </LinearLayout>
+
+        <!-- ===== EDIT DETAILS BUTTON ===== -->
+        <Button
+            android:id="@+id/btn_dialog_edit"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="✏️ معلومات تبدیل کریں / Edit Details"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:backgroundTint="#192A56"
+            android:layout_marginBottom="8dp" />
+
+        <!-- ===== SHARE BUTTON ===== -->
+        <Button
+            android:id="@+id/btn_dialog_share"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="🔗 شیئر کریں / Share"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:backgroundTint="#FF4081"
+            android:layout_marginBottom="8dp" />
+
+        <!-- ===== CLOSE BUTTON ===== -->
+        <Button
+            android:id="@+id/btn_dialog_close_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="بند کریں / Close"
+            android:textColor="@color/primary_pink"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:backgroundTint="#FFE4EC" />
+
+    </LinearLayout>
+</ScrollView>

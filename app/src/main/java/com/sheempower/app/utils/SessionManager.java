@@ -6,10 +6,14 @@ import android.content.SharedPreferences;
 public class SessionManager {
 
     private static final String PREF_NAME = "she_empower_session";
-    private static final String KEY_UID   = "uid";
-    private static final String KEY_ROLE  = "role";
-    private static final String KEY_NAME  = "name";
-    private static final String KEY_EMAIL = "email";  // ✅ ADD
+    private static final String KEY_UID         = "uid";
+    private static final String KEY_ROLE        = "role";
+    private static final String KEY_NAME        = "name";
+    private static final String KEY_EMAIL       = "email";
+    private static final String KEY_PHONE       = "phone";
+    private static final String KEY_CITY        = "city";
+    private static final String KEY_FATHER_NAME = "father_name";
+    private static final String KEY_CLASS       = "user_class";
 
     private final SharedPreferences prefs;
 
@@ -37,13 +41,64 @@ public class SessionManager {
         return prefs.getString(KEY_NAME, "");
     }
 
-    // ✅ ADD یہ دونوں methods
+    public String getUserName() {
+        return getName();
+    }
+
+    public void saveName(String name) {
+        prefs.edit().putString(KEY_NAME, name).apply();
+    }
+
+    public String getFatherName() {
+        return prefs.getString(KEY_FATHER_NAME, "");
+    }
+
+    public void saveFatherName(String fatherName) {
+        prefs.edit().putString(KEY_FATHER_NAME, fatherName).apply();
+    }
+
+    public String getUserClass() {
+        return prefs.getString(KEY_CLASS, "");
+    }
+
+    public void saveUserClass(String userClass) {
+        prefs.edit().putString(KEY_CLASS, userClass).apply();
+    }
+
     public String getEmail() {
         return prefs.getString(KEY_EMAIL, "");
     }
 
+    public String getUserEmail() {
+        return getEmail();
+    }
+
     public void saveEmail(String email) {
         prefs.edit().putString(KEY_EMAIL, email).apply();
+    }
+
+    public String getPhone() {
+        return prefs.getString(KEY_PHONE, "");
+    }
+
+    public String getUserPhone() {
+        return getPhone();
+    }
+
+    public void savePhone(String phone) {
+        prefs.edit().putString(KEY_PHONE, phone).apply();
+    }
+
+    public String getCity() {
+        return prefs.getString(KEY_CITY, "");
+    }
+
+    public String getUserCity() {
+        return getCity();
+    }
+
+    public void saveCity(String city) {
+        prefs.edit().putString(KEY_CITY, city).apply();
     }
 
     public boolean isLoggedIn() {
@@ -60,10 +115,6 @@ public class SessionManager {
 
     public boolean isAdmin() {
         return "admin".equals(getRole());
-    }
-
-    public void saveName(String name) {
-        prefs.edit().putString(KEY_NAME, name).apply();
     }
 
     public void saveRole(String role) {
