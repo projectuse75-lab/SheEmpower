@@ -3,7 +3,7 @@
 
     <!-- Primary — Midnight Navy -->
     <color name="primary">#192A56</color>
-kkkkkkkkk    <color name="primary_dark">#0F1B3D</color>
+    <color name="primary_dark">#0F1B3D</color>
     <color name="primary_light">#2A3F75</color>
     <color name="midnight_navy">#192A56</color>
 
@@ -25,6 +25,26 @@ kkkkkkkkk    <color name="primary_dark">#0F1B3D</color>
     <color name="white">#FFFFFF</color>
     <color name="card_bg">#FFFFFF</color>
     <color name="bg_cream">#FCFBFB</color>
+    <color name="screen_background">#FCFBFB</color>
+    <color name="settings_background">#FCFBFB</color>
+    <color name="bg_dark">#0F1B3D</color>
+    <color name="dark_background">#0F1B3D</color>
+    <color name="lighter_pink">#E8EEF5</color>
+
+    <!-- Surface / Cards / Inputs -->
+    <color name="input_bg">#FFFFFF</color>
+    <color name="gray_light">#F5F7FA</color>
+    <color name="screen_surface">#FFFFFF</color>
+    <color name="settings_card">#FFFFFF</color>
+    <color name="settings_card_background">#192A56</color>
+    <color name="dark_surface">#192A56</color>
+    <color name="placeholder_bg">#F5F7FA</color>
+    <color name="light_pink">#E8EEF5</color>
+    <color name="skeu_cream_dark">#FCFBFB</color>
+    <color name="skeu_highlight">#FFF8EA</color>
+    <color name="skeu_cream_border">#EAECEE</color>
+    <color name="skeu_pink_light">#E8EEF5</color>
+    <color name="primary_pink">#192A56</color>
 
     <!-- Text -->
     <color name="text_primary">#192A56</color>
@@ -32,52 +52,34 @@ kkkkkkkkk    <color name="primary_dark">#0F1B3D</color>
     <color name="text_light">#192A56</color>
     <color name="text_gray">#6B7A99</color>
     <color name="text_dark">#192A56</color>
-
-    <!-- Compatibility aliases -->
+    <color name="settings_card_text">#192A56</color>
+    <color name="screen_text">#6B7A99</color>
+    <color name="screen_secondary_text">#6B7A99</color>
     <color name="lavender_text">#192A56</color>
     <color name="lavender_soft">#6B7A99</color>
     <color name="lavender_primary">#192A56</color>
     <color name="lavender_dark">#0F1B3D</color>
-    <color name="skeu_cream_dark">#FCFBFB</color>
-    <color name="skeu_highlight">#FFF8EA</color>
-    <color name="skeu_cream_border">#EAECEE</color>
-    <color name="skeu_pink_light">#E8EEF5</color>
-    <color name="primary_pink">#192A56</color>
+    <color name="dark_text">#FCFBFB</color>
+    <color name="dark_text_secondary">#B0B8CC</color>
 
-    <!-- Settings -->
-    <color name="settings_card_text">#192A56</color>
-    <color name="screen_text">#6B7A99</color>
-
-    <!-- Status -->
+    <!-- Status & Action -->
     <color name="status_pending">#F7D794</color>
     <color name="status_approved">#2ECC71</color>
     <color name="status_rejected">#E74C3C</color>
     <color name="status_progress">#3498DB</color>
     <color name="verified_green">#2ECC71</color>
-
-    <!-- Action -->
     <color name="success_green">#2ECC71</color>
     <color name="warning_amber">#F39C12</color>
     <color name="whatsapp_green">#25D366</color>
     <color name="error_red">#E74C3C</color>
 
-    <!-- Divider & Inputs -->
+    <!-- Divider & Border -->
     <color name="divider">#EAECEE</color>
-    <color name="gray_light">#F5F7FA</color>
-    <color name="input_bg">#FFFFFF</color>
     <color name="card_border">#EAECEE</color>
 
-    <!-- App Icon -->
-    <color name="ic_launcher_background">#FFFFFF</color>
-
-    <!-- Dark Theme -->
-    <color name="dark_background">#0F1B3D</color>
-    <color name="dark_surface">#192A56</color>
-    <color name="dark_text">#FCFBFB</color>
-    <color name="dark_text_secondary">#B0B8CC</color>
-
-    <!-- Extra -->
+    <!-- Base & App Icon -->
     <color name="black">#000000</color>
-    <color name="placeholder_bg">#F5F7FA</color>
+    <color name="gray">#6B7A99</color>
+    <color name="ic_launcher_background">#FFFFFF</color>
 
 </resources>

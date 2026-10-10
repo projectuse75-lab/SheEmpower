@@ -138,12 +138,19 @@ public class ProductReviewsActivity extends AppCompatActivity {
 
     private void updateCatBtnStyle(Button btn, boolean isSelected) {
         if (btn == null) return;
+        PreferencesManager prefs = new PreferencesManager(this);
+        boolean isDark = prefs.isDarkThemeEnabled();
+
         if (isSelected) {
             btn.setBackgroundResource(R.drawable.bg_skeu_button_primary);
             btn.setTextColor(0xFFFFFFFF);
         } else {
             btn.setBackgroundResource(R.drawable.bg_skeu_button_cream);
-            btn.setTextColor(0xFF192A56);
+            if (isDark) {
+                btn.setTextColor(0xFFFFFFFF);
+            } else {
+                btn.setTextColor(0xFF192A56);
+            }
         }
     }
 
